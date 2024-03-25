@@ -5,7 +5,7 @@
               <!-- Parte inferior -->
               <ul class="navbar-nav">
                 <li class="nav-item active">
-                  <a class="nav-link" href="./">
+                  <a class="nav-link" href="register.php">
                     <span class="nav-link-icon d-md-none d-lg-inline-block"
                       ><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                       <svg
@@ -42,7 +42,7 @@
                 </li>
 
                 <li class="nav-item active">
-                  <a class="nav-link" href="./">
+                  <a class="nav-link" href="login.php">
                     <span class="nav-link-icon d-md-none d-lg-inline-block"
                       ><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                       <svg
@@ -74,7 +74,7 @@
                   </a>
                 </li>
                 <li class="nav-item active">
-                  <a class="nav-link" href="pato.html">
+                  <a class="nav-link" href="discover">
                     <span class="nav-link-icon d-md-none d-lg-inline-block"
                       ><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                       <svg
