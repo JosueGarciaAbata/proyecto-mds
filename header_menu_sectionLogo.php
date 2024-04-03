@@ -36,6 +36,35 @@
         font-feature-settings: "cv03", "cv04", "cv11";
       }
     </style>
+        <style>
+      .error-container {
+        display: flex;
+        align-items: center;
+      }
+
+      .error {
+        color: crimson;
+        font-size: smaller;
+        margin-right: 10px; /* Ajusta el margen entre el ícono y el mensaje de error según sea necesario */
+      }
+
+      .error-icon {
+        color: crimson;
+      }
+    </style>
+
+<script
+      src="https://kit.fontawesome.com/e6b9a81de9.js"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      type="module"
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"
+    ></script>
+    <script
+      nomodule
+      src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"
+    ></script>
   </head>
   <body>
     <script src="./dist/js/demo-theme.min.js?1684106062"></script>

@@ -3,36 +3,25 @@
       <div class="page-wrapper d-flex justify-content-center align-items-center">
       <div class="container container-tight py-4">
         
-        <form class="card card-md" action="./" method="get" autocomplete="off" novalidate="">
+        <form  id="register-form" class="card card-md" action="./" method="get" autocomplete="off" novalidate="">
           <div class="card-body">
             <h2 class="card-title text-center mb-4">Create new account</h2>
             <div class="mb-3">
               <label class="form-label">Name</label>
-              <input type="text" class="form-control" placeholder="Enter name">
+              <input type="text" class="form-control" placeholder="Enter name" name="nombre" id="nombre">
             </div>
             <div class="mb-3">
               <label class="form-label">Email address</label>
-              <input type="email" class="form-control" placeholder="Enter email">
+              <input type="email" class="form-control" placeholder="Enter email" name="register_mail" id="register_mail">
             </div>
-            <div class="mb-3">
-              <label class="form-label">Password</label>
-              <div class="input-group input-group-flat">
-                <input type="password" class="form-control" placeholder="Password" autocomplete="off">
-                <span class="input-group-text">
-                  <a href="#" class="link-secondary" data-bs-toggle="tooltip" aria-label="Show password" data-bs-original-title="Show password"><!-- Download SVG icon from http://tabler-icons.io/i/eye -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"></path><path d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"></path><path d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"></path></svg>
-                  </a>
-                </span>
-              </div>
-            </div>
-            <div class="mb-3">
-              <label class="form-check">
-                <input type="checkbox" class="form-check-input">
-                <span class="form-check-label">Agree the <a href="./terms-of-service.html" tabindex="-1">terms and policy</a>.</span>
-              </label>
-            </div>
+            <div class="mb-3 position-relative">
+    <label class="form-label">Password</label>
+    <input type="password" class="form-control" placeholder="Password" autocomplete="off" name="register_password" id="register_password">
+    <i id="passChange" class="fa-solid fa-eye-slash position-absolute" style="right: 10px; top: 70%; transform: translateY(-50%);"></i>
+</div>
+           
             <div class="form-footer">
-              <button type="submit" class="btn btn-primary w-100">Create new account</button>
+              <button type="button" class="btn btn-primary w-100" id="register_button">Create new account</button>
             </div>
           </div>
         </form>
@@ -43,3 +32,135 @@
     </div>
 
       <?php require_once('footerV1.php'); ?> 
+
+      <script>
+
+
+
+
+$(document).ready(function() {
+    $.validator.addMethod("strongPassword", function(value, element) {
+        return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@*().-_])[a-zA-Z\d!@*().-_]{8,}$/.test(value);
+    }, "La contraseña debe tener al menos 8 caracteres y contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial (opcional).");
+    $.validator.addMethod("controllerName", function(value, element) {
+    return this.optional(element) || /^[A-Za-z0-9_]+$/.test(value);
+}, "El nombre no puede contener espacios en blanco ni caracteres especiales, solo letras, números o guiones bajos (_).");
+    
+    $("#register-form").validate({
+        rules: {
+          nombre: {
+                required: true,
+                minlength: 5,
+                maxlength:10,
+                controllerName: true,
+            },
+            register_mail: {
+                required: true,
+                email: true,
+            },
+            register_password: {
+                required: true,
+                strongPassword: true,
+                minlength:8,
+            },
+        },
+        messages: {
+            nombre: {
+                required: "Por favor ingrese un nombre",
+                minlength: "Por favor ingrese al menos 5 caracteres",
+                maxlength:"El número máximo de carácteres es 10"
+            },
+            register_mail: {
+                required: "Por favor ingrese un email",
+                email: "Por favor ingrese un email válido",
+            },
+            register_password: {
+                required: "Por favor ingrese una contraseña para esta cuenta",
+                minlength:"Por favor ingrese al menos 8 caracteres para la contraseña"
+            },
+        },
+        errorElement: "div",
+        errorPlacement: function(error, element) {
+            error.addClass("error");
+            var container = $("<div>").addClass("error-container");
+            container.insertAfter(element);
+            error.appendTo(container);
+        },
+        highlight: function(element) {
+            $(element).addClass("error");
+        },
+        unhighlight: function(element) {
+            $(element).removeClass("error");
+        },
+    });
+});
+
+$('#register_button ').click(function() {
+
+  if (
+    $("#register-form").valid()
+   
+) {
+console.log("Paso");
+
+
+}else{
+
+console.log("No paso");  
+}
+});
+
+
+// // function validarCorreoElectronico(correo) {
+    
+// //     var regCorreo= /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  
+// //     return regCorreo.test(correo);
+// // }
+// function enviarMensaje(){
+
+// $mail_setFromEmail=$('#customer_email').val();
+// $mail_setFromName=$('#customer_name').val();
+// $txt_message=$('#message').val();
+// $mail_subject='Cliente Nuevo Pagina  Vaz:';	
+// $telefono=$("#telefono").val();
+// //var expresionRegularCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+
+
+
+// if($("#modalForm form").valid()
+// ){
+//   $.ajax({
+//     url:'sendemail.php',
+//       data:{mail_setFromEmail:$mail_setFromEmail,
+//         mail_setFromName:$mail_setFromName,
+//           txt_message:$txt_message,
+//           mail_subject:$mail_subject,
+//           telefono:$telefono,
+//         },
+//     type:'POST',
+//     dataType: 'html',
+//     beforeSend: function() {
+//       var inputNombre = document.getElementById("send");
+//       inputNombre.value = "Enviando...";
+//     //$('#send').text('Enviando...');
+//     $('#send').addClass('btn-info');
+//     },
+//     success: function( resp ) {
+    
+//       $('#send').text('Enviar Mesaje');
+//       $('#send').removeClass('btn-info');
+//       $('#send').addClass('btn-success');
+//       $('#modalForm').modal('hide');
+
+
+//   mostrarModalExito("Email enviado con éxito");
+//     }
+//   });
+// }
+
+  
+// }
+</script>
