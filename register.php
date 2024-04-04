@@ -8,7 +8,7 @@
             <h2 class="card-title text-center mb-4">Create new account</h2>
             <div class="mb-3">
               <label class="form-label">Name</label>
-              <input type="text" class="form-control" placeholder="Enter name" name="nombre" id="nombre">
+              <input type="text" class="form-control" placeholder="Enter name" name="register_name" id="register_name">
             </div>
             <div class="mb-3">
               <label class="form-label">Email address</label>
@@ -17,9 +17,16 @@
             <div class="mb-3 position-relative">
     <label class="form-label">Password</label>
     <input type="password" class="form-control" placeholder="Password" autocomplete="off" name="register_password" id="register_password">
-    <i id="passChange" class="fa-solid fa-eye-slash position-absolute" style="right: 10px; top: 70%; transform: translateY(-50%);"></i>
+  
 </div>
-           
+<div class="mb-3">
+                    <label class="form-check">
+                      <input type="checkbox" class="form-check-input" />
+                      <span class="form-check-label"
+                        >Mostrar contraseña</span
+                      >
+                    </label>
+                  </div>
             <div class="form-footer">
               <button type="button" class="btn btn-primary w-100" id="register_button">Create new account</button>
             </div>
@@ -48,7 +55,7 @@ $(document).ready(function() {
     
     $("#register-form").validate({
         rules: {
-          nombre: {
+          register_name: {
                 required: true,
                 minlength: 5,
                 maxlength:10,
@@ -65,7 +72,7 @@ $(document).ready(function() {
             },
         },
         messages: {
-            nombre: {
+            register_name: {
                 required: "Por favor ingrese un nombre",
                 minlength: "Por favor ingrese al menos 5 caracteres",
                 maxlength:"El número máximo de carácteres es 10"
@@ -97,11 +104,37 @@ $(document).ready(function() {
 
 $('#register_button ').click(function() {
 
+
+
   if (
     $("#register-form").valid()
    
 ) {
-console.log("Paso");
+
+
+  user_name=$("#register_name").val();
+  user_email=$("#register_mail").val();
+   user_password=$("#register_password").val();
+
+    $.ajax({
+		url:'procesarInformacion/register.php',
+			data:{
+        register_name:user_name,
+        register_mail:user_email,
+        register_password:user_password,
+        
+        },
+		type:'POST',	
+		success: function( resp ) {
+        console.log(resp);
+        
+    },
+    error: function(xhr, status, error) {
+        // Manejar el error aquí
+        console.log("Error al enviar el email:", error);
+        // Aquí puedes mostrar un mensaje de error al usuario o realizar otras acciones necesarias
+    }
+});
 
 
 }else{
