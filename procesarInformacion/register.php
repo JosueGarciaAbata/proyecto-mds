@@ -16,38 +16,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function crearCuenta($conexion,$name,$email,$password){
 
-$sql_correo = "SELECT * FROM usuarios WHERE correo_electronico_usuario = ?";
-$stmt_correo = $conexion->prepare($sql_correo);
-$stmt_correo->bind_param("s", $email);
-$stmt_correo->execute();
-$resultado_correo = $stmt_correo->get_result();
+$sql= "SELECT * FROM usuarios WHERE correo_electronico_usuario = ? AND nombre_usuario=?";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("ss", $email,$password);
+$stmt->execute();
+$result = $stmt->get_result();
 
-$sql_nombre = "SELECT * FROM usuarios WHERE nombre_usuario = ?";
-$stmt_nombre = $conexion->prepare($sql_nombre);
-$stmt_nombre->bind_param("s", $name);
-$stmt_nombre->execute();
-$resultado_nombre = $stmt_nombre->get_result();
-if ($resultado_correo->num_rows > 0) {
+if ($result->num_rows > 0) {
   $resultado = false;
-} elseif ($resultado_nombre->num_rows > 0) {
-  $resultado = false;
-} else {
-  // No hay usuarios con el mismo correo electrónico ni nombre de usuario
-  $sql_insert = "INSERT INTO usuarios (nombre_usuario, correo_electronico_usuario, contrasenia_usuario) VALUES (?, ?, ?)";
+}  else {
+
+  $fotoPerfilDefecto="../img/defaulAvatar.png";
+  $randomNumbers = mt_rand(1000, 9999);
+
+  $carpetaUsuario = "../usersContent/$name$randomNumbers";
+  if (!mkdir($carpetaUsuario)) {
+
+   return false;
+ 
+  }
+  $sql_insert = "INSERT INTO usuarios (nombre_usuario, correo_electronico_usuario, contrasenia_usuario,ubicacion_foto_perfil_usuario,carpeta_usuario) VALUES (?, ?, ?,?,?)";
   $stmt_insert = $conexion->prepare($sql_insert);
-  $stmt_insert->bind_param("sss", $name, $email, $password);
+  $stmt_insert->bind_param("sssss", $name, $email, $password,$fotoPerfilDefecto,$carpetaUsuario);
   $stmt_insert->execute();
   $user_id = $stmt_insert->insert_id;
 
   session_start();
 
   $_SESSION['user_id'] = $user_id;
-  $_SESSION['user_name'] = $name;
 
   $resultado = true;
+
 }
 
 return $resultado;
+
+
 
 }
 

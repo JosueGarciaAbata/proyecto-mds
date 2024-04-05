@@ -21,7 +21,7 @@
 </div>
 <div class="mb-3">
                     <label class="form-check">
-                      <input type="checkbox" class="form-check-input" />
+                      <input  id="show_password"type="checkbox" class="form-check-input" />
                       <span class="form-check-label"
                         >Mostrar contraseña</span
                       >
@@ -102,7 +102,17 @@ $(document).ready(function() {
     });
 });
 
-$('#register_button ').click(function() {
+
+$('#show_password').change(function() {
+    var passwordField = $('#register_password');
+    if ($(this).is(':checked')) {
+        passwordField.attr('type', 'text');
+    } else {
+        passwordField.attr('type', 'password');
+    }
+});
+
+$('#register_button').click(function() {
 
 
 
@@ -126,74 +136,32 @@ $('#register_button ').click(function() {
         },
 		type:'POST',	
 		success: function( resp ) {
-        console.log(resp);
+
+       if (resp == "true"){
+
+      
+        mostrarModalExito("Usuario creado con exito");
+	setTimeout(function(){
+ window.location.href="usuarioRegistrado/index.php"
+
+	},2500)
+       }else{
+
+        mostrarModalDeAdvertencia("Ya existe una cuenta con la información ingresada");
+        
+       }
         
     },
     error: function(xhr, status, error) {
-        // Manejar el error aquí
-        console.log("Error al enviar el email:", error);
-        // Aquí puedes mostrar un mensaje de error al usuario o realizar otras acciones necesarias
+      mostrarModalAdvertencia("Sucedio un error al crear la cuenta");
+        
     }
 });
 
 
-}else{
-
-console.log("No paso");  
 }
 });
 
 
-// // function validarCorreoElectronico(correo) {
-    
-// //     var regCorreo= /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-  
-// //     return regCorreo.test(correo);
-// // }
-// function enviarMensaje(){
-
-// $mail_setFromEmail=$('#customer_email').val();
-// $mail_setFromName=$('#customer_name').val();
-// $txt_message=$('#message').val();
-// $mail_subject='Cliente Nuevo Pagina  Vaz:';	
-// $telefono=$("#telefono").val();
-// //var expresionRegularCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-
-
-// if($("#modalForm form").valid()
-// ){
-//   $.ajax({
-//     url:'sendemail.php',
-//       data:{mail_setFromEmail:$mail_setFromEmail,
-//         mail_setFromName:$mail_setFromName,
-//           txt_message:$txt_message,
-//           mail_subject:$mail_subject,
-//           telefono:$telefono,
-//         },
-//     type:'POST',
-//     dataType: 'html',
-//     beforeSend: function() {
-//       var inputNombre = document.getElementById("send");
-//       inputNombre.value = "Enviando...";
-//     //$('#send').text('Enviando...');
-//     $('#send').addClass('btn-info');
-//     },
-//     success: function( resp ) {
-    
-//       $('#send').text('Enviar Mesaje');
-//       $('#send').removeClass('btn-info');
-//       $('#send').addClass('btn-success');
-//       $('#modalForm').modal('hide');
-
-
-//   mostrarModalExito("Email enviado con éxito");
-//     }
-//   });
-// }
-
-  
-// }
 </script>

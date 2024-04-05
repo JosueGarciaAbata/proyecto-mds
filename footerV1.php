@@ -46,6 +46,29 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
-
+    <script src="./dist/libs/SweetAlert2/SweetAlert2.js"></script>
+    
+    <script>
+       function mostrarModalDeAdvertencia(mensaje) {
+        
+        Swal.fire({
+            icon: 'warning',
+            title: 'Alerta',
+            text: mensaje,
+            confirmButtonText: 'Aceptar'
+        });
+    }
+    
+    function mostrarModalExito(mensaje){
+        Swal.fire({
+      position: "center",
+      icon: "success",
+      title: mensaje,
+      showConfirmButton: false,
+      timer: 2500
+    });
+    
+    }
+    </script>
   </body>
 </html>

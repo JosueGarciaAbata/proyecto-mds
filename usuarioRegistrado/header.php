@@ -1,3 +1,33 @@
+<?php
+session_start();
+
+// Verificar si no hay una sesión en curso
+if (!isset($_SESSION['user_id'])) {
+  header("Location: ../index.php");
+    exit(); // Asegura que el script se detenga después de la redirección
+}
+else{
+  require_once("../procesarInformacion/conexion.php");
+  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+  $user_id = $_SESSION['user_id']; // Obtener el ID de usuario de la sesión
+  
+  // Realizar una consulta para obtener la ruta de la foto de perfil del usuario
+  $sql_select_foto = "SELECT ubicacion_foto_perfil_usuario FROM usuarios WHERE id_usuario = ?";
+  $stmt_select_foto = $conexion->prepare($sql_select_foto);
+  $stmt_select_foto->bind_param("s", $user_id); // Utiliza "s" para indicar que es una cadena
+  $stmt_select_foto->execute();
+  $stmt_select_foto->bind_result($fotoPerfil);
+  $stmt_select_foto->fetch();
+  $stmt_select_foto->close();
+
+
+}
+?>
+<?php
+
+?>
+
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -157,7 +187,7 @@
             </div>
             <div class="nav-item dropdown">
               <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown" aria-label="Open user menu">
-                <span class="avatar avatar-sm" style="background-image: url(../defaulAvatar.png)"></span>
+              <span class="avatar avatar-sm" style="background-image: url('<?php echo $fotoPerfil; ?>')"></span>
                 <div class="d-none d-xl-block ps-2">
                   <div>Juan Carlos</div>
                   

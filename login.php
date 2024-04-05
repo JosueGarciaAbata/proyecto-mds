@@ -22,12 +22,16 @@
                     />
                   </div>
                   <div class="mb-3 ">
-    <label class="form-label">Password</label>
+    <label class="form-label">Password
+    <span class="form-label-description">
+                    <a href="./forgot_password.php">I forgot password</a>
+                  </span>
+    </label>
     <input type="password" class="form-control" placeholder="Password" autocomplete="off" name="login_password" id="login_password">
 </div>
                   <div class="mb-3">
                     <label class="form-check">
-                      <input type="checkbox" class="form-check-input" />
+                      <input   id="show_password" type="checkbox" class="form-check-input" />
                       <span class="form-check-label"
                         >Mostrar contraseña</span
                       >
@@ -94,6 +98,19 @@
           },
       });
   });
+$("#show_password").change(function(){
+
+var passwordField = $("#login_password");
+
+if ($(this).is(":checked")){
+
+passwordField.attr("type","text");
+}else{
+
+  passwordField.attr("type","password")
+}
+
+})
 
   $('#login_button').click(function() {
 
@@ -101,66 +118,42 @@ if (
   $("#login-form").valid()
  
 ) {
-console.log("Paso");
+  user_email=$("#login_email").val();
+   user_password=$("#login_password").val();
 
+    $.ajax({
+		url:'procesarInformacion/login.php',
+			data:{
+        login_email:user_email,
+        login_password:user_password,
+        
+        },
+		type:'POST',	
+		success: function( resp ) {
+console.log(resp);
+       if (resp == "true"){
+    
+        mostrarModalExito("Inicio de sesión éxitoso");
+	setTimeout(function(){
+ window.location.href="usuarioRegistrado/index.php"
 
-}else{
+	},2500)
+       }else{
 
-console.log("No paso");  
-}
+        mostrarModalDeAdvertencia("No se encontró la cuenta ingresada");
+        
+       }
+      },
+      error: function(xhr, status, error) {
+      mostrarModalAdvertencia("Sucedio un error al iniciar sesion");
+        
+    }
+    
+    });
+
+  }
+
 });
 
 
-  // // function validarCorreoElectronico(correo) {
-      
-  // //     var regCorreo= /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    
-  // //     return regCorreo.test(correo);
-  // // }
-  // function enviarMensaje(){
-
-  // $mail_setFromEmail=$('#customer_email').val();
-  // $mail_setFromName=$('#customer_name').val();
-  // $txt_message=$('#message').val();
-  // $mail_subject='Cliente Nuevo Pagina  Vaz:';	
-  // $telefono=$("#telefono").val();
-  // //var expresionRegularCorreo = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-
-
-
-  // if($("#modalForm form").valid()
-  // ){
-  //   $.ajax({
-  //     url:'sendemail.php',
-  //       data:{mail_setFromEmail:$mail_setFromEmail,
-  //         mail_setFromName:$mail_setFromName,
-  //           txt_message:$txt_message,
-  //           mail_subject:$mail_subject,
-  //           telefono:$telefono,
-  //         },
-  //     type:'POST',
-  //     dataType: 'html',
-  //     beforeSend: function() {
-  //       var inputNombre = document.getElementById("send");
-  //       inputNombre.value = "Enviando...";
-  //     //$('#send').text('Enviando...');
-  //     $('#send').addClass('btn-info');
-  //     },
-  //     success: function( resp ) {
-      
-  //       $('#send').text('Enviar Mesaje');
-  //       $('#send').removeClass('btn-info');
-  //       $('#send').addClass('btn-success');
-  //       $('#modalForm').modal('hide');
-
-
-  //   mostrarModalExito("Email enviado con éxito");
-  //     }
-  //   });
-  // }
-
-    
-  // }
   </script>
