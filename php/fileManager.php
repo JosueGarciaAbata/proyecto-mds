@@ -8,49 +8,49 @@ class FileManager
     {
         return self::$location;
     }
-//  subyacentes
+    //  subyacentes
     public static function crearDirectorio($path)
     {
         if (!file_exists($path)) {
             mkdir($path, 0755, true);
         }
     }
-//  para el principal
+    //  para el principal
     public static function createDir()
     {
         // Ver si hay una carpeta para dicha carrera, sino la creamos
         self::crearDirectorio(self::getLocation());
     }
-//  add UsuarioFolder
+    //  add UsuarioFolder
     public static function añadirCarpetaUsuario($id)
     {
         //  crear d golpe todos
-        
+
         $path = self::$location . "/" . $id;
         //  para su portafolio y otro para sus vlogs
-        self::crearDirectorio($path."/portafolio");
-        self::crearDirectorio($path."/vlogs");
+        self::crearDirectorio($path . "/portafolio");
+        self::crearDirectorio($path . "/vlogs");
     }
 
     public static function contarCarpetas($pathRelativo)
     {
         // Construir la ruta absoluta
         $pathAbsoluto = __DIR__ . '/' . $pathRelativo;
-    
+
         // Verificar que el path sea un directorio
         if (!is_dir($pathAbsoluto)) {
             return 0; // Si no es un directorio, retornar 0
         }
-    
+
         // Contador para almacenar el número de carpetas
         $contador = 0;
-    
+
         // Iterar sobre los elementos del directorio
         $directorios = glob($pathAbsoluto . '/*', GLOB_ONLYDIR);
         foreach ($directorios as $directorio) {
             $contador++; // Incrementar el contador por cada directorio encontrado
         }
-    
+
         return $contador; // Retornar el número total de carpetas
     }
 
@@ -58,10 +58,10 @@ class FileManager
     {
 
         $path = self::$location . "/" . $id . "/portafolio/project";
-        $nElement=(self::contarCarpetas($path)+1);
-        
+        $nElement = (self::contarCarpetas($path) + 1);
+
         //images
-        self::crearDirectorio($path.$nElement."/images");
+        self::crearDirectorio($path . $nElement . "/images");
         //links
         // self::crearDirectorio($path."/links");
     }
@@ -76,7 +76,7 @@ class FileManager
                 // Nombre del archivo en el servidor
                 $extension = pathinfo(basename($_FILES[$name]["name"]), PATHINFO_EXTENSION);
                 //  id del archivo
-                $nombreArchivo="/".$id.$extension;
+                $nombreArchivo = "/" . $id . $extension;
                 // Ruta completa del archivo en el servidor
                 $rutaArchivo = $directorioDestino . "" . $nombreArchivo;
                 // Mover el archivo al directorio de destino
@@ -93,6 +93,6 @@ class FileManager
         }
     }
 
-    
+
 }
 
