@@ -26,7 +26,7 @@ function validateAccount($conexion, $email, $password)
   $result = $stmt->get_result();
 
   if ($result->num_rows > 0) {
-    $resultado = false;
+
     $row = $result->fetch_assoc();
     $user_id = $row['id_usuario'];
     session_start();

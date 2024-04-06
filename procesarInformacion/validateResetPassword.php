@@ -20,7 +20,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       echo json_encode(array("success" => false));
     }
   }
-  if (!isset($_POST["action"]) && $_POST["action"] == "changePassword") {
+  if (isset($_POST["action"]) && $_POST["action"] == "changePassword") {
 
     echo json_encode(changePassword($conexion, $_POST["new_password"]));
 
@@ -74,18 +74,18 @@ function changePassword($conexion, $newPassword)
 
   session_start();
 
+  $newPassword = hash("sha256", $newPassword);
   $user_email = $_SESSION["userEmailPassword"];
 
-  $sql = "UPDATE usuarios SET contrasenia_usuario=? WHERE correo_electronico_usuario=$user_email";
-
+  $sql = "UPDATE usuarios SET contrasenia_usuario=? WHERE correo_electronico_usuario=?";
   $stmt = $conexion->prepare($sql);
-
-  $stmt->bind_param("s", $newPassword);
-
-  $stmt->execute();
-  session_destroy();
-
-  return true;
+  $stmt->bind_param("ss", $newPassword, $user_email);
+  if ($stmt->execute()) {
+    session_destroy();
+    return true; // Devuelve true si la operación fue exitosa
+  } else {
+    return false; // Devuelve false si ocurrió algún error
+  }
 }
 
 
