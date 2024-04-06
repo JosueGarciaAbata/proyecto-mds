@@ -25,10 +25,10 @@ class DB
     {
         return $this->conexion->quote($valor);
     }
-    
-    
 
 
-}  
+
+
+}
 
 ?>

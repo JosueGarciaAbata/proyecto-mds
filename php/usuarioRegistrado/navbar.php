@@ -29,21 +29,13 @@
           </li>
 
           <li class="nav-item active">
-            <a class="nav-link" href="projects.php">
-              <span
-                class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
-                <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-                  stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                  <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                  <path d="M3 3m0 2a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2z"></path>
-                  <path d="M9 15h-2"></path>
-                  <path d="M13 12h-6"></path>
-                  <path d="M11 9h-4"></path>
-                </svg>
+            <button class="nav-link toggle-submenu">
+              <span class="nav-link-icon d-md-none d-lg-inline-block">
               </span>
               <span class="nav-link-title">My projects</span>
-            </a>
+            </button>
           </li>
+
           <li class="nav-item active">
             <a class="nav-link" href="portfolio.php">
               <span
@@ -80,4 +72,37 @@
       </div>
     </div>
   </div>
+
+  <div d-md-none="d-sm-none" id="submenu-proyectos" style="display: none;">
+    <button class="crear-proyecto btn btn-primary">Create a project</button>
+  </div>
+
+  <div id="formulario-proyecto" style="display: none;">
+    <form id="formulario">
+      <div>
+        <label for="nombre">Título del proyecto:</label>
+        <input type="text" id="nombre" name="nombre">
+      </div>
+      <div>
+        <label for="descripcion">Descripción del proyecto:</label>
+        <input id="descripcion" name="descripcion"></input>
+      </div>
+      <div>
+        <label for="fecha_inicio">Fecha de inicio del proyecto:</label>
+        <input type="date" id="fecha_inicio" name="fecha_inicio">
+      </div>
+      <div>
+        <label for="fecha_fin">Fecha de finalización del proyecto:</label>
+        <input type="date" id="fecha_fin" name="fecha_fin">
+      </div>
+      <button type="submit">Crear</button>
+    </form>
+  </div>
+
+  <div id="confirmacion" style="display: none;">
+    <p>¿Está seguro de que desea crear el proyecto?</p>
+    <button id="confirmar">Sí</button>
+    <button id="cancelar">Cancelar</button>
+  </div>
+
 </header>
