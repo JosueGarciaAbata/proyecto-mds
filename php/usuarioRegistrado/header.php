@@ -12,17 +12,17 @@
       My Creative Portfolio
     </title>
     <!-- CSS files -->
-    <link href="../dist/css/tabler.min.css?1684106062" rel="stylesheet" />
-    <link href="../dist/css/tabler-flags.min.css?1684106062" rel="stylesheet" />
+    <link href="./../../dist/css/tabler.min.css?1684106062" rel="stylesheet" />
+    <link href="./../../dist/css/tabler-flags.min.css?1684106062" rel="stylesheet" />
     <link
-      href="../dist/css/tabler-payments.min.css?1684106062"
+      href="./../../dist/css/tabler-payments.min.css?1684106062"
       rel="stylesheet"
     />
     <link
-      href="../dist/css/tabler-vendors.min.css?1684106062"
+      href="./../../dist/css/tabler-vendors.min.css?1684106062"
       rel="stylesheet"
     />
-    <link href="../dist/css/demo.min.css?1684106062" rel="stylesheet" />
+    <link href="./../../dist/css/demo.min.css?1684106062" rel="stylesheet" />
     <style>
       
     </style>
@@ -67,7 +67,7 @@
     ></script>
   </head>
   <body>
-    <script src="../dist/js/demo-theme.min.js?1684106062"></script>
+    <script src="./../../dist/js/demo-theme.min.js?1684106062"></script>
     <div class="page">
     <header class="navbar navbar-expand-md d-print-none">
         <div class="container-xl">
@@ -165,7 +165,7 @@
               </a>
               <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
            
-                <a href="../register.php" class="dropdown-item">Logout</a>
+                <a href="./../register.php" class="dropdown-item">Logout</a>
               </div>
             </div>
           </div>

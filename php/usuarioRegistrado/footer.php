@@ -23,26 +23,26 @@
         </footer>
     <!-- Libs JS -->
     <script
-      src="../dist/libs/apexcharts/dist/apexcharts.min.js?1684106062"
+      src="./../dist/libs/apexcharts/dist/apexcharts.min.js?1684106062"
       defer
     ></script>
     <script
-      src="../dist/libs/jsvectormap/dist/js/jsvectormap.min.js?1684106062"
+      src="./../dist/libs/jsvectormap/dist/js/jsvectormap.min.js?1684106062"
       defer
     ></script>
     <script
-      src="../dist/libs/jsvectormap/dist/maps/world.js?1684106062"
+      src="./../dist/libs/jsvectormap/dist/maps/world.js?1684106062"
       defer
     ></script>
     <script
-      src="../dist/libs/jsvectormap/dist/maps/world-merc.js?1684106062"
+      src="./../dist/libs/jsvectormap/dist/maps/world-merc.js?1684106062"
       defer
     ></script>
     <!-- Tabler Core -->
-    <script src="../dist/js/tabler.min.js?1684106062" defer></script>
-    <script src="../dist/js/demo.min.js?1684106062" defer></script>
+    <script src="./../dist/js/tabler.min.js?1684106062" defer></script>
+    <script src="./../dist/js/demo.min.js?1684106062" defer></script>
 
-    <script src="./dist/libs/jquery_3.2.1/jquery.min.js"></script>
+    <script src="./../dist/libs/jquery_3.2.1/jquery.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
