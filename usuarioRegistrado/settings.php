@@ -12,7 +12,7 @@ $stmt_info_usuario->close();
 ?>
 
 <div class="page-wrapper">
-  <!-- Page header -->
+
   <div class="page-header d-print-none">
     <div class="container-xl">
       <div class="row g-2 align-items-center">
@@ -22,7 +22,7 @@ $stmt_info_usuario->close();
       </div>
     </div>
   </div>
-  <!-- Page body -->
+
   <div class="page-body">
     <div class="container-xl">
       <div class="card">
@@ -188,7 +188,7 @@ $stmt_info_usuario->close();
           mostrarModalDeAdvertencia("Error al cargar la iamgen");
 
         }
-        var imageUrl = response; // Suponiendo que el servidor devuelve la URL de la nueva imagen
+        var imageUrl = response;
         $('.avatar').css('background-image', 'url(' + imageUrl + ')');
       },
       error: function (xhr, status, error) {
@@ -227,23 +227,23 @@ $stmt_info_usuario->close();
           // Crear un objeto FormData para enviar la imagen al servidor
           var formData = new FormData();
           formData.append('profileImage', imageFile);
-          formData.append('action', 'imgPerfil'); // Especificar la acción como 'imgPerfil'
-          formData.append('action', 'imgPerfil'); // Especificar la acción como 'imgPerfil'
-          formData.append('update_name', $('#update_name').val()); // Agregar el valor de update_name
-          formData.append('update_email', $('#update_email').val()); // Agregar el valor de update_email
+          formData.append('action', 'imgPerfil');
+          formData.append('action', 'imgPerfil');
+          formData.append('update_name', $('#update_name').val());
+          formData.append('update_email', $('#update_email').val());
           formData.append('update_password', $('#update_password').val());
 
-          // Realizar una solicitud AJAX para subir la imagen al servidor
+
           $.ajax({
-            url: 'procesarInformacion/updateUser.php', // URL del script de procesamiento
-            type: 'POST', // Método HTTP utilizado para la solicitud
-            data: formData, // Datos a enviar (FormData con la imagen)
-            contentType: false, // No establecer el tipo de contenido
-            processData: false, // No procesar datos
+            url: 'procesarInformacion/updateUser.php',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
             success: function (response) {
 
               if (response !== 'false') {
-                mostrarModalExito("MostrarModalExito");
+                mostrarModalExito("Perfil Actualizado con Exito");
                 setTimeout(function () {
                   window.location.href = "index.php"
 
@@ -253,33 +253,23 @@ $stmt_info_usuario->close();
               }
             },
             error: function (xhr, status, error) {
-              // Manejar errores de la solicitud AJAX
+
               console.error(error);
               mostrarModalDeAdvertencia("Error de conexión");
             }
           });
 
         } else {
-          // Si no se seleccionó ninguna imagen, continuar con la actualización sin la imagen
-          console.log("No se seleccionó ninguna imagen para actualizar");
-          // Aquí puedes agregar más lógica si es necesario
+          mostrarModalDeAdvertencia("No hay una imagen cargada");
+
         }
 
-      } else {
-        // Si el formulario no es válido, no realizar la acción de actualización
-        console.log("El formulario no es válido");
-        // Aquí puedes agregar más lógica si es necesario
       }
 
 
 
     }
 
-
-
-    else {
-
-    }
 
 
   });

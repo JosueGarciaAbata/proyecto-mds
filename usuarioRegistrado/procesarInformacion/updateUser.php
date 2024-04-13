@@ -20,10 +20,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $carpeta_usuario = $row['carpeta_usuario'];
   }
   if (isset($_POST['action']) && $_POST['action'] === 'imgPerfilTemporal') {
-    // Procesar la subida de la imagen como acción 'imgPerfilTemporal'
+
     $rutaImagen = subirImagenPerfil("../$carpeta_usuario/temp/");
 
-    // Devolver la respuesta (URL de la imagen o mensaje de error)
+
     if ($rutaImagen !== false) {
       echo "$rutaImagen";
     } else {
@@ -67,15 +67,14 @@ function generarNombreUnico($extension)
   return $nombreEncriptado . '.' . $extension;
 }
 
-// Función para validar y procesar la subida de la imagen
 function subirImagenPerfil($carpetaDestino)
 {
-  // Verificar si se recibió un archivo de imagen
+
   if (isset($_FILES['profileImage']) && $_FILES['profileImage']['error'] === UPLOAD_ERR_OK) {
-    // Validar que el archivo sea una imagen
+
     $imageFileType = exif_imagetype($_FILES['profileImage']['tmp_name']);
     if ($imageFileType !== false) {
-      // Solo permitir tipos de imágenes específicos (puedes ajustar según tus necesidades)
+
       $allowedTypes = array(IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF);
       if (in_array($imageFileType, $allowedTypes)) {
 
@@ -83,45 +82,45 @@ function subirImagenPerfil($carpetaDestino)
 
 
 
-        // Directorio temporal donde se almacenarán las imágenes
+
         $tempDir = $carpetaDestino;
 
-        // Crear el directorio temporal si no existe
+
         if (!is_dir($tempDir)) {
-          mkdir($tempDir, 0755, true); // Crear directorio recursivamente
+          mkdir($tempDir, 0755, true);
         }
 
-        // Eliminar archivos existentes en el directorio temporal
+
         $files = scandir($tempDir);
         foreach ($files as $file) {
           if ($file != '.' && $file != '..') {
-            unlink($tempDir . $file); // Eliminar archivo
+            unlink($tempDir . $file);
           }
         }
 
-        // Generar un nombre único para el archivo de imagen
+
         $extension = pathinfo($_FILES['profileImage']['name'], PATHINFO_EXTENSION);
         $nombreArchivo = generarNombreUnico($extension);
 
-        // Ruta completa del archivo de imagen en el directorio temporal
+
         $targetFile = $tempDir . $nombreArchivo;
 
-        // Mover el archivo subido al directorio temporal
+
         if (move_uploaded_file($_FILES['profileImage']['tmp_name'], $targetFile)) {
           // Devolver la ruta completa de la imagen
           return $targetFile = preg_replace('/^\.\.\//', '', $targetFile, 1);
         } else {
-          return false; // Error al mover la imagen
+          return false;
         }
 
       } else {
-        return false; // Tipo de archivo no permitido (no es una imagen válida)
+        return false;
       }
     } else {
-      return false; // El archivo no es una imagen válida
+      return false;
     }
   } else {
-    return false; // No se ha recibido ninguna imagen o ha ocurrido un error durante la carga
+    return false;
   }
 }
 
