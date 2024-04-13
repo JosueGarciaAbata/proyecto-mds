@@ -20,6 +20,7 @@
       </div>
     </div>
   </div>
+
 </footer>
 <!-- Libs JS -->
 <script src="./../dist/libs/apexcharts/dist/apexcharts.min.js?1684106062" defer></script>
@@ -34,54 +35,48 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
-<script scr="../../../js/options.js"></script>
+
+<!-- ¿Por qué no vale? Xd  -->
+<script scr="../javascript/toGenerateTemplate.js"></script>
 
 <script>
   $(document).ready(function () {
-    $(".toggle-submenu").click(function () {
-      $("#formulario-proyecto").slideUp();
-      $("#submenu-proyectos").toggle();
+    $(".nav-link").click(function (event) {
+      event.preventDefault();
+
+      $("#submenu-portafolio").slideDown();
     });
 
-    $(".crear-proyecto").click(function () {
-      $("#formulario-proyecto").slideDown();
+    $("#submenu-portafolio .crear-portafolio").click(function () {
+      $("#formulario-portafolio").slideDown();
     });
 
     $("#formulario").submit(function (event) {
       event.preventDefault();
-
-      $("#confirmacion").slideDown();
-    });
-
-    $("#confirmar").click(function () {
-      $("#formulario").submit();
       generarPaginaHTML();
-      // Ocultar el mensaje de confirmación
-      $("#confirmacion").slideUp();
-    });
-
-    $("#cancelar").click(function () {
-      $("#confirmacion").slideUp();
     });
   });
 
   function generarPaginaHTML() {
-    var nombre = $("#nombre").val();
-    var descripcion = $("#descripcion").val();
-    var fechaInicio = $("#fecha_inicio").val();
-    var fechaFin = $("#fecha_fin").val();
+    var tituloProyecto = $("#titulo-proyecto").val();
+    var mensajeBienvenida = $("#mensaje-bienvenida").val();
+    var nombres = $("#nombre").val();
+    var apellidos = $("#apellidos").val();
+    var habilidadesTecnicas = $("#habilidades-tecnicas").val();
+    var habilidadesSociales = $("#habilidades-sociales").val();
 
-    // Enviar los datos al servidor para generar la página HTML basada en la plantilla
-    $.post("../../plantillas/generar_pagina.php", {
-      nombre: nombre,
-      descripcion: descripcion,
-      fecha_inicio: fechaInicio,
-      fecha_fin: fechaFin
+    // En este punto, los datos se deben enviar a la base de datos.
+    $.post("../../templates/generar_pagina.php", {
+      tituloProyecto: tituloProyecto,
+      mensajeBienvenida: mensajeBienvenida,
+      nombres: nombres,
+      apellidos: apellidos,
+      habilidadesTecnicas: habilidadesTecnicas,
+      habilidadesSociales: habilidadesSociales
     }, function (respuesta) {
-      window.location.href = '../../plantillas/pagina_generada.php?html=' + encodeURIComponent(respuesta);
+      console.log("Hola");
     });
   }
-
 </script>
 
 </body>

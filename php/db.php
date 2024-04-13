@@ -2,6 +2,8 @@
 
 class DB
 {
+
+    private static $instancia;
     private $conexion;
     public function __construct($servername, $username, $password, $database, $port)
     {
@@ -15,18 +17,23 @@ class DB
         }
     }
 
+    public static function obtenerInstancia($servername, $username, $password, $database, $port)
+    {
+        if (self::$instancia === null) {
+            self::$instancia = new self($servername, $username, $password, $database, $port);
+        }
+        return self::$instancia;
+    }
+
     public function getPDO()
     {
         return $this->conexion;
     }
 
-
     public function quoteValor($valor)
     {
         return $this->conexion->quote($valor);
     }
-
-
 
 
 }
