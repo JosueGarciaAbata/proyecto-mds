@@ -109,6 +109,7 @@
       $("#login-form").valid()
 
     ) {
+      $(this).prop('disabled', true);
       user_email = $("#login_email").val();
       user_password = $("#login_password").val();
 
@@ -132,11 +133,13 @@
           } else {
 
             mostrarModalDeAdvertencia("No se encontró la cuenta ingresada");
+            $(this).prop('disabled', false);
 
           }
         },
         error: function (xhr, status, error) {
           mostrarModalAdvertencia("Sucedio un error al iniciar sesion");
+          $(this).prop('disabled', false);
 
         }
 

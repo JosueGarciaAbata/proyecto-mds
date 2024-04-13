@@ -16,7 +16,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 function validateAccount($conexion, $email, $password)
 {
-
+  $passwordText = $password;
   $password = hash("sha256", $password);
 
   $sql = "SELECT * FROM usuarios WHERE correo_electronico_usuario = ? AND contrasenia_usuario=? ";
@@ -30,7 +30,7 @@ function validateAccount($conexion, $email, $password)
     $row = $result->fetch_assoc();
     $user_id = $row['id_usuario'];
     session_start();
-
+    $_SESSION['password_user'] = $passwordText;
     $_SESSION['user_id'] = $user_id;
     $response = true;
 

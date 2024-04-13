@@ -37,22 +37,42 @@ function crearCuenta($conexion, $name, $email, $password)
   } else {
 
     $fotoPerfilDefecto = "../img/defaulAvatar.png";
+    // Crear directorio para el nuevo usuario
     $randomNumbers = mt_rand(1000, 9999);
-
     $carpetaUsuario = "../usersContent/$name$randomNumbers";
-    if (!mkdir($carpetaUsuario)) {
-
-      return false;
-
+    if (!mkdir($carpetaUsuario, 0755, true)) {
+      return false; // Error al crear directorio principal del usuario
     }
+
+    // Crear subdirectorios
+    $subdirectorios = ['temp', 'posts', 'proyectos', 'portafolio', 'perfil'];
+    foreach ($subdirectorios as $subdir) {
+      $carpetaSubdir = "$carpetaUsuario/$subdir";
+      if (!mkdir($carpetaSubdir, 0755, true)) {
+        return false; // Error al crear subdirectorio
+      }
+    }
+
+
+
+    $sourceFile = '../img/defaulAvatar.png';
+    $destinationFile = "$carpetaUsuario/perfil/defaulAvatar.png";
+    if (!copy($sourceFile, $destinationFile)) {
+      return false; // Error al copiar archivo de imagen de perfil
+    }
+
+
+
+
+    session_start();
+    $_SESSION['password_user'] = $password;
     $password = hash("sha256", $password);
     $sql_insert = "INSERT INTO usuarios (nombre_usuario, correo_electronico_usuario, contrasenia_usuario,ubicacion_foto_perfil_usuario,carpeta_usuario) VALUES (?, ?, ?,?,?)";
     $stmt_insert = $conexion->prepare($sql_insert);
-    $stmt_insert->bind_param("sssss", $name, $email, $password, $fotoPerfilDefecto, $carpetaUsuario);
+    $stmt_insert->bind_param("sssss", $name, $email, $password, $destinationFile, $carpetaUsuario);
     $stmt_insert->execute();
     $user_id = $stmt_insert->insert_id;
 
-    session_start();
 
     $_SESSION['user_id'] = $user_id;
 
