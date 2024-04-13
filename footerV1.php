@@ -46,6 +46,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<<<<<<< HEAD
     <script src="./dist/libs/SweetAlert2/SweetAlert2.js"></script>
     
     <script>
@@ -70,5 +71,8 @@
     
     }
     </script>
+=======
+
+>>>>>>> b55c4d8ab5cc5fbe7062e901de93d96a55d870da
   </body>
 </html>
