@@ -1,31 +1,3 @@
-<?php
-session_start();
-
-// Verificar si no hay una sesión en curso
-if (!isset($_SESSION['user_id'])) {
-  header("Location: ../index.php");
-  exit(); // Asegura que el script se detenga después de la redirección
-} else {
-  require_once ("../procesarInformacion/conexion.php");
-  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
-  $user_id = $_SESSION['user_id']; // Obtener el ID de usuario de la sesión
-
-  // Realizar una consulta para obtener la ruta de la foto de perfil del usuario
-  $sql_select_info_usuario = "SELECT ubicacion_foto_perfil_usuario, nombre_usuario FROM usuarios WHERE id_usuario = ?";
-  $stmt_select_info_usuario = $conexion->prepare($sql_select_info_usuario);
-  $stmt_select_info_usuario->bind_param("s", $user_id); // Utiliza "s" para indicar que es una cadena
-  $stmt_select_info_usuario->execute();
-  $stmt_select_info_usuario->bind_result($fotoPerfil, $nombreUsuario);
-  $stmt_select_info_usuario->fetch();
-  $stmt_select_info_usuario->close();
-
-}
-?>
-<?php
-
-?>
-
-
 <!DOCTYPE html>
 
 <html lang="en">
@@ -38,11 +10,11 @@ if (!isset($_SESSION['user_id'])) {
     My Creative Portfolio
   </title>
   <!-- CSS files -->
-  <link href="../dist/css/tabler.min.css?1684106062" rel="stylesheet" />
-  <link href="../dist/css/tabler-flags.min.css?1684106062" rel="stylesheet" />
-  <link href="../dist/css/tabler-payments.min.css?1684106062" rel="stylesheet" />
-  <link href="../dist/css/tabler-vendors.min.css?1684106062" rel="stylesheet" />
-  <link href="../dist/css/demo.min.css?1684106062" rel="stylesheet" />
+  <link href="./../dist/css/tabler.min.css?1684106062" rel="stylesheet" />
+  <link href="./../dist/css/tabler-flags.min.css?1684106062" rel="stylesheet" />
+  <link href="./../dist/css/tabler-payments.min.css?1684106062" rel="stylesheet" />
+  <link href="./../dist/css/tabler-vendors.min.css?1684106062" rel="stylesheet" />
+  <link href="./../dist/css/demo.min.css?1684106062" rel="stylesheet" />
   <style>
 
   </style>
@@ -68,7 +40,6 @@ if (!isset($_SESSION['user_id'])) {
       color: crimson;
       font-size: smaller;
       margin-right: 10px;
-      /* Ajusta el margen entre el ícono y el mensaje de error según sea necesario */
     }
 
     .error-icon {
@@ -82,7 +53,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 
 <body>
-  <script src="../dist/js/demo-theme.min.js?1684106062"></script>
+  <script src="./../dist/js/demo-theme.min.js?1684106062"></script>
   <div class="page">
     <header class="navbar navbar-expand-md d-print-none">
       <div class="container-xl">
@@ -93,7 +64,7 @@ if (!isset($_SESSION['user_id'])) {
         <h1 style="font-family: cursive;"
           class="navbar-brand navbar-brand-autodark d-none-navbar-horizontal pe-0 pe-md-3">
           My Creative Portfolio
-          <a class="nav-link" href="index.php">
+          <a class="nav-link" href="./">
             <span
               class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
               <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -120,7 +91,6 @@ if (!isset($_SESSION['user_id'])) {
           </a>
         </h1>
 
-
         <div class="navbar-nav flex-row order-md-last">
           <div class="nav-item d-none d-md-flex me-3">
             <div class="btn-list"></div>
@@ -146,21 +116,6 @@ if (!isset($_SESSION['user_id'])) {
               </svg>
             </a>
           </div>
-          <div class="nav-item dropdown">
-            <a href="#" class="nav-link d-flex lh-1 text-reset p-0" data-bs-toggle="dropdown"
-              aria-label="Open user menu">
-              <span class="avatar avatar-sm" style="background-image: url(../static/avatars/000m.jpg)"></span>
-              <div class="d-none d-xl-block ps-2">
-                <div>Juan Carlos</div>
-
-              </div>
-            </a>
-            <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-
-              <a href="../register.php" class="dropdown-item">Logout</a>
-            </div>
-          </div>
         </div>
-
       </div>
     </header>
