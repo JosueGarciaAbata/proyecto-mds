@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   echo json_encode(crearCuenta($conexion, $_POST['register_name'], $_POST['register_mail'], $_POST['register_password']));
 
 
-
 }
 
 
