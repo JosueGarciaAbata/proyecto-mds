@@ -17,6 +17,7 @@ function seleccionar() {
   menuVisible = false;
 }
 
+// Todo de aqui para abajo no lo estoy usando
 // Funcion que aplica las animaciones de las habilidades
 function efectoHabilidades() {
   var skills = document.getElementById("skills");

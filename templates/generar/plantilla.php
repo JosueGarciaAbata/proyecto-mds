@@ -23,6 +23,7 @@
                 <ul>
                     <li><a href="#inicio" onclick="seleccionar()">Inicio</a></li>
                     <li><a href="#sobre-mi" onclick="seleccionar()">Sobre mi</a></li>
+                    <li><a href="#skills" onclick="seleccionar()">Habilidades</a></li>
                     <li><a href="#proyectos" onclick="seleccionar()">Proyectos</a></li>
                 </ul>
             </nav>
@@ -40,11 +41,11 @@
             </div>
             <h1>Josué García</h1>
             <h2>Ingeniero de Software</h2>
-            <div class="redes">
+            <!-- <div class="redes">
                 <a href="#"><i class="fa-brands fa-facebook"></i></a>
                 <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
                 <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-            </div>
+            </div> -->
         </div>
     </section>
 
@@ -52,7 +53,8 @@
     <section id="sobre-mi" class="sobre-mi">
         <div class="contenido-seccion">
             <h2>Sobre mi</h2>
-            <p><span>Hola, soy Josué García</span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore illo
+            <p><span>Hola, soy Josué García</span>. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore
+                illo
                 vero odit possimus ut unde, tempore rerum, placeat, ad obcaecati fugiat beatae quis accusamus iste
                 facilis ullam dolor! Magni, libero?</p>
 
@@ -74,6 +76,7 @@
                 <!-- Intereses  -->
                 <div class="col">
                     <h3>Intereses</h3>
+                    <!-- Esto en teoria se debe generar dinamicamente  -->
                     <div class="contenedor-intereses">
                         <div class="intereses">
                             <i class="fa-solid fa-gamepad"></i>
@@ -99,12 +102,13 @@
 
     <!-- Habilidades -->
     <section id="skills" class="skills">
+        <!-- Todo esto en teoria se debe  generar dinamicamente  -->
         <div class="contenido-seccion">
             <h2>Habilidades</h2>
             <div class="fila">
                 <!-- Habilidades tecnicas  -->
                 <div class="col">
-                    <h3>Habilidades técnicas</h3>
+                    <h3>Técnicas</h3>
                     <div class="skill">
                         <span>JavaScript</span>
                         <div class="barra-skill">
@@ -180,6 +184,7 @@
 
     <!-- Portafolio  -->
     <section id="proyectos" class="proyectos">
+        <!-- Esto se debe generar dinamicamente  -->
         <div class="contenido-seccion">
             <h2>Proyectos</h2>
             <div class="galeria">
