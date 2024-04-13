@@ -216,33 +216,73 @@ $stmt_info_usuario->close();
     ) {
 
 
-      var avatarElement = $('.avatar.avatar-xl');
+      if ($("#updateFormInfo").valid()) {
 
-      var backgroundImageStyle = avatarElement.css('background-image');
+        // Obtener el archivo de imagen seleccionado
+        var imageFile = $('#uploadInput')[0].files[0];
 
-      var match = backgroundImageStyle.match(/url\(['"]?(.*?)['"]?\)/);
-      if (match && match[1]) {
-        var imageUrl = match[1];
+        // Verificar si se seleccionó una imagen
+        if (imageFile) {
 
+          // Crear un objeto FormData para enviar la imagen al servidor
+          var formData = new FormData();
+          formData.append('profileImage', imageFile);
+          formData.append('action', 'imgPerfil'); // Especificar la acción como 'imgPerfil'
+          formData.append('action', 'imgPerfil'); // Especificar la acción como 'imgPerfil'
+          formData.append('update_name', $('#update_name').val()); // Agregar el valor de update_name
+          formData.append('update_email', $('#update_email').val()); // Agregar el valor de update_email
+          formData.append('update_password', $('#update_password').val());
 
-        var usersContentIndex = imageUrl.indexOf('usersContent/');
+          // Realizar una solicitud AJAX para subir la imagen al servidor
+          $.ajax({
+            url: 'procesarInformacion/updateUser.php', // URL del script de procesamiento
+            type: 'POST', // Método HTTP utilizado para la solicitud
+            data: formData, // Datos a enviar (FormData con la imagen)
+            contentType: false, // No establecer el tipo de contenido
+            processData: false, // No procesar datos
+            success: function (response) {
 
-        var desiredUrl = imageUrl.substring(usersContentIndex);
+              if (response !== 'false') {
+                mostrarModalExito("MostrarModalExito");
+                setTimeout(function () {
+                  window.location.href = "index.php"
 
-        console.log('URL deseada:', desiredUrl);
+                }, 2500)
+              } else {
+                mostrarModalDeAdvertencia("Error al actualizar la imagen de perfil");
+              }
+            },
+            error: function (xhr, status, error) {
+              // Manejar errores de la solicitud AJAX
+              console.error(error);
+              mostrarModalDeAdvertencia("Error de conexión");
+            }
+          });
+
+        } else {
+          // Si no se seleccionó ninguna imagen, continuar con la actualización sin la imagen
+          console.log("No se seleccionó ninguna imagen para actualizar");
+          // Aquí puedes agregar más lógica si es necesario
+        }
+
       } else {
-        console.log('No se encontró una URL de fondo válida en el estilo de background-image.');
+        // Si el formulario no es válido, no realizar la acción de actualización
+        console.log("El formulario no es válido");
+        // Aquí puedes agregar más lógica si es necesario
       }
 
+
+
     }
+
+
+
     else {
 
     }
 
 
   });
-
-
 
 
 
