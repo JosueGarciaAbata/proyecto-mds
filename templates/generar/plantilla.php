@@ -188,40 +188,8 @@
         <div class="contenido-seccion">
             <h2>Proyectos</h2>
             <div class="galeria">
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p1.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p2.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p3.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p4.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
+                <!-- Aqui se va a generar dinamicamente los proyectos  -->
             </div>
-        </div>
     </section>
 
     <!-- Pie de pagina  -->
@@ -232,6 +200,35 @@
     </footer>
 
     <script src="../datos_plantillas/template1/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Codigo para generar dinamicamente los proyectos del portafolio  -->
+    <script>
+        $(document).ready(function () {
+            // Solicitud AJAX para obtener los datos de los proyectos
+            $.ajax({
+                url: 'obtener_proyectos.php',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Itera sobre los datos y agrega dinámicamente los proyectos a la galería
+                    $.each(data, function (index, proyecto) {
+                        var proyectoHTML = '<div class="proyecto">' +
+                            '<img src="../datos_plantillas/template1/img/p1.jpg" alt="">' +
+                            '<div class="overlay">' +
+                            '<h3>' + proyecto.titulo + '</h3>' +
+                            '<p>' + proyecto.descripcion + '</p>' +
+                            '</div>' +
+                            '</div>';
+                        $('.galeria').append(proyectoHTML);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al obtener los proyectos:', error, xhr, status);
+                }
+            });
+        });
+    </script>
 
 </body>
 

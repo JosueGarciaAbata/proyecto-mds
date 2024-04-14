@@ -6,8 +6,8 @@ class ConexionBD
 
     // Datos de conexión a la base de datos
     private $servername = "localhost"; // Nombre del servidor de la base de datos
-    private $username = "modelamientoProyecto";      // Nombre de usuario de la base de datos
-    private $password = "EKQuY92.ovMe7xin";   // Contraseña de la base de datos
+    private $username = "root";      // Nombre de usuario de la base de datos
+    private $password = "josueg";   // Contraseña de la base de datos
     private $database = "my_creative_portfolio";    // Nombre de la base de datos
 
     // Variable para almacenar la conexión
