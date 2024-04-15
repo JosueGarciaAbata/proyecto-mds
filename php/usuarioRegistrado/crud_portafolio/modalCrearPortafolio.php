@@ -10,7 +10,7 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form action="guardar_proyecto.php" method="post" enctype="multipart/form-data">
+                <form action="crud_portafolio/guardar_portafolio.php" method="post" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="titulo-proyecto" class="form-label">Titulo del proyecto:</label>
                         <input type="text" name="titulo-proyecto" id="titulo-proyecto" class="form-control" required>

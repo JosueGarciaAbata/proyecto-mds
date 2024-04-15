@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="../datos_plantillas/template1/estilos.css">
-    <title>Portfolio</title>
+    <link rel="stylesheet" href="../estilos.css">
+    <title><?php echo $template->get('titulo_portafolio') ?></title>
 </head>
 
 <body>
@@ -17,7 +17,7 @@
 
         <header>
             <div class="logo">
-                <a href="#">Josué García</a>
+                <a href="#"><?php echo $template->get('nombres') ?></a>
             </div>
             <nav id="nav">
                 <ul>
@@ -37,15 +37,10 @@
     <section id="inicio" class="inicio">
         <div class="contenido-banner">
             <div class="contenedor-img">
-                <img src="../datos_plantillas/template1/img/hero.png" alt="">
+                <img src='<?php echo $template->get('ruta_imagen') ?>' alt="">
             </div>
-            <h1>Josué García</h1>
+            <h1><?php echo $template->get('nombres') ?></h1>
             <h2>Ingeniero de Software</h2>
-            <!-- <div class="redes">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-            </div> -->
         </div>
     </section>
 

@@ -4,12 +4,20 @@
             <div class="row justify-content-center">
                 <div class="col-auto">
                     <a href="#" class="btn btn-primary crear-portafolio" data-bs-toggle="modal"
-                        data-bs-target="#nuevoModal"><i class="fa-solid fa-circle-plus"></i>
-                        Nuevo proyecto</a>
+                        data-bs-target="#nuevoModal" style="margin-top: 20px;"><i class="fa-solid fa-circle-plus"></i>
+                        Nuevo portafolio</a>
                 </div>
             </div>
         </div>
     </div>
+</section>
+
+<section id="portafolios-section" class="portafolios-section" style="display: none; ">
+    <!-- Esto se genera dinamicamente  -->
+    <div class="contenido-seccion">
+        <div class="galeria">
+            <!-- Aqui se va a generar dinamicamente los proyectos  -->
+        </div>
 </section>
 
 <?php
