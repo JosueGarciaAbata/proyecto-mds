@@ -1,3 +1,8 @@
+<?php
+require_once ('../../procesarInformacion/conexion.php');
+$conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+?>
+
 <!DOCTYPE html>
 
 <html lang="en">
@@ -6,6 +11,10 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+
   <title>
     My Creative Portfolio
   </title>
@@ -15,7 +24,7 @@
   <link href="./../../dist/css/tabler-payments.min.css?1684106062" rel="stylesheet" />
   <link href="./../../dist/css/tabler-vendors.min.css?1684106062" rel="stylesheet" />
   <link href="./../../dist/css/demo.min.css?1684106062" rel="stylesheet" />
-  <link rel="stylesheet" href="../../styles/options.css">
+  <link rel="stylesheet" href="estilos.css">
   <style>
 
   </style>
@@ -124,7 +133,6 @@
               <span class="avatar avatar-sm" style="background-image: url(../../static/avatars/000m.jpg)"></span>
               <div class="d-none d-xl-block ps-2">
                 <div>Juan Carlos</div>
-
               </div>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">

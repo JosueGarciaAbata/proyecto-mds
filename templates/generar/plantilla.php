@@ -7,8 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href="../datos_plantillas/template1/estilos.css">
-    <title>Portfolio</title>
+    <link rel="stylesheet" href="../estilos.css">
+    <title><?php echo $template->get('titulo_portafolio') ?></title>
 </head>
 
 <body>
@@ -17,12 +17,13 @@
 
         <header>
             <div class="logo">
-                <a href="#">Josué García</a>
+                <a href="#"><?php echo $template->get('nombres') ?></a>
             </div>
             <nav id="nav">
                 <ul>
                     <li><a href="#inicio" onclick="seleccionar()">Inicio</a></li>
                     <li><a href="#sobre-mi" onclick="seleccionar()">Sobre mi</a></li>
+                    <li><a href="#skills" onclick="seleccionar()">Habilidades</a></li>
                     <li><a href="#proyectos" onclick="seleccionar()">Proyectos</a></li>
                 </ul>
             </nav>
@@ -36,15 +37,10 @@
     <section id="inicio" class="inicio">
         <div class="contenido-banner">
             <div class="contenedor-img">
-                <img src="../datos_plantillas/template1/img/hero.png" alt="">
+                <img src='<?php echo $template->get('ruta_imagen') ?>' alt="">
             </div>
-            <h1>Josué García</h1>
+            <h1><?php echo $template->get('nombres') ?></h1>
             <h2>Ingeniero de Software</h2>
-            <div class="redes">
-                <a href="#"><i class="fa-brands fa-facebook"></i></a>
-                <a href="#"><i class="fa-brands fa-x-twitter"></i></a>
-                <a href="#"><i class="fa-brands fa-linkedin"></i></a>
-            </div>
         </div>
     </section>
 
@@ -52,7 +48,8 @@
     <section id="sobre-mi" class="sobre-mi">
         <div class="contenido-seccion">
             <h2>Sobre mi</h2>
-            <p><span>Hola, soy Josué García</span>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore illo
+            <p><span>Hola, soy Josué García</span>. Lorem ipsum dolor, sit amet consectetur adipisicing elit. Labore
+                illo
                 vero odit possimus ut unde, tempore rerum, placeat, ad obcaecati fugiat beatae quis accusamus iste
                 facilis ullam dolor! Magni, libero?</p>
 
@@ -74,6 +71,7 @@
                 <!-- Intereses  -->
                 <div class="col">
                     <h3>Intereses</h3>
+                    <!-- Esto en teoria se debe generar dinamicamente  -->
                     <div class="contenedor-intereses">
                         <div class="intereses">
                             <i class="fa-solid fa-gamepad"></i>
@@ -99,12 +97,13 @@
 
     <!-- Habilidades -->
     <section id="skills" class="skills">
+        <!-- Todo esto en teoria se debe  generar dinamicamente  -->
         <div class="contenido-seccion">
             <h2>Habilidades</h2>
             <div class="fila">
                 <!-- Habilidades tecnicas  -->
                 <div class="col">
-                    <h3>Habilidades técnicas</h3>
+                    <h3>Técnicas</h3>
                     <div class="skill">
                         <span>JavaScript</span>
                         <div class="barra-skill">
@@ -180,43 +179,12 @@
 
     <!-- Portafolio  -->
     <section id="proyectos" class="proyectos">
+        <!-- Esto se debe generar dinamicamente  -->
         <div class="contenido-seccion">
             <h2>Proyectos</h2>
             <div class="galeria">
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p1.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p2.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p3.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
-                <div class="proyecto">
-                    <img src="../datos_plantillas/template1/img/p4.jpg" alt="">
-                    <div class="overlay">
-                        <h3>Diseño creativo</h3>
-                        <p>Fotografia</p>
-                    </div>
-                </div>
-
+                <!-- Aqui se va a generar dinamicamente los proyectos  -->
             </div>
-        </div>
     </section>
 
     <!-- Pie de pagina  -->
@@ -227,6 +195,35 @@
     </footer>
 
     <script src="../datos_plantillas/template1/script.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Codigo para generar dinamicamente los proyectos del portafolio  -->
+    <script>
+        $(document).ready(function () {
+            // Solicitud AJAX para obtener los datos de los proyectos
+            $.ajax({
+                url: 'obtener_proyectos.php',
+                method: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Itera sobre los datos y agrega dinámicamente los proyectos a la galería
+                    $.each(data, function (index, proyecto) {
+                        var proyectoHTML = '<div class="proyecto">' +
+                            '<img src="../datos_plantillas/template1/img/p1.jpg" alt="">' +
+                            '<div class="overlay">' +
+                            '<h3>' + proyecto.titulo + '</h3>' +
+                            '<p>' + proyecto.descripcion + '</p>' +
+                            '</div>' +
+                            '</div>';
+                        $('.galeria').append(proyectoHTML);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    console.error('Error al obtener los proyectos:', error, xhr, status);
+                }
+            });
+        });
+    </script>
 
 </body>
 

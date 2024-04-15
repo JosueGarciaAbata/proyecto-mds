@@ -22,7 +22,7 @@
   </div>
 
 </footer>
-<!-- Libs JS -->
+<!-- Libs Js -->
 <script src="./../dist/libs/apexcharts/dist/apexcharts.min.js?1684106062" defer></script>
 <script src="./../dist/libs/jsvectormap/dist/js/jsvectormap.min.js?1684106062" defer></script>
 <script src="./../dist/libs/jsvectormap/dist/maps/world.js?1684106062" defer></script>
@@ -31,53 +31,25 @@
 <script src="./../dist/js/tabler.min.js?1684106062" defer></script>
 <script src="./../dist/js/demo.min.js?1684106062" defer></script>
 
-<script src="./../dist/libs/jquery_3.2.1/jquery.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- <script src="./../dist/libs/jquery_3.2.1/jquery.min.js"></script> -->
+<!-- <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script> -->
+
+<!-- JQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+  integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/jquery.validate.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.3/additional-methods.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-<!-- ¿Por qué no vale? Xd  -->
-<script scr="../javascript/toGenerateTemplate.js"></script>
+<!-- Bootstrap  -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"
+  integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
 
-<script>
-  $(document).ready(function () {
-    $(".nav-link").click(function (event) {
-      event.preventDefault();
-
-      $("#submenu-portafolio").slideDown();
-    });
-
-    $("#submenu-portafolio .crear-portafolio").click(function () {
-      $("#formulario-portafolio").slideDown();
-    });
-
-    $("#formulario").submit(function (event) {
-      event.preventDefault();
-      generarPaginaHTML();
-    });
-  });
-
-  function generarPaginaHTML() {
-    var tituloProyecto = $("#titulo-proyecto").val();
-    var mensajeBienvenida = $("#mensaje-bienvenida").val();
-    var nombres = $("#nombre").val();
-    var apellidos = $("#apellidos").val();
-    var habilidadesTecnicas = $("#habilidades-tecnicas").val();
-    var habilidadesSociales = $("#habilidades-sociales").val();
-
-    // En este punto, los datos se deben enviar a la base de datos.
-    $.post("../../templates/generar_pagina.php", {
-      tituloProyecto: tituloProyecto,
-      mensajeBienvenida: mensajeBienvenida,
-      nombres: nombres,
-      apellidos: apellidos,
-      habilidadesTecnicas: habilidadesTecnicas,
-      habilidadesSociales: habilidadesSociales
-    }, function (respuesta) {
-      console.log("Hola");
-    });
-  }
-</script>
+<!-- Portfolio Js -->
+<script src="javascript/generarContenido.js"></script>
+<script src="javascript/generarPagina.js"></script>
 
 </body>
 

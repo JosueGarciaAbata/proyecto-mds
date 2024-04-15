@@ -71,17 +71,11 @@ function crearCuenta($conexion, $name, $email, $password)
     $stmt_insert->bind_param("sssss", $name, $email, $password, $destinationFile, $carpetaUsuario);
     $stmt_insert->execute();
     $user_id = $stmt_insert->insert_id;
-
-
     $_SESSION['user_id'] = $user_id;
-
     $resultado = true;
-
   }
 
   return $resultado;
-
-
 
 }
 
