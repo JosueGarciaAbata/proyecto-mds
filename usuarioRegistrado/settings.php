@@ -29,8 +29,8 @@ $stmt_info_usuario->close();
         <div class="row g-0">
           <div class="col d-flex flex-column">
             <div class="card-body">
-              <h2 class="mb-4">Mi cuenta</h2>
-              <h3 class="card-title">Detalles del perfil</h3>
+              <h2 class="mb-4">My account</h2>
+              <h3 class="card-title">Profile details</h3>
               <div class="row align-items-center">
                 <div class="col-auto">
                   <span class="avatar avatar-xl" style="background-image: url('<?php echo $fotoPerfil; ?>')"></span>
@@ -38,14 +38,14 @@ $stmt_info_usuario->close();
                 <div class="col-auto">
                   <form id="uploadForm" enctype="multipart/form-data">
                     <input type="file" id="uploadInput" name="profileImage" accept="image/*" style="display: none;">
-                    <label for="uploadInput" class="btn">Seleccionar imagen</label>
+                    <label for="uploadInput" class="btn">Select image</label>
                   </form>
                 </div>
               </div>
 
               <!-- Formulario para actualizar información -->
               <form id="updateFormInfo" method="post" action="procesar_actualizacion.php">
-                <h3 class="card-title mt-4">Nombre</h3>
+                <h3 class="card-title mt-4">Name</h3>
                 <div class="row g-2">
                   <div class="col-auto">
                     <input id="update_name" type="text" class="form-control" name="update_name"
@@ -59,7 +59,7 @@ $stmt_info_usuario->close();
                       placeholder="Ingresa tu correo" value="<?php echo $email_user; ?>" size="30">
                   </div>
                 </div>
-                <h3 class="card-title mt-4">Contraseña</h3>
+                <h3 class="card-title mt-4">Password</h3>
                 <div class="row g-2">
                   <div class="col-auto">
                     <input id="update_password" type="password" class="form-control mb-2" name="update_password"
@@ -69,13 +69,13 @@ $stmt_info_usuario->close();
                 <div class="mb-3">
                   <label class="form-check">
                     <input id="show_password" type="checkbox" class="form-check-input" />
-                    <span class="form-check-label">Mostrar contraseña</span>
+                    <span class="form-check-label">Show password</span>
                   </label>
                 </div>
                 <div class="card-footer bg-transparent mt-auto">
                   <div class="btn-list justify-content-end">
-                    <a href="index.php" class="btn">Cancelar</a>
-                    <button type="button" id="btnUpdate" class="btn btn-primary">Actualizar</button>
+                    <a href="index.php" class="btn">Cancel</a>
+                    <button type="button" id="btnUpdate" class="btn btn-primary">Update</button>
                   </div>
                 </div>
               </form>
@@ -91,189 +91,4 @@ $stmt_info_usuario->close();
 
 <?php require_once ('footer.php'); ?>
 
-<script>
-
-  //validarInformacion
-
-
-  $(document).ready(function () {
-    $.validator.addMethod("strongPassword", function (value, element) {
-      return this.optional(element) || /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@*().-_])[a-zA-Z\d!@*().-_]{8,}$/.test(value);
-    }, "La contraseña debe tener al menos 8 caracteres y contener al menos una letra mayúscula, una letra minúscula, un número y un carácter especial (opcional).");
-    $.validator.addMethod("controllerName", function (value, element) {
-      return this.optional(element) || /^[A-Za-z0-9_]+$/.test(value);
-    }, "El nombre no puede contener espacios en blanco ni caracteres especiales, solo letras, números o guiones bajos (_).");
-
-    $("#updateFormInfo").validate({
-      rules: {
-        update_name: {
-          required: true,
-          minlength: 5,
-          maxlength: 10,
-          controllerName: true,
-        },
-        update_email: {
-          required: true,
-          email: true,
-        },
-        update_password: {
-          required: true,
-          strongPassword: true,
-          minlength: 8,
-        },
-      },
-      messages: {
-        update_name: {
-          required: "Por favor ingrese un nombre",
-          minlength: "Por favor ingrese al menos 5 caracteres",
-          maxlength: "El número máximo de carácteres es 10"
-        },
-        update_email: {
-          required: "Por favor ingrese un email",
-          email: "Por favor ingrese un email válido",
-        },
-        update_password: {
-          required: "Por favor ingrese una contraseña para esta cuenta",
-          minlength: "Por favor ingrese al menos 8 caracteres para la contraseña"
-        },
-      },
-      errorElement: "div",
-      errorPlacement: function (error, element) {
-        error.addClass("error");
-        var container = $("<div>").addClass("error-container");
-        container.insertAfter(element);
-        error.appendTo(container);
-      },
-      highlight: function (element) {
-        $(element).addClass("error");
-      },
-      unhighlight: function (element) {
-        $(element).removeClass("error");
-      },
-    });
-  });
-
-
-  //Mostrar contraseña
-  $('#show_password').change(function () {
-    var passwordField = $('#update_password');
-    if ($(this).is(':checked')) {
-      passwordField.attr('type', 'text');
-    } else {
-      passwordField.attr('type', 'password');
-    }
-  });
-
-
-
-  $('#uploadInput').change(function () {
-    $('#uploadForm').submit();
-  });
-
-  //Cargar Imagen Temporal
-  $('#uploadForm').submit(function (event) {
-    event.preventDefault();
-    var formData = new FormData(this);
-    formData.append('action', 'imgPerfilTemporal');
-
-    $.ajax({
-      url: 'procesarInformacion/updateUser.php',
-      type: 'POST',
-      data: formData,
-      contentType: false,
-      processData: false,
-      success: function (response) {
-
-        if (response == "false") {
-          mostrarModalDeAdvertencia("Error al cargar la iamgen");
-
-        }
-        var imageUrl = response;
-        $('.avatar').css('background-image', 'url(' + imageUrl + ')');
-      },
-      error: function (xhr, status, error) {
-        console.error(error);
-
-      }
-    });
-  });
-
-
-
-
-
-  //ActualizarInformacion
-
-
-
-
-  bntUpdate = document.getElementById("btnUpdate");
-
-  btnUpdate.addEventListener("click", function () {
-    if (
-      $("#updateFormInfo").valid()
-
-    ) {
-
-
-      if ($("#updateFormInfo").valid()) {
-
-        // Obtener el archivo de imagen seleccionado
-        var imageFile = $('#uploadInput')[0].files[0];
-
-        // Verificar si se seleccionó una imagen
-        if (imageFile) {
-
-          // Crear un objeto FormData para enviar la imagen al servidor
-          var formData = new FormData();
-          formData.append('profileImage', imageFile);
-          formData.append('action', 'imgPerfil');
-          formData.append('action', 'imgPerfil');
-          formData.append('update_name', $('#update_name').val());
-          formData.append('update_email', $('#update_email').val());
-          formData.append('update_password', $('#update_password').val());
-
-
-          $.ajax({
-            url: 'procesarInformacion/updateUser.php',
-            type: 'POST',
-            data: formData,
-            contentType: false,
-            processData: false,
-            success: function (response) {
-
-              if (response !== 'false') {
-                mostrarModalExito("Perfil Actualizado con Exito");
-                setTimeout(function () {
-                  window.location.href = "index.php"
-
-                }, 2500)
-              } else {
-                mostrarModalDeAdvertencia("Error al actualizar la imagen de perfil");
-              }
-            },
-            error: function (xhr, status, error) {
-
-              console.error(error);
-              mostrarModalDeAdvertencia("Error de conexión");
-            }
-          });
-
-        } else {
-          mostrarModalDeAdvertencia("No hay una imagen cargada");
-
-        }
-
-      }
-
-
-
-    }
-
-
-
-  });
-
-
-
-</script>
+<script src="js/settings.js"></script>
