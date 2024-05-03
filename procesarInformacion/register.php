@@ -10,6 +10,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   echo json_encode(crearCuenta($conexion, $_POST['register_name'], $_POST['register_mail'], $_POST['register_password']));
 
 
+
 }
 
 
@@ -71,11 +72,17 @@ function crearCuenta($conexion, $name, $email, $password)
     $stmt_insert->bind_param("sssss", $name, $email, $password, $destinationFile, $carpetaUsuario);
     $stmt_insert->execute();
     $user_id = $stmt_insert->insert_id;
+
+
     $_SESSION['user_id'] = $user_id;
+
     $resultado = true;
+
   }
 
   return $resultado;
+
+
 
 }
 
