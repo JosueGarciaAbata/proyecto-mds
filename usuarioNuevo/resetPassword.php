@@ -40,6 +40,12 @@ if (isset($_SESSION['code'])) {
                     <label class="form-label">New password</label>
                     <input id="reset_password" name="reset_password" type="password" class="form-control">
                 </div>
+                <div class="mb-3">
+                    <label class="form-check">
+                        <input id="show_password" type="checkbox" class="form-check-input" />
+                        <span class="form-check-label">Show password</span>
+                    </label>
+                </div>
                 <div class="form-footer">
 
                     <div class="form-footer">

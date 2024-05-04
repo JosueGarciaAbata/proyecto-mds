@@ -1,3 +1,9 @@
+/*
+ *
+ *Validar informacion ingresada
+ *
+ */
+
 $(document).ready(function () {
   $.validator.addMethod(
     "strongPassword",
@@ -68,7 +74,11 @@ $(document).ready(function () {
   });
 });
 
-//Mostrar contraseña
+/*
+ *
+ *Intercalar visibilidad contraseña
+ *
+ */
 $("#show_password").change(function () {
   var passwordField = $("#update_password");
   if ($(this).is(":checked")) {
@@ -78,36 +88,52 @@ $("#show_password").change(function () {
   }
 });
 
+/*
+ *
+ *Guardar imagen subida en el form
+ *
+ */
+
 $("#uploadInput").change(function () {
   $("#uploadForm").submit();
 });
 
-//Cargar Imagen Temporal
+/*
+ *
+ *Mostrar imagen subida
+ *
+ */
 $("#uploadForm").submit(function (event) {
   event.preventDefault();
   var formData = new FormData(this);
   formData.append("action", "imgPerfilTemporal");
 
   $.ajax({
-    url: "procesarInformacion/updateUser.php",
+    url: "procesarInformacion/user/updateUser.php",
     type: "POST",
     data: formData,
     contentType: false,
     processData: false,
     success: function (response) {
+      console.log(response);
       if (response == "false") {
-        mostrarModalDeAdvertencia("Error al cargar la iamgen");
+        mostrarModalDeAdvertencia("Error loading image");
+      } else {
+        var imageUrl = response;
+        $(".avatar").css("background-image", "url(" + imageUrl + ")");
       }
-      var imageUrl = response;
-      $(".avatar").css("background-image", "url(" + imageUrl + ")");
     },
     error: function (xhr, status, error) {
-      console.error(error);
+      mostrarModalDeAdvertencia("An error has ocurred ");
     },
   });
 });
 
-//ActualizarInformacion
+/*
+ *
+ *Actualizar información del usuario
+ *
+ */
 
 bntUpdate = document.getElementById("btnUpdate");
 
@@ -129,7 +155,7 @@ btnUpdate.addEventListener("click", function () {
         formData.append("update_password", $("#update_password").val());
 
         $.ajax({
-          url: "procesarInformacion/updateUser.php",
+          url: "procesarInformacion/user/updateUser.php",
           type: "POST",
           data: formData,
           contentType: false,
@@ -141,11 +167,10 @@ btnUpdate.addEventListener("click", function () {
                 window.location.href = "index.php";
               }, 2500);
             } else {
-              mostrarModalDeAdvertencia("Error updating profile image");
+              mostrarModalDeAdvertencia("Error updating profile ");
             }
           },
           error: function (xhr, status, error) {
-            console.error(error);
             mostrarModalDeAdvertencia("Connection error");
           },
         });

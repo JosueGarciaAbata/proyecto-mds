@@ -1,3 +1,9 @@
+/*
+ *
+ * Validar información  ingresada
+ *
+ */
+
 $(document).ready(function () {
   $.validator.addMethod(
     "strongPassword",
@@ -68,6 +74,13 @@ $(document).ready(function () {
   });
 });
 
+/*
+ *
+ *Intercalar  visibilidad contraseña
+ *
+ *
+ */
+
 $("#show_password").change(function () {
   var passwordField = $("#register_password");
   if ($(this).is(":checked")) {
@@ -76,6 +89,12 @@ $("#show_password").change(function () {
     passwordField.attr("type", "password");
   }
 });
+
+/*
+ *
+ *Procesar información
+ *
+ */
 
 $("#register_button").click(function () {
   var registerButton = $(this);

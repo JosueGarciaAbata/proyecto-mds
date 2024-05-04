@@ -1,3 +1,8 @@
+/*
+ *Validación de campos
+ *
+ */
+
 $(document).ready(function () {
   $("#login-form").validate({
     rules: {
@@ -33,6 +38,12 @@ $(document).ready(function () {
     },
   });
 });
+
+/*
+ *Intercalacion visible/oculto  campo contraseña
+ *
+ */
+
 $("#show_password").change(function () {
   var passwordField = $("#login_password");
 
@@ -43,8 +54,13 @@ $("#show_password").change(function () {
   }
 });
 
+/*
+ *Procesar informacion  ingresada
+ *
+ */
+
 $("#login_button").click(function () {
-  var loginButton = $(this); // Almacenar una referencia al botón de inicio de sesión
+  var loginButton = $(this);
 
   if ($("#login-form").valid()) {
     loginButton.prop("disabled", true);
@@ -60,9 +76,8 @@ $("#login_button").click(function () {
       },
       type: "POST",
       success: function (resp) {
-        console.log(resp);
         if (resp == "true") {
-          mostrarModalExito("Inicio de sesión exitoso");
+          mostrarModalExito("Successful login");
           setTimeout(function () {
             window.location.href = "../usuarioRegistrado/index.php";
           }, 2500);

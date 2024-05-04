@@ -1,3 +1,9 @@
+/**
+ *
+ *Darle funcionalidad al modal de eliminacion
+ *
+ */
+
 $(document).ready(function () {
   $('#deleteModal .close, #deleteModal button[data-dismiss="modal"]').click(
     function () {
@@ -5,6 +11,14 @@ $(document).ready(function () {
     }
   );
 });
+
+/**
+ *
+ *
+ *Cargar  los post del usuario
+ *
+ *
+ */
 
 $(document).ready(function () {
   var pageWrapper = $(".row-cards");
@@ -23,6 +37,7 @@ $(document).ready(function () {
         // Limpiar el contenido actual de pageWrapper antes de agregar nuevos posts
         pageWrapper.empty();
 
+        //Generar los contenedores con la informacion del post
         data.forEach(function (post) {
           var cardCol = $('<div class="col-sm-6 col-lg-4"></div>');
           var card = $('<div class="card card-sm position-relative"></div>');
@@ -40,16 +55,20 @@ $(document).ready(function () {
 
           var anchor = $('<a href="#" class="d-block"></a>');
 
+          //Cargar imagen del post o generica
+
           var imageUrl =
             post.ubicacion_imagen_post &&
             post.ubicacion_imagen_post.trim() !== ""
               ? post.ubicacion_imagen_post
               : "../img/genericImagePost.jpg";
 
+          //Asignar imagen
           var imageElement = $("<img>");
           imageElement.attr("src", imageUrl);
           imageElement.addClass("card-img-top");
 
+          //Establecer propiedades de la imagen
           imageElement.css({
             width: "100%",
             height: "100%",
@@ -67,7 +86,7 @@ $(document).ready(function () {
               "</h4>"
           );
 
-          // Asignar data-id al ícono de editar y al ícono de borrar
+          // Asignar el id del   post al ícono de editar y al ícono de borrar
           editIcon.attr("data-id", post.id_post);
           deleteIcon.attr("data-id", post.id_post);
 
@@ -82,6 +101,7 @@ $(document).ready(function () {
           // Agregar la tarjeta al contenedor principal (pageWrapper)
           pageWrapper.append(cardCol);
 
+          //Generar funcionalidad al boton de borrado del post
           deleteIcon.on("click", function () {
             $("#deleteModal").modal("show");
 
@@ -89,7 +109,6 @@ $(document).ready(function () {
             $("#confirmDeleteBtn")
               .off("click")
               .on("click", function () {
-                console.log("Borrando el post con ID: " + post.id_post);
                 $.ajax({
                   url: "procesarInformacion/posts/posts.php",
                   type: "POST",
@@ -99,7 +118,7 @@ $(document).ready(function () {
                   },
                   success: function (response) {
                     if (response == "true") {
-                      mostrarModalExito("Post Eliminado");
+                      mostrarModalExito("Deleted Post");
                       setTimeout(function () {
                         window.location.href = "index.php";
                       }, 2500);
@@ -117,9 +136,8 @@ $(document).ready(function () {
               });
           });
 
+          //Generar funcionalidad al boton de edicion
           editIcon.on("click", function () {
-            console.log("Editar post con ID:", post.id_post);
-
             $.ajax({
               url: "procesarInformacion/posts/posts.php",
               type: "POST",
@@ -132,7 +150,6 @@ $(document).ready(function () {
 
                 // Acceder a la información del post
                 var postInfo = data["post_info"];
-                console.log(data);
 
                 // Acceder a las etiquetas asociadas al post
                 var labels = data["etiquetas"];
@@ -163,6 +180,8 @@ $(document).ready(function () {
                 var etiquetas = data["etiquetas"];
 
                 // Recuperar las etiquetas de la categoría del post
+
+                //Esta seccion del codigo permite que se muestren activas las etiquetas asociadas al post
                 var etiquetasCategoria = data["etiquetas_categoria"];
                 var formSelectgroup =
                   document.querySelector(".form-selectgroup");
@@ -200,27 +219,36 @@ $(document).ready(function () {
                     formSelectgroup.appendChild(labelElement);
                   });
                 }
+
+                //Esta seccion permite al modal saber que lo que se realizara sera una actualizacion
+
                 $("#btn_post").attr("data_info", "update");
                 $("#btn_post").attr("data_id_post", post.id_post);
               },
               error: function (xhr, status, error) {
-                console.error("Error al obtener el post:", error);
+                mostrarModalDeAdvertencia("An error has occurred");
               },
             });
           });
         });
       },
       error: function (xhr, status, error) {
-        console.log(error);
         mostrarModalDeAdvertencia("An error has occurred");
       },
     });
   }
-
+  //Obtener los posts
   getPosts();
 });
 
-//Validar titulo y contenido
+/*
+ *
+ *
+ *Validar informacion ingresada
+ *
+ *
+ */
+
 $(document).ready(function () {
   $("#postForm").validate({
     rules: {
@@ -263,7 +291,13 @@ $(document).ready(function () {
   });
 });
 
-//Cargar etiquetas de la categoria seleccionada
+/*
+ *
+ *
+ *Cambiar las etiquetas dependiendo de la categria
+ *
+ *
+ */
 
 $(document).ready(function () {
   $("#categoria").change(function () {
@@ -313,12 +347,24 @@ $(document).ready(function () {
   });
 });
 
-//Cambiar dinamicamente la imagen
+/*
+ *
+ *
+ *Guardar la imagen ingresada en un form
+ *
+ *
+ */
 
 $("#postInput").change(function () {
   $("#postFormImage").submit();
 });
 
+/*
+ *
+ *
+ * Cambiar dinamicamente la imagen del post
+ *
+ */
 $("#postFormImage").submit(function (event) {
   event.preventDefault();
   var formData = new FormData(this);
@@ -335,7 +381,6 @@ $("#postFormImage").submit(function (event) {
 
       if (response == "false") {
         mostrarModalDeAdvertencia("Error al cargar la imagen");
-        $("#postImage").attr("src", "../img/genericUploadImage.jpg");
       } else {
         var imageUrl = response;
         $("#postImage").attr("src", imageUrl);
@@ -347,26 +392,40 @@ $("#postFormImage").submit(function (event) {
     },
   });
 });
+
 $("#btn_create").click(function () {
+  //Esta seccion le permite saber al modal que se usara para crear un post
   $("#btn_post").attr("data_info", "create");
   $("#superiorTitle").text("Crear Post");
 });
 
+/*
+ *
+ *
+ *Procesar informacion del post
+ *
+ *
+ */
+
 $("#btn_post").click(function () {
+  //Recuperar accion a realizar creacion  o actualiacion
   var dataInfoValue = $(this).attr("data_info");
 
+  //Recuperar imagen
   var imageFile = $("#postInput")[0].files[0];
   if (
     $("#postForm").valid() &&
     $("#categoria").val() !== null &&
     $("#state").val() != null
   ) {
+    //Guardar etiquetas seleccionadas
     var labelsActive = [];
     $(".form-selectgroup input[type='checkbox']:checked").each(function () {
       var labelId = $(this).data("id");
       labelsActive.push(labelId);
     });
 
+    //Guardar informacion en formData
     var formData = new FormData();
     if (imageFile) {
       formData.append("postImage", imageFile);
@@ -384,7 +443,7 @@ $("#btn_post").click(function () {
     formData.append("id_category", $("#categoria").val());
     formData.append("state", $("#state").val());
     formData.append("labelsActive", JSON.stringify(labelsActive));
-
+    //Enviar informacion del post al backend
     $.ajax({
       url: "procesarInformacion/posts/posts.php",
       type: "POST",
@@ -392,8 +451,6 @@ $("#btn_post").click(function () {
       contentType: false,
       processData: false,
       success: function (response) {
-        console.log(response);
-
         if (response == "true") {
           mostrarModalExito("Post Saved with Success");
           setTimeout(function () {
@@ -408,7 +465,6 @@ $("#btn_post").click(function () {
         mostrarModalDeAdvertencia("Connection error");
       },
     });
-    //////////////
   } else {
     mostrarModalDeAdvertencia("Necessary missing information");
   }

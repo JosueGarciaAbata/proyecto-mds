@@ -1,3 +1,9 @@
+/*
+ *
+ *Validar  informacion ingresada
+ *
+ */
+
 $(document).ready(function () {
   $("#forgot_password_form").validate({
     rules: {
@@ -26,6 +32,12 @@ $(document).ready(function () {
       $(element).removeClass("error");
     },
   });
+
+  /*
+   *
+   *Procesar informacion ingresadas
+   *
+   */
 
   var buttonForgotPassword = document.getElementById("forgot_password_button");
 
@@ -73,6 +85,12 @@ $(document).ready(function () {
       });
     }
   });
+
+  /*
+   *
+   *Validar  codigo de verificacion ingresado
+   *
+   */
 
   $("#verifyCodeBtn").click(function () {
     var code = $("#codeInput").val();
