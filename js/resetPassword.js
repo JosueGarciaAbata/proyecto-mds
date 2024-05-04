@@ -1,3 +1,8 @@
+/*
+ *
+ *Validar información ingresada
+ *
+ */
 $(document).ready(function () {
   $.validator.addMethod(
     "strongPassword",
@@ -39,6 +44,27 @@ $(document).ready(function () {
     },
   });
 });
+
+/*
+ *
+ *Intercalar visibilidad contraseña
+ *
+ */
+
+$("#show_password").change(function () {
+  var passwordField = $("#reset_password");
+  if ($(this).is(":checked")) {
+    passwordField.attr("type", "text");
+  } else {
+    passwordField.attr("type", "password");
+  }
+});
+
+/*
+ *
+ *Procesar nueva contraseña
+ *
+ */
 
 $("#reset_password_button").click(function () {
   if ($("#reset_password_form").valid()) {

@@ -1,32 +1,36 @@
 <?php
 require_once ("../../../procesarInformacion/conexion.php");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+require_once ("../img/gestorImagenes.php");
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  //Recuperar conexion
+  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+  //Recuperar id del usuario
   session_start();
   $user_id = $_SESSION['user_id'];
-
+  //Buscar carpeta del usuario
   $sql = "SELECT carpeta_usuario FROM usuarios WHERE id_usuario=?";
   $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
   $stmt = $conexion->prepare($sql);
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
+  //Validar existencia de carpeta del usuario
   if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $userContent = $row['carpeta_usuario'];
   }
   //$stmt->close();
 
-
+  //Cargar etiquetas de categoria  recibida
   if (isset($_POST["action"]) && $_POST["action"] == "changeCategory" && isset($_POST['category']) && !empty($_POST['category'])) {
-
+    //Cargar y guardar imagen temporal recibida
     echo json_encode(getLabels($conexion, $_POST["category"]));
 
   } elseif (isset($_POST['action']) && $_POST['action'] === 'imgProjectTemporal') {
 
-    $routeImage = uploadImage("../../$userContent/temp/", true);
+    $routeImage = uploadImage("../../$userContent/temp/", "projectImage", true);
 
 
     if ($routeImage !== false) {
@@ -37,7 +41,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
       echo 'false';
     }
-  } elseif (isset($_POST['action']) && $_POST['action'] === 'createNewProject' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state']) && isset($_POST["date_start"]) && isset($_POST["date_end"])) {
+  }
+  //Procesar nuevo proyecto
+  elseif (isset($_POST['action']) && $_POST['action'] === 'createNewProject' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state']) && isset($_POST["date_start"]) && isset($_POST["date_end"])) {
+
+    //Crear proyecto sin imagen
     if (!isset($_FILES['projectImage'])) {
       $sql = "INSERT INTO proyectos (id_usuario_proyecto, id_categoria_proyecto,id_estado_proyecto ,titulo_proyecto,descripcion_proyecto,fecha_inicio_proyecto,fecha_finalizacion_proyecto) VALUES (?, ?,?, ?, ?,?,?)";
       $stmt = $conexion->prepare($sql);
@@ -49,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if (!empty($labelsActive)) {
           // Insertar registros adicionales para asociar las etiquetas con la publicación
           $projectId = $conexion->insert_id; // Obtener el ID de la publicación insertada anteriormente
-
+          //Insertar etiquetas en la tabla asociada al proyecto
           $sqlLabels = "INSERT INTO etiquetas_agrupadas_proyectos (id_etiqueta_etiquetas_agrupadas,id_proyecto_etiquetas_agrupadas) VALUES (?, ?)";
           $stmtLabels = $conexion->prepare($sqlLabels);
 
@@ -68,8 +76,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
 
     } else {
-
-      $routeImage = uploadImage("../../$userContent/proyectos/", false);
+      //Crear proyecto con imagen
+      $routeImage = uploadImage("../../$userContent/proyectos/", "projectImage", false);
       if ($routeImage !== false) {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
 
@@ -84,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           if (!empty($labelsActive)) {
             // Insertar registros adicionales para asociar las etiquetas con la publicación
             $projectId = $conexion->insert_id; // Obtener el ID de la publicación insertada anteriormente
-
+            //Insertar etiquetas en la tabla asociada al proyecto
             $sqlLabels = "INSERT INTO etiquetas_agrupadas_proyectos (id_etiqueta_etiquetas_agrupadas, id_proyecto_etiquetas_agrupadas) VALUES (?, ?)";
             $stmtLabels = $conexion->prepare($sqlLabels);
 
@@ -111,9 +119,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-
+    //Actualizar proyecto
   } elseif (isset($_POST['action']) && $_POST['action'] === 'updateProject' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state']) && isset($_POST['state']) && isset($_POST["date_start"]) && isset($_POST["date_end"])) {
-
+    //Actualizar proyecto sin imagen
     if (!isset($_FILES['projectImage'])) {
       $sql = "UPDATE proyectos SET id_categoria_proyecto=?,id_estado_proyecto=?,titulo_proyecto=?,descripcion_proyecto=?,fecha_inicio_proyecto=?,fecha_finalizacion_proyecto=? WHERE id_proyecto=?  ";
 
@@ -125,13 +133,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Obtener el ID de la publicación insertada anteriormente
 
-        // Eliminar registros antiguos asociados con el post
+        // Eliminar registros antiguos asociados con el proyecto
         $sqlDeleteOldLabels = "DELETE FROM etiquetas_agrupadas_proyectos WHERE id_proyecto_etiquetas_agrupadas = ?";
         $stmtDeleteOldLabels = $conexion->prepare($sqlDeleteOldLabels);
         $stmtDeleteOldLabels->bind_param("i", $_POST["id_project"]);
         $stmtDeleteOldLabels->execute();
 
-        // Insertar nuevos registros asociados con el post
+        // Insertar nuevos registros asociados con el proyecto
         if (!empty($labelsActive)) {
           $sqlInsertNewLabels = "INSERT INTO etiquetas_agrupadas_proyectos(id_etiqueta_etiquetas_agrupadas, id_proyecto_etiquetas_agrupadas) VALUES (?, ?)";
           $stmtInsertNewLabels = $conexion->prepare($sqlInsertNewLabels);
@@ -148,9 +156,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "false";
       }
 
-    } else {
+    }
+    //Actualizar proyecto con imagen
+    else {
 
-      $routeImage = uploadImage("../../$userContent/proyectos/", false);
+      $routeImage = uploadImage("../../$userContent/proyectos/", "projectImage", false);
       if ($routeImage !== false) {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
 
@@ -165,13 +175,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Obtener el ID de la publicación insertada anteriormente
           // $postId = $conexion->insert_id;
 
-          // Eliminar registros antiguos asociados con el post
+          // Eliminar registros antiguos asociados con el proyecto
           $sqlDeleteOldLabels = "DELETE FROM etiquetas_agrupadas_proyectos WHERE id_proyecto_etiquetas_agrupadas = ?";
           $stmtDeleteOldLabels = $conexion->prepare($sqlDeleteOldLabels);
           $stmtDeleteOldLabels->bind_param("i", $_POST["id_project"]);
           $stmtDeleteOldLabels->execute();
 
-          // Insertar nuevos registros asociados con el post
+          // Insertar nuevos registros asociados con el proyecto
           if (!empty($labelsActive)) {
             $sqlInsertNewLabels = "INSERT INTO etiquetas_agrupadas_proyectos(id_etiqueta_etiquetas_agrupadas, id_proyecto_etiquetas_agrupadas) VALUES (?, ?)";
             $stmtInsertNewLabels = $conexion->prepare($sqlInsertNewLabels);
@@ -198,7 +208,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "selectProjects") {
+  }
+  //Recuperar y enviar informacion de proyectos asociados a un usuario
+  elseif (isset($_POST["action"]) && $_POST["action"] == "selectProjects") {
     $stmt->close();
     $posts = getProjects($conexion, $user_id);
 
@@ -207,19 +219,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // Imprimir la respuesta JSON
     echo $response;
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "getInfoUpdateProject" && isset($_POST["id_project"])) {
+  }
+  //Recuperar y enviar informacion de un proyecto que se desea actualizar 
+  elseif (isset($_POST["action"]) && $_POST["action"] == "getInfoUpdateProject" && isset($_POST["id_project"])) {
     $stmt->close();
     $project = getInfoUpdateProject($conexion, $_POST["id_project"]);
 
     echo json_encode($project);
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "deleteProject" && isset($_POST["id_project"])) {
-    // Preparar y ejecutar la consulta para eliminar etiquetas asociadas al post
+  }
+  //Eliminar proyecto
+  elseif (isset($_POST["action"]) && $_POST["action"] == "deleteProject" && isset($_POST["id_project"])) {
+    //Eliminar etiquetas asociadas al proyecto (para evitar conflictos)
     $sql_labels = "DELETE FROM etiquetas_agrupadas_proyectos WHERE id_proyecto_etiquetas_agrupadas = ?";
     $stmt_labels = $conexion->prepare($sql_labels);
     $stmt_labels->bind_param("i", $_POST["id_project"]);
     $stmt_labels->execute();
 
-    // Preparar y ejecutar la consulta para eliminar el post
+    //Eliminar el proyecto
     $sql_delete = "DELETE FROM proyectos WHERE id_proyecto=?";
     $stmt_delete = $conexion->prepare($sql_delete);
     $stmt_delete->bind_param("i", $_POST["id_project"]);
@@ -236,7 +252,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-
+/*
+ * 
+ * 
+ *Obtener etiquetas asociadas a una categoria 
+ * 
+ * 
+ */
 function getLabels($conexion, $idCategory)
 {
   $sql = "SELECT nombre_etiqueta,id_etiqueta FROM etiquetas WHERE id_categoria_etiqueta=?";
@@ -255,93 +277,12 @@ function getLabels($conexion, $idCategory)
 }
 
 
-function generateUniqueName($extension)
-{
-  $nombreEncriptado = bin2hex(random_bytes(8));
-  return $nombreEncriptado . '.' . $extension;
-}
-
-function uploadImage($carpetaDestino, $clear)
-{
-  if (isset($_FILES['projectImage']) && $_FILES['projectImage']['error'] === UPLOAD_ERR_OK) {
-    $imageFileType = exif_imagetype($_FILES['projectImage']['tmp_name']);
-    if ($imageFileType !== false) {
-      $allowedTypes = array(IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF);
-      if (in_array($imageFileType, $allowedTypes)) {
-        $tempDir = $carpetaDestino;
-        if (!is_dir($tempDir)) {
-          mkdir($tempDir, 0755, true);
-        }
-        if ($clear) {
-          $files = glob($tempDir . '/*');
-          foreach ($files as $file) {
-            if (is_file($file)) {
-              unlink($file);
-            }
-          }
-        }
-        $extension = pathinfo($_FILES['projectImage']['name'], PATHINFO_EXTENSION);
-        $nombreArchivo = generateUniqueName($extension);
-        $targetFile = $tempDir . $nombreArchivo;
-        if (move_uploaded_file($_FILES['projectImage']['tmp_name'], $targetFile)) {
-          // Redimensionar la imagen a 300x168 píxeles
-          resizeImage($targetFile, $targetFile, 300, 168);
-          // Devolver la ruta completa de la imagen
-          return preg_replace('/^\.\.\//', '', $targetFile, 1);
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
-}
-function resizeImage($sourceFile, $targetFile, $newWidth, $newHeight)
-{
-  list($srcWidth, $srcHeight, $type) = getimagesize($sourceFile);
-  $sourceImage = null;
-  switch ($type) {
-    case IMAGETYPE_JPEG:
-      $sourceImage = imagecreatefromjpeg($sourceFile);
-      break;
-    case IMAGETYPE_PNG:
-      $sourceImage = imagecreatefrompng($sourceFile);
-      break;
-    case IMAGETYPE_GIF:
-      $sourceImage = imagecreatefromgif($sourceFile);
-      break;
-    default:
-      return false;
-  }
-  if (!$sourceImage) {
-    return false;
-  }
-  $resizedImage = imagescale($sourceImage, $newWidth, $newHeight);
-  if (!$resizedImage) {
-    return false;
-  }
-  switch ($type) {
-    case IMAGETYPE_JPEG:
-      imagejpeg($resizedImage, $targetFile);
-      break;
-    case IMAGETYPE_PNG:
-      imagepng($resizedImage, $targetFile);
-      break;
-    case IMAGETYPE_GIF:
-      imagegif($resizedImage, $targetFile);
-      break;
-    default:
-      return false;
-  }
-  imagedestroy($sourceImage);
-  imagedestroy($resizedImage);
-  return true;
-}
+/*
+ * 
+ * 
+ * Obtener proyectos asociados a un usuario
+ * 
+ */
 
 function getProjects($conexion, $user_id)
 {
@@ -361,6 +302,14 @@ function getProjects($conexion, $user_id)
   return $data;
 }
 
+/*
+ * 
+ * 
+ * Obtener informacion asociado a un proyecto
+ * 
+ * 
+ */
+
 function getInfoUpdateProject($conexion, $id_project)
 {
   $data = [];
@@ -376,7 +325,7 @@ function getInfoUpdateProject($conexion, $id_project)
     $data['project_info'] = $row; // Agregar la información del post al array $data
   }
 
-  // Consulta para obtener las etiquetas asociadas al post
+  //Buscar y recuperar etiquetas asociadas al proyecto
   $sql_etiquetas = "SELECT etiquetas.nombre_etiqueta ,etiquetas.id_etiqueta
                     FROM etiquetas_agrupadas_proyectos 
                     INNER JOIN etiquetas 
@@ -398,7 +347,7 @@ function getInfoUpdateProject($conexion, $id_project)
 
   $data['etiquetas'] = $etiquetas; // Agregar las etiquetas al array $data
 
-  // Consulta para obtener las etiquetas de una categoría específica
+  //Recuperar etiquetas asociadas a la categoria del prooyecto
   $id_categoria_project = $data['project_info']['id_categoria_proyecto'];
   $sql_etiquetas_categoria = "SELECT * FROM etiquetas WHERE id_categoria_etiqueta=?";
   $stmt_etiquetas_categoria = $conexion->prepare($sql_etiquetas_categoria);

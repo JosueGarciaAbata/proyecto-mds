@@ -1,31 +1,43 @@
 <?php
 require_once ("../../../procesarInformacion/conexion.php");
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+require_once ("../img/gestorImagenes.php");
 
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+  //Recuperar conexion
+  $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+  //Recuperar id del usuario
   session_start();
   $user_id = $_SESSION['user_id'];
 
+  //Buscar carpeta del usuario
   $sql = "SELECT carpeta_usuario FROM usuarios WHERE id_usuario=?";
   $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
   $stmt = $conexion->prepare($sql);
   $stmt->bind_param("i", $user_id);
   $stmt->execute();
   $result = $stmt->get_result();
+
+  //Validar existencia de carpeta del usuario
   if ($result->num_rows > 0) {
     $row = $result->fetch_assoc();
     $userContent = $row['carpeta_usuario'];
+  } else {
+
+    echo "false";
   }
   //$stmt->close();
 
+  //Cargar etiquetas de categoria  recibida
   if (isset($_POST["action"]) && $_POST["action"] == "changeCategory" && isset($_POST['category']) && !empty($_POST['category'])) {
 
     echo json_encode(getLabels($conexion, $_POST["category"]));
 
-  } elseif (isset($_POST['action']) && $_POST['action'] === 'imgPostTemporal') {
+  }
+  //Cargar y guardar imagen temporal recibida
+  elseif (isset($_POST['action']) && $_POST['action'] === 'imgPostTemporal') {
 
-    $routeImage = uploadImage("../../$userContent/temp/", true);
+    $routeImage = uploadImage("../../$userContent/temp/", "postImage", true);
 
 
     if ($routeImage !== false) {
@@ -36,7 +48,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
       echo 'false';
     }
-  } elseif (isset($_POST['action']) && $_POST['action'] === 'createNewPost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
+  }
+
+  //Procesar nuevo post
+  elseif (isset($_POST['action']) && $_POST['action'] === 'createNewPost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
+
+    //Crear post sin imagen
 
     if (!isset($_FILES['postImage'])) {
       $sql = "INSERT INTO posts (id_usuario_post, id_categoria_post,id_estado_post ,titulo_post, contenido_textual_post) VALUES (?, ?,?, ?, ?)";
@@ -50,6 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
           // Insertar registros adicionales para asociar las etiquetas con la publicación
           $postId = $conexion->insert_id; // Obtener el ID de la publicación insertada anteriormente
 
+          //Insertar etiquetas en la tabla asociada a posts
           $sqlLabels = "INSERT INTO etiquetas_agrupadas (id_etiqueta_etiquetas_agrupadas, id_post_etiquetas_agrupadas) VALUES (?, ?)";
           $stmtLabels = $conexion->prepare($sqlLabels);
 
@@ -67,9 +85,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo "false";
       }
 
-    } else {
+    }
 
-      $routeImage = uploadImage("../../$userContent/posts/", false);
+    //Crear post con imagen
+    else {
+
+      $routeImage = uploadImage("../../$userContent/posts/", "postImage", false);
       if ($routeImage !== false) {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
         $sql = "INSERT INTO posts (id_usuario_post, id_categoria_post,id_estado_post ,titulo_post, contenido_textual_post, ubicacion_imagen_post) VALUES (?, ?,?, ?, ?, ?)";
@@ -83,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // Insertar registros adicionales para asociar las etiquetas con la publicación
             $postId = $conexion->insert_id; // Obtener el ID de la publicación insertada anteriormente
 
+            //Insertar etiquetas en la tabla asociada al post
             $sqlLabels = "INSERT INTO etiquetas_agrupadas (id_etiqueta_etiquetas_agrupadas, id_post_etiquetas_agrupadas) VALUES (?, ?)";
             $stmtLabels = $conexion->prepare($sqlLabels);
 
@@ -110,8 +132,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-  } elseif (isset($_POST['action']) && $_POST['action'] === 'updatePost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
-
+  }
+  //Actualizar post
+  elseif (isset($_POST['action']) && $_POST['action'] === 'updatePost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
+    //Actualizar post sin imagen
     if (!isset($_FILES['postImage'])) {
       $sql = "UPDATE posts SET id_categoria_post=?,id_estado_post=?,titulo_post=?,contenido_textual_post=? WHERE id_post=?  ";
 
@@ -147,8 +171,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
       }
 
     } else {
-
-      $routeImage = uploadImage("../../$userContent/posts/", false);
+      //Actualizar post con imagen
+      $routeImage = uploadImage("../../$userContent/posts/", "postImage", false);
       if ($routeImage !== false) {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
         $sql = "UPDATE posts SET id_categoria_post=?,id_estado_post=?,titulo_post=?,contenido_textual_post=?,ubicacion_imagen_post=? WHERE id_post=? ";
@@ -194,28 +218,35 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "selectPosts") {
+  }
+  //Recuperar y enviar informacion de posts asociados a un usuario
+  elseif (isset($_POST["action"]) && $_POST["action"] == "selectPosts") {
     $stmt->close();
     $posts = getPosts($conexion, $user_id);
 
     // Convertir los posts a formato JSON
     $response = json_encode($posts);
 
-    // Imprimir la respuesta JSON
     echo $response;
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "getInfoUpdatePost" && isset($_POST["id_post"])) {
+  }
+
+  //Recuperar y enviar informacion de un post que se desea actualizar 
+  elseif (isset($_POST["action"]) && $_POST["action"] == "getInfoUpdatePost" && isset($_POST["id_post"])) {
     $stmt->close();
     $post = getInfoUpdatePost($conexion, $_POST["id_post"]);
 
     echo json_encode($post);
-  } elseif (isset($_POST["action"]) && $_POST["action"] == "deletePost" && isset($_POST["id_post"])) {
-    // Preparar y ejecutar la consulta para eliminar etiquetas asociadas al post
+  }
+
+  //Eliminar post
+  elseif (isset($_POST["action"]) && $_POST["action"] == "deletePost" && isset($_POST["id_post"])) {
+    //Eliminar etiquetas asociadas al post (para evitar conflictos)
     $sql_labels = "DELETE FROM etiquetas_agrupadas WHERE id_post_etiquetas_agrupadas = ?";
     $stmt_labels = $conexion->prepare($sql_labels);
     $stmt_labels->bind_param("i", $_POST["id_post"]);
     $stmt_labels->execute();
 
-    // Preparar y ejecutar la consulta para eliminar el post
+    //Eliminar el post
     $sql_delete = "DELETE FROM posts WHERE id_post=?";
     $stmt_delete = $conexion->prepare($sql_delete);
     $stmt_delete->bind_param("i", $_POST["id_post"]);
@@ -233,6 +264,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
 
+/*
+ * 
+ * 
+ *Obtener etiquetas asociadas a una categoria 
+ * 
+ * 
+ */
 function getLabels($conexion, $idCategory)
 {
   $sql = "SELECT nombre_etiqueta,id_etiqueta FROM etiquetas WHERE id_categoria_etiqueta=?";
@@ -250,95 +288,12 @@ function getLabels($conexion, $idCategory)
   return $labelsArray;
 }
 
-
-function generateUniqueName($extension)
-{
-  $nombreEncriptado = bin2hex(random_bytes(8));
-  return $nombreEncriptado . '.' . $extension;
-}
-
-function uploadImage($carpetaDestino, $clear)
-{
-  if (isset($_FILES['postImage']) && $_FILES['postImage']['error'] === UPLOAD_ERR_OK) {
-    $imageFileType = exif_imagetype($_FILES['postImage']['tmp_name']);
-    if ($imageFileType !== false) {
-      $allowedTypes = array(IMAGETYPE_JPEG, IMAGETYPE_PNG, IMAGETYPE_GIF);
-      if (in_array($imageFileType, $allowedTypes)) {
-        $tempDir = $carpetaDestino;
-        if (!is_dir($tempDir)) {
-          mkdir($tempDir, 0755, true);
-        }
-        if ($clear) {
-          $files = glob($tempDir . '/*');
-          foreach ($files as $file) {
-            if (is_file($file)) {
-              unlink($file);
-            }
-          }
-        }
-        $extension = pathinfo($_FILES['postImage']['name'], PATHINFO_EXTENSION);
-        $nombreArchivo = generateUniqueName($extension);
-        $targetFile = $tempDir . $nombreArchivo;
-        if (move_uploaded_file($_FILES['postImage']['tmp_name'], $targetFile)) {
-          // Redimensionar la imagen a 300x168 píxeles
-          resizeImage($targetFile, $targetFile, 300, 168);
-          // Devolver la ruta completa de la imagen
-          return preg_replace('/^\.\.\//', '', $targetFile, 1);
-        } else {
-          return false;
-        }
-      } else {
-        return false;
-      }
-    } else {
-      return false;
-    }
-  } else {
-    return false;
-  }
-}
-function resizeImage($sourceFile, $targetFile, $newWidth, $newHeight)
-{
-  list($srcWidth, $srcHeight, $type) = getimagesize($sourceFile);
-  $sourceImage = null;
-  switch ($type) {
-    case IMAGETYPE_JPEG:
-      $sourceImage = imagecreatefromjpeg($sourceFile);
-      break;
-    case IMAGETYPE_PNG:
-      $sourceImage = imagecreatefrompng($sourceFile);
-      break;
-    case IMAGETYPE_GIF:
-      $sourceImage = imagecreatefromgif($sourceFile);
-      break;
-    default:
-      return false;
-  }
-  if (!$sourceImage) {
-    return false;
-  }
-  $resizedImage = imagescale($sourceImage, $newWidth, $newHeight);
-  if (!$resizedImage) {
-    return false;
-  }
-  switch ($type) {
-    case IMAGETYPE_JPEG:
-      imagejpeg($resizedImage, $targetFile);
-      break;
-    case IMAGETYPE_PNG:
-      imagepng($resizedImage, $targetFile);
-      break;
-    case IMAGETYPE_GIF:
-      imagegif($resizedImage, $targetFile);
-      break;
-    default:
-      return false;
-  }
-  imagedestroy($sourceImage);
-  imagedestroy($resizedImage);
-  return true;
-}
-
+/*
+ * 
+ * 
+ * Obtener posts asociados a un usuario
+ * 
+ */
 function getPosts($conexion, $user_id)
 {
   $sql = "SELECT * FROM posts WHERE id_usuario_post = ?  ORDER BY id_post DESC";
@@ -357,11 +312,17 @@ function getPosts($conexion, $user_id)
   return $data;
 }
 
+/*
+ * 
+ * 
+ * Obtener informacion asociado a un post
+ * 
+ */
 function getInfoUpdatePost($conexion, $id_post)
 {
   $data = [];
 
-  // Consulta para obtener la información del post
+  //Recuperar informacion asociada al post
   $sql = "SELECT * FROM posts WHERE id_post=?";
   $stmt = $conexion->prepare($sql);
   $stmt->bind_param("i", $id_post);
@@ -372,7 +333,7 @@ function getInfoUpdatePost($conexion, $id_post)
     $data['post_info'] = $row; // Agregar la información del post al array $data
   }
 
-  // Consulta para obtener las etiquetas asociadas al post
+  //Buscar y recuperar etiquetas asociadas al post
   $sql_etiquetas = "SELECT etiquetas.nombre_etiqueta ,etiquetas.id_etiqueta
                     FROM etiquetas_agrupadas 
                     INNER JOIN etiquetas 
@@ -392,9 +353,9 @@ function getInfoUpdatePost($conexion, $id_post)
     $etiquetas[] = $etiqueta;
   }
 
-  $data['etiquetas'] = $etiquetas; // Agregar las etiquetas al array $data
+  $data['etiquetas'] = $etiquetas;
 
-  // Consulta para obtener las etiquetas de una categoría específica
+  //Recuperar etiquetas asociadas a la categoria del post
   $id_categoria_post = $data['post_info']['id_categoria_post'];
   $sql_etiquetas_categoria = "SELECT * FROM etiquetas WHERE id_categoria_etiqueta=?";
   $stmt_etiquetas_categoria = $conexion->prepare($sql_etiquetas_categoria);

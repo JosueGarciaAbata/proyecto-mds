@@ -1,3 +1,9 @@
+/**
+ *
+ *Darle funcionalidad al modal de eliminacion
+ *
+ */
+
 $(document).ready(function () {
   $('#deleteModal .close, #deleteModal button[data-dismiss="modal"]').click(
     function () {
@@ -5,7 +11,13 @@ $(document).ready(function () {
     }
   );
 });
-
+/**
+ *
+ *
+ *Cargar  los proyectos del usuario
+ *
+ *
+ */
 $(document).ready(function () {
   var pageWrapper = $(".row-cards");
 
@@ -38,16 +50,20 @@ $(document).ready(function () {
           editIcon.css("cursor", "pointer"); // Establecer un cursor de puntero en el ícono para indicar que es interactivo
 
           var anchor = $('<a href="#" class="d-block"></a>');
-
+          //Cargar imagen del proyecto o generica
           var imageUrl =
             project.ubicacion_imagen_proyecto &&
             project.ubicacion_imagen_proyecto.trim() !== ""
               ? project.ubicacion_imagen_proyecto
               : "../img/genericImagePost.jpg";
 
+          //Asignar imagen
+
           var imageElement = $("<img>");
           imageElement.attr("src", imageUrl);
           imageElement.addClass("card-img-top");
+
+          //Establecer propiedades de la imagen
 
           imageElement.css({
             width: "100%",
@@ -66,7 +82,7 @@ $(document).ready(function () {
               "</h4>"
           );
 
-          // Asignar data-id al ícono de editar y al ícono de borrar
+          // Asignar el id del proyecto al ícono de editar y al ícono de borrar
           editIcon.attr("data-id", project.id_proyecto);
           deleteIcon.attr("data-id", project.id_proyecto);
 
@@ -80,6 +96,8 @@ $(document).ready(function () {
 
           // Agregar la tarjeta al contenedor principal (pageWrapper)
           pageWrapper.append(cardCol);
+
+          //Generar funcionalidad al boton de borrado del proyecto
 
           deleteIcon.on("click", function () {
             $("#deleteModal").modal("show");
@@ -102,7 +120,7 @@ $(document).ready(function () {
                     if (response == "true") {
                       mostrarModalExito("project Eliminado");
                       setTimeout(function () {
-                        window.location.href = "index.php";
+                        window.location.href = "projects.php";
                       }, 2500);
                     } else {
                       mostrarModalDeAdvertencia(
@@ -120,6 +138,8 @@ $(document).ready(function () {
               });
           });
 
+          //Generar funcionalidad al boton de edicion
+
           editIcon.on("click", function () {
             console.log("Editar project con ID:", project.id_proyecto);
 
@@ -134,21 +154,21 @@ $(document).ready(function () {
                 console.log(data);
                 var data = JSON.parse(response);
 
-                // Acceder a la información del project
+                // Acceder a la información del proyecto
                 var projectInfo = data["project_info"];
                 console.log(data);
 
-                // Acceder a las etiquetas asociadas al project
+                // Acceder a las etiquetas asociadas al proyecto
                 var labels = data["etiquetas"];
 
-                // Rellenar los campos con la información del project
+                // Rellenar los campos con la información del proyecto
                 $("#title_project").val(projectInfo["titulo_proyecto"]);
                 $("#content_project").val(projectInfo["descripcion_proyecto"]);
                 $("#fecha_inicio").val(projectInfo["fecha_inicio_proyecto"]);
                 $("#fecha_fin").val(projectInfo["fecha_finalizacion_proyecto"]);
                 $("#state").val(projectInfo["id_estado_proyecto"]);
 
-                // Actualizar la imagen del project
+                // Actualizar la imagen del proyecto
                 if (projectInfo["ubicacion_imagen_proyecto"] !== "") {
                   $("#projectImage").attr(
                     "src",
@@ -161,17 +181,20 @@ $(document).ready(function () {
                   );
                 }
 
-                // Rellenar la categoría del project
+                // Rellenar la categoría del proyecto
                 $("#categoria").val(projectInfo["id_categoria_proyecto"]);
 
                 // Modificar el título superior
                 $("#superiorTitle").text("Editar project");
 
                 $("#imageModal").modal("show");
-                // Recuperar las etiquetas asociadas al project
+                // Recuperar las etiquetas asociadas al proyecto
                 var etiquetas = data["etiquetas"];
 
-                // Recuperar las etiquetas de la categoría del project
+                //Esta seccion del codigo permite que se muestren activas las etiquetas asociadas al proyecto
+
+                // Recuperar las etiquetas de la categoría del proyecto
+
                 var etiquetasCategoria = data["etiquetas_categoria"];
                 var formSelectgroup =
                   document.querySelector(".form-selectgroup");
@@ -195,7 +218,7 @@ $(document).ready(function () {
                     labelElement.appendChild(inputElement);
                     labelElement.appendChild(spanElement);
 
-                    // Verificar si esta etiqueta está asociada al project actual y marcar el checkbox correspondiente
+                    // Verificar si esta etiqueta está asociada al proyecto actual y marcar el checkbox correspondiente
                     var etiquetaAsociada = etiquetas.find(function (etiqueta) {
                       return (
                         etiqueta.id_etiqueta === etiquetaCategoria.id_etiqueta
@@ -209,6 +232,9 @@ $(document).ready(function () {
                     formSelectgroup.appendChild(labelElement);
                   });
                 }
+
+                //Esta seccion permite al modal saber que lo que se realizara sera una actualizacion
+
                 $("#btn_project").attr("data_info", "update");
                 $("#btn_project").attr("data_id_project", project.id_proyecto);
               },
@@ -226,11 +252,27 @@ $(document).ready(function () {
     });
   }
 
+  //Obtener los proyectos
+
   getprojects();
 });
 
-//Validar titulo y contenido
+/*
+ *
+ *
+ *Validar informacion ingresada
+ *
+ *
+ */
 $(document).ready(function () {
+  $.validator.addMethod(
+    "greaterThan",
+    function (value, element, param) {
+      var startDate = $(param).val();
+      return startDate === "" || new Date(value) > new Date(startDate);
+    },
+    "Please enter a date after the start date"
+  );
   $("#projectForm").validate({
     rules: {
       title_project: {
@@ -243,6 +285,13 @@ $(document).ready(function () {
         minlength: 10,
         maxlength: 350,
       },
+      fecha_inicio: {
+        required: true,
+      },
+      fecha_fin: {
+        required: true,
+        greaterThan: "#fecha_inicio", // Agregamos una regla personalizada para verificar si la fecha_fin es mayor que la fecha_inicio
+      },
     },
     messages: {
       title_project: {
@@ -254,6 +303,13 @@ $(document).ready(function () {
         required: "Please enter content for the project",
         minlength: "Please enter at least 10 characters",
         maxlength: "The maximum number of characters for the content is 350",
+      },
+      fecha_inicio: {
+        required: "Please select a start date",
+      },
+      fecha_fin: {
+        required: "Please select an end date",
+        greaterThan: "The end date must be greater than the start date", // Mensaje de error personalizado para la regla greaterThan
       },
     },
     errorElement: "div",
@@ -272,7 +328,13 @@ $(document).ready(function () {
   });
 });
 
-//Cargar etiquetas de la categoria seleccionada
+/*
+ *
+ *
+ *Cambiar las etiquetas dependiendo de la categria
+ *
+ *
+ */
 
 $(document).ready(function () {
   $("#categoria").change(function () {
@@ -322,11 +384,24 @@ $(document).ready(function () {
   });
 });
 
-//Cambiar dinamicamente la imagen
+/*
+ *
+ *
+ *Guardar la imagen ingresada en un form
+ *
+ *
+ */
 
 $("#projectInput").change(function () {
   $("#projectFormImage").submit();
 });
+
+/*
+ *
+ *
+ * Cambiar dinamicamente la imagen del post
+ *
+ */
 
 $("#projectFormImage").submit(function (event) {
   event.preventDefault();
@@ -344,7 +419,6 @@ $("#projectFormImage").submit(function (event) {
 
       if (response == "false") {
         mostrarModalDeAdvertencia("Error loading image");
-        $("#projectImage").attr("src", "../img/genericUploadImage.jpg");
       } else {
         var imageUrl = response;
         $("#projectImage").attr("src", imageUrl);
@@ -356,26 +430,40 @@ $("#projectFormImage").submit(function (event) {
     },
   });
 });
+
+//Esta seccion le permite saber al modal que se usara para crear un proyecto
+
 $("#btn_create").click(function () {
   $("#btn_project").attr("data_info", "create");
   $("#superiorTitle").text("Crear project");
 });
 
-$("#btn_project").click(function () {
-  var dataInfoValue = $(this).attr("data_info");
+/*
+ *
+ *
+ *Procesar informacion del proyecto
+ *
+ *
+ */
 
+$("#btn_project").click(function () {
+  //Recuperar accion a realizar creacion  o actualiacion
+  var dataInfoValue = $(this).attr("data_info");
+  //Recuperar imagen
   var imageFile = $("#projectInput")[0].files[0];
+
   if (
     $("#projectForm").valid() &&
     $("#categoria").val() !== null &&
     $("#state").val() != null
   ) {
+    //Guardar etiquetas seleccionadas
     var labelsActive = [];
     $(".form-selectgroup input[type='checkbox']:checked").each(function () {
       var labelId = $(this).data("id");
       labelsActive.push(labelId);
     });
-
+    //Guardar informacion en formData
     var formData = new FormData();
     if (imageFile) {
       formData.append("projectImage", imageFile);
@@ -395,7 +483,7 @@ $("#btn_project").click(function () {
     formData.append("date_start", $("#fecha_inicio").val());
     formData.append("date_end", $("#fecha_fin").val());
     formData.append("labelsActive", JSON.stringify(labelsActive));
-
+    //Enviar informacion del proyecto al backend
     $.ajax({
       url: "procesarInformacion/projects/projects.php",
       type: "POST",
@@ -408,7 +496,7 @@ $("#btn_project").click(function () {
         if (response == "true") {
           mostrarModalExito("Project Successfully Saved");
           setTimeout(function () {
-            window.location.href = "index.php";
+            window.location.href = "projects.php";
           }, 2500);
         } else {
           mostrarModalDeAdvertencia("The project could not be saved");
@@ -421,7 +509,9 @@ $("#btn_project").click(function () {
     });
     //////////////
   } else {
-    mostrarModalDeAdvertencia("Necessary missing information");
+    mostrarModalDeAdvertencia(
+      "Necessary missing information or Incorrect information"
+    );
   }
 });
 $(document).ready(function () {});
