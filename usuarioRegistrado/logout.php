@@ -7,4 +7,3 @@ session_destroy();
 // Redirigir al usuario a la página de registro
 header("Location: ../index.php");
 exit();
-?>

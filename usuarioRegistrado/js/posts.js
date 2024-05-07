@@ -451,6 +451,7 @@ $("#btn_post").click(function () {
       contentType: false,
       processData: false,
       success: function (response) {
+        console.log(response);
         if (response == "true") {
           mostrarModalExito("Post Saved with Success");
           setTimeout(function () {

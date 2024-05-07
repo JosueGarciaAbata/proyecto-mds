@@ -2,9 +2,6 @@
 require_once ('header.php');
 require_once ('navbar.php');
 
-
-
-
 $stmt_categorias = $conexion->prepare("SELECT * FROM categorias");
 $stmt_categorias->execute();
 $result_categorias = $stmt_categorias->get_result();
@@ -17,9 +14,7 @@ $result_state = $stmt_state->get_result();
 $states = $result_state->fetch_all(MYSQLI_ASSOC);
 $stmt_state->close();
 
-
 ?>
-
 
 <style>
   .delete-icon {
@@ -53,11 +48,11 @@ $stmt_state->close();
           <!-- Page title actions -->
           <div class="col-auto ms-auto d-print-none">
             <div class="d-flex">
-              <div class="me-3">
+              <!-- <div class="me-3">
                 <div class="input-icon">
                   <input type="text" value="" class="form-control" placeholder="Search…">
                   <span class="input-icon-addon">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/search -->
+                    Download SVG icon from http://tabler-icons.io/i/search 
                     <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
                       stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                       <path stroke="none" d="M0 0h24v24H0z" fill="none" />
@@ -66,7 +61,7 @@ $stmt_state->close();
                     </svg>
                   </span>
                 </div>
-              </div>
+              </div> -->
               <button id="btn_create" type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#imageModal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -74,7 +69,7 @@ $stmt_state->close();
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                   <path d="M12 5l0 14"></path>
                   <path d="M5 12l14 0"></path>
-                </svg> New
+                </svg> New project
               </button>
             </div>
           </div>
@@ -209,12 +204,8 @@ $stmt_state->close();
         </div>
       </div>
     </div>
-
   </div>
 </div>
 <?php require_once ('footer.php'); ?>
-
-
-
 
 <script src="js/projects.js"></script>
