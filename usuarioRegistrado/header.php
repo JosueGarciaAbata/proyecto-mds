@@ -81,6 +81,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 
 <body>
+
   <script src="../dist/js/demo-theme.min.js?1684106062"></script>
   <div class="page">
     <header class="navbar navbar-expand-md d-print-none">
