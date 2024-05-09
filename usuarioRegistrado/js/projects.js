@@ -52,7 +52,7 @@ $(document).ready(function () {
           var anchor = $('<a href="#" class="d-block"></a>');
           //Cargar imagen del proyecto o generica
           var imageUrl =
-            project.ubicacion_imagen_proyecto &&
+            project.ubicacion_imagen_proyecto != null &&
             project.ubicacion_imagen_proyecto.trim() !== ""
               ? project.ubicacion_imagen_proyecto
               : "../img/genericImagePost.jpg";
@@ -169,7 +169,7 @@ $(document).ready(function () {
                 $("#state").val(projectInfo["id_estado_proyecto"]);
 
                 // Actualizar la imagen del proyecto
-                if (projectInfo["ubicacion_imagen_proyecto"] !== "") {
+                if (projectInfo["ubicacion_imagen_proyecto"] !== null) {
                   $("#projectImage").attr(
                     "src",
                     projectInfo["ubicacion_imagen_proyecto"]

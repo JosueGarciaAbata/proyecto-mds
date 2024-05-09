@@ -58,7 +58,7 @@ $(document).ready(function () {
           //Cargar imagen del post o generica
 
           var imageUrl =
-            post.ubicacion_imagen_post &&
+            post.ubicacion_imagen_post != null &&
             post.ubicacion_imagen_post.trim() !== ""
               ? post.ubicacion_imagen_post
               : "../img/genericImagePost.jpg";
@@ -160,7 +160,7 @@ $(document).ready(function () {
                 $("#state").val(postInfo["id_estado_post"]);
 
                 // Actualizar la imagen del post
-                if (postInfo["ubicacion_imagen_post"] !== "") {
+                if (postInfo["ubicacion_imagen_post"] !== null) {
                   $("#postImage").attr(
                     "src",
                     postInfo["ubicacion_imagen_post"]
