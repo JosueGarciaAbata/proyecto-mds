@@ -29,33 +29,11 @@ $stmt_categorias->close();
 <!-- Main content -->
 <div class="page">
     <div class="page-wrapper">
-        <!-- Delete modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        Are you sure you want to delete this portfolio?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
         <!-- Main modal -->
         <div class="modal fade" id="filtroModalPost" tabindex="-1" aria-labelledby="filtroModalPost" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content"
-                    style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0; overflow: auto;">
+                    style="position: relative; top: 50px; left: 0; right: 0; bottom: 0; overflow: auto;">
                     <div class="modal-header">
                         <h5 class="modal-title" id="superiorTitle">Filter content</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -86,7 +64,7 @@ $stmt_categorias->close();
                                 </div>
                             </div>
 
-                            <!-- Seccion para mostrar las etiquetas -->
+                            <!-- Seccion para mostrar las etiquetas de la categoria-->
                             <div class="mb-3" style="display: none;" id="etiquetas-div">
                                 <label for="inputTitle" class="form-label">Tags</label>
                                 <div class="form-selectgroup" id="tags">

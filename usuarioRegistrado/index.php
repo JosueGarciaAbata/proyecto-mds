@@ -49,35 +49,17 @@ $stmt_state->close();
           <!-- Page title actions -->
           <div class="col-auto ms-auto d-print-none">
             <div class="d-flex">
-              <!-- <div class="me-3">
-                 <div class="input-icon">
-                  <input type="text" value="" class="form-control" placeholder="Search…">
-                  <span class="input-icon-addon">
-                     Download SVG icon from http://tabler-icons.io/i/search 
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-                      stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                      <path d="M21 21l-6 -6" />
-                    </svg>
-                  </span>
-                </div>
-            </div>  -->
-
-              <!-- Page title actions -->
-              <div class="col-auto ms-auto d-print-none">
-                <div class="d-flex">
-                  <button id="btn_create" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
-                    data-bs-target="#filtroModalPost">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                      class="bi bi-filter" viewBox="0 0 16 16">
-                      <path
-                        d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
-                    </svg>Apply filter
-                  </button>
-                </div>
-              </div>
-
+              <!-- Principio boton filtrado -->
+              <button id="btn_apply_filter" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+                data-bs-target="#filtroModalPost">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+                </svg>Apply filter
+              </button>
+              <!-- Fin boton filtrado -->
+              <!-- Inicio crear post -->
               <button id="btn_create" type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#imageModal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -85,8 +67,9 @@ $stmt_state->close();
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                   <path d="M12 5l0 14"></path>
                   <path d="M5 12l14 0"></path>
-                </svg>New post
+                </svg>New
               </button>
+              <!-- Fin crear post -->
             </div>
           </div>
         </div>
@@ -194,8 +177,13 @@ $stmt_state->close();
         </div>
       </div>
     </div>
+
     <?php require_once ('../filters/filters_posts.php'); ?>
+
+    <!-- Fin wrapper -->
   </div>
+
+  <!-- Fin page -->
 </div>
 <?php require_once ('footer.php'); ?>
 

@@ -1,224 +1,573 @@
 /*
 Filtro en función de los post: btn_post
 */
+
 $(document).ready(function () {
   $("#tipo-filtro-post").change(function () {
-    var typeSelected = $(this).val();
+    var typeSelected = $("#tipo-filtro-post").val();
     $("#categorias-div, #categorias-tags-div, #etiquetas-div").hide();
 
     if (typeSelected === "tipo-categoria") {
       $("#categorias-div").show();
       getCategories("categories", "getCategoriesPosts");
-      manejarFiltro("categories");
+
+      // Cambio en las categorias
+      $("#categories").on("change", "input[type='checkbox']", function () {
+        var selectedCategories = obtenerSeleccionados("categories");
+
+        $("#btn_filter")
+          .off()
+          .click(function () {
+            if (selectedCategories.length > 0) {
+              // Enviando solicitud para las categorias
+              $.ajax({
+                url: "procesarInformacion/filters/filters.php",
+                type: "POST",
+                data: {
+                  categoriesData: selectedCategories,
+                  action: "filterPostsByCategories",
+                },
+                success: function (response) {
+                  var pageWrapper = $(".row-cards");
+                  var data = JSON.parse(response);
+                  console.log(response);
+
+                  pageWrapper.empty();
+
+                  //Generar los contenedores con la informacion del post
+                  data.forEach(function (post) {
+                    var cardCol = $('<div class="col-sm-6 col-lg-4"></div>');
+                    var card = $(
+                      '<div class="card card-sm position-relative"></div>'
+                    );
+
+                    // SVG de borrado en la esquina superior derecha
+                    var deleteIcon = $(
+                      '<svg xmlns="http://www.w3.org/2000/svg" class="icon delete-icon position-absolute top-0 end-0 m-3" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="top: -10px;"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>'
+                    );
+
+                    // SVG de editar al extremo derecho del cardBody
+                    var editIcon = $(
+                      '<svg xmlns="http://www.w3.org/2000/svg" class="icon edit-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M11.933 5h-6.933v16h13v-8"></path><path d="M14 17h-5"></path><path d="M9 13h5v-4h-5z"></path><path d="M15 5v-2"></path><path d="M18 6l2 -2"></path><path d="M19 9h2"></path><line x1="7" y1="6" x2="7" y2="10"></line><line x1="17" y1="6" x2="17" y2="10"></line></svg>'
+                    );
+                    editIcon.css("cursor", "pointer"); // Establecer un cursor de puntero en el ícono para indicar que es interactivo
+
+                    var anchor = $('<a href="#" class="d-block"></a>');
+
+                    //Cargar imagen del post o generica
+
+                    var imageUrl =
+                      post.ubicacion_imagen_post != null &&
+                      post.ubicacion_imagen_post.trim() !== ""
+                        ? post.ubicacion_imagen_post
+                        : "../img/genericImagePost.jpg";
+
+                    //Asignar imagen
+                    var imageElement = $("<img>");
+                    imageElement.attr("src", imageUrl);
+                    imageElement.addClass("card-img-top");
+
+                    //Establecer propiedades de la imagen
+                    imageElement.css({
+                      width: "100%",
+                      height: "100%",
+                      "object-fit": "cover",
+                      "max-height": "200px",
+                    });
+
+                    anchor.append(imageElement);
+                    var cardBody = $(
+                      '<div class="card-body d-flex align-items-center justify-content-between"></div>'
+                    );
+                    var title = $(
+                      '<h4 class="mb-0" style="margin-left: 10px;">' +
+                        post.titulo_post +
+                        "</h4>"
+                    );
+
+                    // Asignar el id del   post al ícono de editar y al ícono de borrar
+                    editIcon.attr("data-id", post.id_post);
+                    deleteIcon.attr("data-id", post.id_post);
+
+                    // Adjuntar elementos al DOM para formar la estructura del post
+                    cardBody.append(title);
+                    cardBody.append(editIcon); // Adjuntar el SVG de editar al extremo derecho del cardBody
+                    card.append(deleteIcon); // Adjuntar el SVG de borrado a la tarjeta
+                    card.append(anchor);
+                    card.append(cardBody);
+                    cardCol.append(card);
+
+                    // Agregar la tarjeta al contenedor principal (pageWrapper)
+                    pageWrapper.append(cardCol);
+
+                    //Generar funcionalidad al boton de borrado del post
+                    deleteIcon.on("click", function () {
+                      $("#deleteModal").modal("show");
+
+                      // Configurar el botón de confirmar borrado
+                      $("#confirmDeleteBtn")
+                        .off("click")
+                        .on("click", function () {
+                          $.ajax({
+                            url: "procesarInformacion/posts/posts.php",
+                            type: "POST",
+                            data: {
+                              id_post: post.id_post,
+                              action: "deletePost",
+                            },
+                            success: function (response) {
+                              if (response == "true") {
+                                mostrarModalExito("Deleted Post");
+                                setTimeout(function () {
+                                  window.location.href = "index.php";
+                                }, 2500);
+                              } else {
+                                mostrarModalDeAdvertencia(
+                                  "Could not delete the post"
+                                );
+                              }
+                            },
+                            error: function (xhr, status, error) {
+                              console.error(error);
+                              mostrarModalDeAdvertencia("Connection error");
+                            },
+                          });
+
+                          $("#confirmModal").modal("hide");
+                        });
+                    });
+
+                    //Generar funcionalidad al boton de edicion
+                    editIcon.on("click", function () {
+                      $.ajax({
+                        url: "procesarInformacion/posts/posts.php",
+                        type: "POST",
+                        data: {
+                          action: "getInfoUpdatePost",
+                          id_post: post.id_post,
+                        },
+                        success: function (response) {
+                          var data = JSON.parse(response);
+
+                          // Acceder a la información del post
+                          var postInfo = data["post_info"];
+
+                          // Acceder a las etiquetas asociadas al post
+                          var labels = data["etiquetas"];
+
+                          // Rellenar los campos con la información del post
+                          $("#title_post").val(postInfo["titulo_post"]);
+                          $("#content_post").val(
+                            postInfo["contenido_textual_post"]
+                          );
+                          $("#state").val(postInfo["id_estado_post"]);
+
+                          // Actualizar la imagen del post
+                          if (postInfo["ubicacion_imagen_post"] !== null) {
+                            $("#postImage").attr(
+                              "src",
+                              postInfo["ubicacion_imagen_post"]
+                            );
+                          } else {
+                            $("#postImage").attr(
+                              "src",
+                              "../img/genericUploadImage.jpg"
+                            );
+                          }
+
+                          // Rellenar la categoría del post
+                          $("#categoria").val(postInfo["id_categoria_post"]);
+
+                          // Modificar el título superior
+                          $("#superiorTitle").text("Editar Post");
+
+                          $("#imageModal").modal("show");
+                          // Recuperar las etiquetas asociadas al post
+                          var etiquetas = data["etiquetas"];
+
+                          // Recuperar las etiquetas de la categoría del post
+
+                          //Esta seccion del codigo permite que se muestren activas las etiquetas asociadas al post
+                          var etiquetasCategoria = data["etiquetas_categoria"];
+                          var formSelectgroup =
+                            document.querySelector(".form-selectgroup");
+                          if (etiquetas.length > 0) {
+                            formSelectgroup.innerHTML = "";
+                            etiquetasCategoria.forEach(function (
+                              etiquetaCategoria
+                            ) {
+                              var labelElement =
+                                document.createElement("label");
+                              labelElement.classList.add(
+                                "form-selectgroup-item"
+                              );
+
+                              var inputElement =
+                                document.createElement("input");
+                              inputElement.type = "checkbox";
+                              inputElement.name = "name";
+                              inputElement.value =
+                                etiquetaCategoria.nombre_etiqueta;
+                              inputElement.dataset.id =
+                                etiquetaCategoria.id_etiqueta;
+                              inputElement.classList.add(
+                                "form-selectgroup-input"
+                              );
+
+                              var spanElement = document.createElement("span");
+                              spanElement.classList.add(
+                                "form-selectgroup-label"
+                              );
+                              spanElement.textContent =
+                                etiquetaCategoria.nombre_etiqueta;
+
+                              labelElement.appendChild(inputElement);
+                              labelElement.appendChild(spanElement);
+
+                              // Verificar si esta etiqueta está asociada al post actual y marcar el checkbox correspondiente
+                              var etiquetaAsociada = etiquetas.find(function (
+                                etiqueta
+                              ) {
+                                return (
+                                  etiqueta.id_etiqueta ===
+                                  etiquetaCategoria.id_etiqueta
+                                );
+                              });
+
+                              if (etiquetaAsociada) {
+                                inputElement.checked = true;
+                              }
+
+                              formSelectgroup.appendChild(labelElement);
+                            });
+                          }
+
+                          //Esta seccion permite al modal saber que lo que se realizara sera una actualizacion
+
+                          $("#btn_post").attr("data_info", "update");
+                          $("#btn_post").attr("data_id_post", post.id_post);
+                        },
+                        error: function (xhr, status, error) {
+                          mostrarModalDeAdvertencia("An error has occurred");
+                        },
+                      });
+                    });
+                  });
+                },
+                error: function (xhr, status, error) {
+                  console.log(error);
+                },
+              });
+            } else {
+              mostrarModalDeAdvertencia("Seleccione al menos una categoría");
+            }
+          });
+      });
     }
 
     if (typeSelected === "tipo-etiqueta") {
       $("#categorias-tags-div").show();
       getCategories("categories-tags", "getCategoriesPosts");
-      manejarFiltro("categories-tags");
-    }
-  });
+      var selectedCategory = null;
 
-  function manejarFiltro(contenedor) {
-    // Elimina todos los controladores de eventos previos
-    $("#" + contenedor).off();
+      $("#categories-tags").on("change", 'input[type="checkbox"]', function () {
+        var selectedTags = [];
+        $('input[type="checkbox"]').not(this).prop("checked", false);
 
-    var selectedCategories = [];
-    var selectedTags = [];
+        selectedCategory = obtenerSeleccionados("categories-tags");
+        if (selectedCategory.length > 0) {
+          var categoryId = $(this).data("id");
+          $.ajax({
+            url: "procesarInformacion/filters/filters.php",
+            type: "POST",
+            data: {
+              action: "getOneCategoryTagsPost",
+              categoryData: categoryId,
+            },
+            success: function (response) {
+              console.log(response);
+              var labels = JSON.parse(response);
 
-    $("#" + contenedor).on("change", "input[type='checkbox']", function () {
-      selectedCategories = obtenerSeleccionados(contenedor);
+              var formSelectgroup = document.querySelector("#etiquetas-div");
 
-      if (contenedor === "categories-tags") {
-        if (selectedCategories.length > 0) {
+              formSelectgroup.innerHTML = "";
+
+              labels.forEach(function (label) {
+                var labelElement = document.createElement("label");
+                labelElement.classList.add("form-selectgroup-item");
+
+                var inputElement = document.createElement("input");
+                inputElement.type = "checkbox";
+                inputElement.name = "name";
+                inputElement.value = label.nombre_etiqueta;
+                inputElement.dataset.id = label.id_etiqueta;
+
+                inputElement.classList.add("form-selectgroup-input");
+
+                var spanElement = document.createElement("span");
+                spanElement.classList.add("form-selectgroup-label");
+                spanElement.textContent = label.nombre_etiqueta;
+
+                labelElement.appendChild(inputElement);
+                labelElement.appendChild(spanElement);
+
+                formSelectgroup.appendChild(labelElement);
+              });
+            },
+            error: function (xhr, status, error) {
+              console.log(error);
+            },
+          });
           $("#etiquetas-div").show();
-          getTags(selectedCategories, "tags", "getTagsPosts");
-          manejarFiltro("tags");
         } else {
           $("#etiquetas-div").hide();
-          selectedTags = [];
         }
-      }
-    });
 
-    $("#tags").on("change", "input[type='checkbox']", function () {
-      selectedTags = obtenerSeleccionados("tags");
-    });
+        $("#btn_filter")
+          .off()
+          .click(function () {
+            selectedTags = obtenerSeleccionados("etiquetas-div");
+            console.log(selectedTags);
+            console.log(selectedCategory);
 
-    $("#btn_filter")
-      .off() // Elimina el controlador de clic previo
-      .click(function () {
-        if (contenedor === "categories") {
-          console.log(selectedCategories);
+            if (selectedCategory.length > 0 && selectedTags.length > 0) {
+              $.ajax({
+                url: "procesarInformacion/filters/filters.php",
+                type: "POST",
+                data: {
+                  categoryData: selectedCategory,
+                  tagsData: selectedTags,
+                  action: "filterPostsByTags",
+                },
+                success: function (response) {
+                  console.log(response);
+                  var pageWrapper = $(".row-cards");
+                  pageWrapper.empty();
 
-          if (selectedCategories.length > 0) {
-            // Enviando solicitud para las categorias
-            $.ajax({
-              url: "procesarInformacion/filters/filters.php",
-              type: "POST",
-              data: {
-                categoriesData: selectedCategories,
-                action: "filterPostsByCategories",
-              },
-              success: function (response) {
-                var pageWrapper = $(".row-cards");
+                  var data = JSON.parse(response);
 
-                var data = JSON.parse(response);
+                  data.forEach(function (post) {
+                    var cardCol = $('<div class="col-sm-6 col-lg-4"></div>');
+                    var card = $(
+                      '<div class="card card-sm position-relative"></div>'
+                    );
 
-                pageWrapper.empty();
+                    var deleteIcon = $(
+                      '<svg xmlns="http://www.w3.org/2000/svg" class="icon delete-icon position-absolute top-0 end-0 m-3" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="top: -10px;"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>'
+                    );
 
-                data.forEach(function (post) {
-                  var cardCol = $('<div class="col-sm-6 col-lg-4"></div>');
-                  var card = $(
-                    '<div class="card card-sm position-relative"></div>'
-                  );
+                    var editIcon = $(
+                      '<svg xmlns="http://www.w3.org/2000/svg" class="icon edit-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M11.933 5h-6.933v16h13v-8"></path><path d="M14 17h-5"></path><path d="M9 13h5v-4h-5z"></path><path d="M15 5v-2"></path><path d="M18 6l2 -2"></path><path d="M19 9h2"></path><line x1="7" y1="6" x2="7" y2="10"></line><line x1="17" y1="6" x2="17" y2="10"></line></svg>'
+                    );
+                    editIcon.css("cursor", "pointer");
 
-                  var deleteIcon = $(
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="icon delete-icon position-absolute top-0 end-0 m-3" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="top: -10px;"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>'
-                  );
+                    var anchor = $('<a href="#" class="d-block"></a>');
 
-                  var editIcon = $(
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="icon edit-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M11.933 5h-6.933v16h13v-8"></path><path d="M14 17h-5"></path><path d="M9 13h5v-4h-5z"></path><path d="M15 5v-2"></path><path d="M18 6l2 -2"></path><path d="M19 9h2"></path><line x1="7" y1="6" x2="7" y2="10"></line><line x1="17" y1="6" x2="17" y2="10"></line></svg>'
-                  );
-                  editIcon.css("cursor", "pointer");
+                    var imageUrl =
+                      post.ubicacion_imagen_post &&
+                      post.ubicacion_imagen_post.trim() !== ""
+                        ? post.ubicacion_imagen_post
+                        : "../img/genericImagePost.jpg";
 
-                  var anchor = $('<a href="#" class="d-block"></a>');
+                    var imageElement = $("<img>");
+                    imageElement.attr("src", imageUrl);
+                    imageElement.addClass("card-img-top");
 
-                  var imageUrl =
-                    post.ubicacion_imagen_post &&
-                    post.ubicacion_imagen_post.trim() !== ""
-                      ? post.ubicacion_imagen_post
-                      : "../img/genericImagePost.jpg";
+                    imageElement.css({
+                      width: "100%",
+                      height: "100%",
+                      "object-fit": "cover",
+                      "max-height": "200px",
+                    });
 
-                  var imageElement = $("<img>");
-                  imageElement.attr("src", imageUrl);
-                  imageElement.addClass("card-img-top");
+                    anchor.append(imageElement);
+                    var cardBody = $(
+                      '<div class="card-body d-flex align-items-center justify-content-between"></div>'
+                    );
+                    var title = $(
+                      '<h4 class="mb-0" style="margin-left: 10px;">' +
+                        post.titulo_post +
+                        "</h4>"
+                    );
 
-                  imageElement.css({
-                    width: "100%",
-                    height: "100%",
-                    "object-fit": "cover",
-                    "max-height": "200px",
+                    editIcon.attr("data-id", post.id_post);
+                    deleteIcon.attr("data-id", post.id_post);
+
+                    cardBody.append(title);
+                    cardBody.append(editIcon);
+                    card.append(deleteIcon);
+                    card.append(anchor);
+                    card.append(cardBody);
+                    cardCol.append(card);
+
+                    // Agregar la tarjeta al contenedor principal (pageWrapper)
+                    pageWrapper.append(cardCol);
+
+                    //Generar funcionalidad al boton de borrado del post
+                    deleteIcon.on("click", function () {
+                      $("#deleteModal").modal("show");
+
+                      // Configurar el botón de confirmar borrado
+                      $("#confirmDeleteBtn")
+                        .off("click")
+                        .on("click", function () {
+                          $.ajax({
+                            url: "procesarInformacion/posts/posts.php",
+                            type: "POST",
+                            data: {
+                              id_post: post.id_post,
+                              action: "deletePost",
+                            },
+                            success: function (response) {
+                              if (response == "true") {
+                                mostrarModalExito("Deleted Post");
+                                setTimeout(function () {
+                                  window.location.href = "index.php";
+                                }, 2500);
+                              } else {
+                                mostrarModalDeAdvertencia(
+                                  "Could not delete the post"
+                                );
+                              }
+                            },
+                            error: function (xhr, status, error) {
+                              console.error(error);
+                              mostrarModalDeAdvertencia("Connection error");
+                            },
+                          });
+
+                          $("#confirmModal").modal("hide");
+                        });
+                    });
+
+                    //Generar funcionalidad al boton de edicion
+                    editIcon.on("click", function () {
+                      $.ajax({
+                        url: "procesarInformacion/posts/posts.php",
+                        type: "POST",
+                        data: {
+                          action: "getInfoUpdatePost",
+                          id_post: post.id_post,
+                        },
+                        success: function (response) {
+                          var data = JSON.parse(response);
+
+                          // Acceder a la información del post
+                          var postInfo = data["post_info"];
+
+                          // Acceder a las etiquetas asociadas al post
+                          var labels = data["etiquetas"];
+
+                          // Rellenar los campos con la información del post
+                          $("#title_post").val(postInfo["titulo_post"]);
+                          $("#content_post").val(
+                            postInfo["contenido_textual_post"]
+                          );
+                          $("#state").val(postInfo["id_estado_post"]);
+
+                          // Actualizar la imagen del post
+                          if (postInfo["ubicacion_imagen_post"] !== null) {
+                            $("#postImage").attr(
+                              "src",
+                              postInfo["ubicacion_imagen_post"]
+                            );
+                          } else {
+                            $("#postImage").attr(
+                              "src",
+                              "../img/genericUploadImage.jpg"
+                            );
+                          }
+
+                          // Rellenar la categoría del post
+                          $("#categoria").val(postInfo["id_categoria_post"]);
+
+                          // Modificar el título superior
+                          $("#superiorTitle").text("Editar Post");
+
+                          $("#imageModal").modal("show");
+                          // Recuperar las etiquetas asociadas al post
+                          var etiquetas = data["etiquetas"];
+
+                          // Recuperar las etiquetas de la categoría del post
+
+                          //Esta seccion del codigo permite que se muestren activas las etiquetas asociadas al post
+                          var etiquetasCategoria = data["etiquetas_categoria"];
+                          var formSelectgroup =
+                            document.querySelector(".form-selectgroup");
+                          if (etiquetas.length > 0) {
+                            formSelectgroup.innerHTML = "";
+                            etiquetasCategoria.forEach(function (
+                              etiquetaCategoria
+                            ) {
+                              var labelElement =
+                                document.createElement("label");
+                              labelElement.classList.add(
+                                "form-selectgroup-item"
+                              );
+
+                              var inputElement =
+                                document.createElement("input");
+                              inputElement.type = "checkbox";
+                              inputElement.name = "name";
+                              inputElement.value =
+                                etiquetaCategoria.nombre_etiqueta;
+                              inputElement.dataset.id =
+                                etiquetaCategoria.id_etiqueta;
+                              inputElement.classList.add(
+                                "form-selectgroup-input"
+                              );
+
+                              var spanElement = document.createElement("span");
+                              spanElement.classList.add(
+                                "form-selectgroup-label"
+                              );
+                              spanElement.textContent =
+                                etiquetaCategoria.nombre_etiqueta;
+
+                              labelElement.appendChild(inputElement);
+                              labelElement.appendChild(spanElement);
+
+                              // Verificar si esta etiqueta está asociada al post actual y marcar el checkbox correspondiente
+                              var etiquetaAsociada = etiquetas.find(function (
+                                etiqueta
+                              ) {
+                                return (
+                                  etiqueta.id_etiqueta ===
+                                  etiquetaCategoria.id_etiqueta
+                                );
+                              });
+
+                              if (etiquetaAsociada) {
+                                inputElement.checked = true;
+                              }
+
+                              formSelectgroup.appendChild(labelElement);
+                            });
+                          }
+
+                          //Esta seccion permite al modal saber que lo que se realizara sera una actualizacion
+
+                          $("#btn_post").attr("data_info", "update");
+                          $("#btn_post").attr("data_id_post", post.id_post);
+                        },
+                        error: function (xhr, status, error) {
+                          mostrarModalDeAdvertencia("An error has occurred");
+                        },
+                      });
+                    });
                   });
-
-                  anchor.append(imageElement);
-                  var cardBody = $(
-                    '<div class="card-body d-flex align-items-center justify-content-between"></div>'
-                  );
-                  var title = $(
-                    '<h4 class="mb-0" style="margin-left: 10px;">' +
-                      post.titulo_post +
-                      "</h4>"
-                  );
-
-                  editIcon.attr("data-id", post.id_post);
-                  deleteIcon.attr("data-id", post.id_post);
-
-                  cardBody.append(title);
-                  cardBody.append(editIcon);
-                  card.append(deleteIcon);
-                  card.append(anchor);
-                  card.append(cardBody);
-                  cardCol.append(card);
-
-                  pageWrapper.append(cardCol);
-                });
-              },
-              error: function (xhr, status, error) {
-                console.log(error);
-              },
-            });
-          } else {
-            mostrarModalDeAdvertencia("Seleccione al menos una categoría");
-          }
-        }
-
-        if (contenedor === "tags") {
-          if (selectedTags.length > 0) {
-            $.ajax({
-              url: "procesarInformacion/filters/filters.php",
-              type: "POST",
-              data: {
-                categoriesData: selectedCategories,
-                tagsData: selectedTags,
-                action: "filterPostsByTags",
-              },
-              success: function (response) {
-                var pageWrapper = $(".row-cards");
-
-                var data = JSON.parse(response);
-
-                pageWrapper.empty();
-
-                data.forEach(function (post) {
-                  var cardCol = $('<div class="col-sm-6 col-lg-4"></div>');
-                  var card = $(
-                    '<div class="card card-sm position-relative"></div>'
-                  );
-
-                  var deleteIcon = $(
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="icon delete-icon position-absolute top-0 end-0 m-3" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round" style="top: -10px;"><path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path></svg>'
-                  );
-
-                  var editIcon = $(
-                    '<svg xmlns="http://www.w3.org/2000/svg" class="icon edit-icon" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z"></path><path d="M11.933 5h-6.933v16h13v-8"></path><path d="M14 17h-5"></path><path d="M9 13h5v-4h-5z"></path><path d="M15 5v-2"></path><path d="M18 6l2 -2"></path><path d="M19 9h2"></path><line x1="7" y1="6" x2="7" y2="10"></line><line x1="17" y1="6" x2="17" y2="10"></line></svg>'
-                  );
-                  editIcon.css("cursor", "pointer");
-
-                  var anchor = $('<a href="#" class="d-block"></a>');
-
-                  var imageUrl =
-                    post.ubicacion_imagen_post &&
-                    post.ubicacion_imagen_post.trim() !== ""
-                      ? post.ubicacion_imagen_post
-                      : "../img/genericImagePost.jpg";
-
-                  var imageElement = $("<img>");
-                  imageElement.attr("src", imageUrl);
-                  imageElement.addClass("card-img-top");
-
-                  imageElement.css({
-                    width: "100%",
-                    height: "100%",
-                    "object-fit": "cover",
-                    "max-height": "200px",
-                  });
-
-                  anchor.append(imageElement);
-                  var cardBody = $(
-                    '<div class="card-body d-flex align-items-center justify-content-between"></div>'
-                  );
-                  var title = $(
-                    '<h4 class="mb-0" style="margin-left: 10px;">' +
-                      post.titulo_post +
-                      "</h4>"
-                  );
-
-                  editIcon.attr("data-id", post.id_post);
-                  deleteIcon.attr("data-id", post.id_post);
-
-                  cardBody.append(title);
-                  cardBody.append(editIcon);
-                  card.append(deleteIcon);
-                  card.append(anchor);
-                  card.append(cardBody);
-                  cardCol.append(card);
-
-                  pageWrapper.append(cardCol);
-                });
-              },
-              error: function (xhr, status, error) {
-                console.log(error);
-              },
-            });
-          } else {
-            mostrarModalDeAdvertencia(
-              "Seleccione al menos una categoria o etiqueta"
-            );
-          }
-        }
+                },
+                error: function (xhr, status, error) {
+                  console.log(error);
+                },
+              });
+            } else {
+              mostrarModalDeAdvertencia("Ingrese una categoria o tag");
+            }
+          });
       });
-  }
+    }
+  });
 });
 
 function obtenerSeleccionados(contenedor) {
@@ -234,7 +583,6 @@ function getCategories(tipoContenedor, tipoAccion) {
     url: "procesarInformacion/filters/filters.php",
     type: "POST",
     data: {
-      // Previous = changeCategory
       action: tipoAccion,
     },
     success: function (response) {
@@ -260,50 +608,6 @@ function getCategories(tipoContenedor, tipoAccion) {
         var spanElement = document.createElement("span");
         spanElement.classList.add("form-selectgroup-label");
         spanElement.textContent = label.nombre_categoria;
-
-        labelElement.appendChild(inputElement);
-        labelElement.appendChild(spanElement);
-
-        formSelectgroup.appendChild(labelElement);
-      });
-    },
-    error: function (xhr, status, error) {
-      console.log(error);
-    },
-  });
-}
-
-function getTags(idCategorias, tipoContenedor, tipoAccion) {
-  $.ajax({
-    url: "procesarInformacion/filters/filters.php",
-    type: "POST",
-    data: {
-      action: tipoAccion,
-      categoriesData: idCategorias,
-    },
-    success: function (response) {
-      var labels = JSON.parse(response);
-      console.log(labels);
-
-      var formSelectgroup = document.querySelector("#" + tipoContenedor);
-
-      formSelectgroup.innerHTML = "";
-
-      labels.forEach(function (label) {
-        var labelElement = document.createElement("label");
-        labelElement.classList.add("form-selectgroup-item");
-
-        var inputElement = document.createElement("input");
-        inputElement.type = "checkbox";
-        inputElement.name = "name";
-        inputElement.value = label.nombre_etiqueta;
-        inputElement.dataset.id = label.id_etiqueta;
-
-        inputElement.classList.add("form-selectgroup-input");
-
-        var spanElement = document.createElement("span");
-        spanElement.classList.add("form-selectgroup-label");
-        spanElement.textContent = label.nombre_etiqueta;
 
         labelElement.appendChild(inputElement);
         labelElement.appendChild(spanElement);
