@@ -1,5 +1,5 @@
 /*
-Filtro en función de los post: btn_post
+Filtro en función de los post: btn_post. Usuario registrado
 */
 
 $(document).ready(function () {
@@ -28,9 +28,9 @@ $(document).ready(function () {
                   action: "filterPostsByCategories",
                 },
                 success: function (response) {
+                  console.log(response);
                   var pageWrapper = $(".row-cards");
                   var data = JSON.parse(response);
-                  console.log(response);
 
                   pageWrapper.empty();
 
@@ -569,6 +569,11 @@ $(document).ready(function () {
     }
   });
 });
+
+/*
+Filtro en función de los post: btn_projects. Usuario registrado
+*/
+$(document).ready(function () {});
 
 function obtenerSeleccionados(contenedor) {
   return $("#" + contenedor + " input[type='checkbox']:checked")

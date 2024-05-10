@@ -13,12 +13,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Filtrado por categorias post
+    // Filtrado por categorias post. Usuario registrado
     if (
         isset($_POST['action']) && $_POST['action'] == "filterPostsByCategories" &&
         isset($_POST['categoriesData'])
     ) {
-        echo json_encode(filterPostsByCategories($conexion, $_POST['categoriesData'], $estado_post));
+        echo json_encode(filterPostsByCategories($conexion, $_POST['categoriesData']));
         exit;
     }
 
@@ -30,12 +30,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(getOneCategoryTags($conexion, $_POST['categoryData'], $estado_post));
     }
 
-    // Filtrado por etiquetas post
+    // Filtrado por etiquetas post. Usuario registrado
     if (
         isset($_POST['action']) && $_POST['action'] == "filterPostsByTags" &&
         isset($_POST['categoryData']) && isset($_POST['tagsData'])
     ) {
-        echo json_encode(filterPostByTags($conexion, $_POST['categoryData'], $_POST['tagsData'], $estado_post));
+        echo json_encode(filterPostByTags($conexion, $_POST['categoryData'], $_POST['tagsData']));
     }
 }
 
@@ -57,17 +57,17 @@ function getCategoriesPosts($conexion, $estado_categoria)
     return $categoriesArray;
 }
 
-// Trae los post en base a las categorias
-function filterPostsByCategories($conexion, $categories, $estado_post)
+// Trae los post en base a las categorias. Usuario registrado
+function filterPostsByCategories($conexion, $categories)
 {
     $placeholders = str_repeat('?,', count($categories) - 1) . '?';
 
     $sql = "SELECT DISTINCT id_post, id_usuario_post, id_categoria_post, id_estado_post, titulo_post, ubicacion_imagen_post
         FROM posts
-        WHERE id_categoria_post IN ($placeholders) AND id_estado_post = ?";
+        WHERE id_categoria_post IN ($placeholders)";
 
-    $types = str_repeat("i", count($categories)) . 'i';
-    $params = array_merge($categories, [$estado_post]);
+    $types = str_repeat("i", count($categories));
+    $params = $categories;
 
     $stmt = $conexion->prepare($sql);
 
@@ -85,7 +85,7 @@ function filterPostsByCategories($conexion, $categories, $estado_post)
     return $postsArray;
 }
 
-// Trae los tags de una categoria. Usuario registrado
+// Trae los tags de una categoria
 function getOneCategoryTags($conexion, $id_category, $estado_post)
 {
     $sql = "SELECT id_etiqueta, nombre_etiqueta 
@@ -104,7 +104,7 @@ function getOneCategoryTags($conexion, $id_category, $estado_post)
 }
 
 // Traer los post que tengan esa etiqueta y categoria (solo una vez). Usuario registrado
-function filterPostByTags($conexion, $category, $tags, $estado_post)
+function filterPostByTags($conexion, $category, $tags)
 {
     // Tomar solo el primer valor del array de categorías
     $id_category = $category[0];
@@ -116,18 +116,14 @@ function filterPostByTags($conexion, $category, $tags, $estado_post)
             INNER JOIN etiquetas_agrupadas ea ON p.id_post = ea.id_post_etiquetas_agrupadas
             INNER JOIN etiquetas e ON ea.id_etiqueta_etiquetas_agrupadas = e.id_etiqueta
             WHERE p.id_categoria_post = ?
-            AND e.id_etiqueta IN ($tagPlaceholders)
-            AND p.id_estado_post = ?";
+            AND e.id_etiqueta IN ($tagPlaceholders)";
 
     $stmt = $conexion->prepare($sql);
 
-    // Construir la cadena de tipos de parámetros
-    $types = 'i' . str_repeat('s', count($tags)) . 'i';
+    $types = 'i' . str_repeat('s', count($tags));
 
-    // Unir todos los parámetros en un solo array
-    $params = array_merge([$id_category], $tags, [$estado_post]);
+    $params = array_merge([$id_category], $tags);
 
-    // Pasar los tipos de parámetros y los parámetros a bind_param
     $stmt->bind_param($types, ...$params);
 
     $stmt->execute();
