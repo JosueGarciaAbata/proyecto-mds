@@ -30,7 +30,7 @@ $stmt_categorias->close();
 <div class="page">
     <div class="page-wrapper">
         <!-- Main modal -->
-        <div class="modal fade" id="filtroModalProjects" tabindex="-1" aria-labelledby="filtroModalProjects"
+        <div class="modal fade" id="filtroModalPortfolios" tabindex="-1" aria-labelledby="filtroModalPortfolios"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content"
@@ -44,35 +44,18 @@ $stmt_categorias->close();
                         <form id="postForm">
                             <div class="mb-3">
                                 <label for="tipo-filtro" class="form-label">Type:</label>
-                                <select name="tipo-filtro" id="tipo-filtro-project" class="form-select" required>
+                                <select name="tipo-filtro" id="tipo-filtro-portfolios" class="form-select" required>
                                     <option value="" disabled selected>Select...</option>
-                                    <option value="tipo-categoria">Category</option>
-                                    <option value="tipo-etiqueta">Tags</option>
+                                    <option value="tipo-skills">Skills</option>
                                 </select>
                             </div>
 
                             <!-- Seccion solamente para categorias -->
-                            <div class="mb-3" style="display: none;" id="categorias-div">
-                                <label for="inputTitle" class="form-label">Categories</label>
-                                <div class="form-selectgroup" id="categories">
+                            <div class="mb-3" style="display: none;" id="skills-div">
+                                <label for="inputTitle" class="form-label">Skills</label>
+                                <div class="form-selectgroup" id="skills">
                                 </div>
                             </div>
-
-                            <!-- Seccion para las categorias de las etiquetas -->
-                            <div class="mb-3" style="display: none;" id="categorias-tags-div">
-                                <label for="inputTitle" class="form-label">Categories</label>
-                                <div class="form-selectgroup" id="categories-tags">
-                                </div>
-                            </div>
-
-                            <!-- Seccion para mostrar las etiquetas de la categoria-->
-                            <div class="mb-3" style="display: none;" id="etiquetas-div">
-                                <label for="inputTitle" class="form-label">Tags</label>
-                                <div class="form-selectgroup" id="tags">
-                                </div>
-                            </div>
-
-                            <!-- Close and save button -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
                                 <button type="button" class="btn btn-secondary me-md-2"
                                     data-bs-dismiss="modal">Close</button>

@@ -45,7 +45,7 @@
             </a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="portfolio.php">
+            <a class="nav-link" href="portfolios.php">
               <span
                 class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -74,19 +74,6 @@
                 </svg>
               </span>
               <span class="nav-link-title">Discover</span>
-            </a>
-          </li>
-          <li class="nav-item active">
-            <a class="nav-link" href="searches.php">
-              <span
-                class="nav-link-icon d-md-none d-lg-inline-block"><!-- Download SVG icon from http://tabler-icons.io/i/home -->
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-search"
-                  viewBox="0 0 16 16">
-                  <path
-                    d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001q.044.06.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1 1 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0" />
-                </svg>
-              </span>
-              <span class="nav-link-title">Searches</span>
             </a>
           </li>
         </ul>

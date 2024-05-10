@@ -1,5 +1,5 @@
 /*
-Filtro en función de los post: btn_post. Usuario registrado
+Filtro en función de los post. Usuario registrado
 */
 
 $(document).ready(function () {

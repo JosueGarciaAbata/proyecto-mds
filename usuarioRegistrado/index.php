@@ -67,7 +67,7 @@ $stmt_state->close();
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                   <path d="M12 5l0 14"></path>
                   <path d="M5 12l14 0"></path>
-                </svg>New
+                </svg>New post
               </button>
               <!-- Fin crear post -->
             </div>
@@ -188,4 +188,4 @@ $stmt_state->close();
 <?php require_once ('footer.php'); ?>
 
 <script src="js/posts.js"></script>
-<script src="js/filters.js"></script>
+<script src="js/filters_posts.js"></script>
