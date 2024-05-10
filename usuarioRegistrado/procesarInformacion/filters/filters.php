@@ -261,34 +261,33 @@ function filterPostByTagsProjects($conexion, $category, $tags)
 Filtrado para portfolios
 */
 
-function filterPortfoliosBySkills($conexion, $skills_data)
+function filterPortfoliosBySkills($conexion, $idHabilidades)
 {
-    // Tomar solo el primer valor del array de categorías
-    $skills_placeholder = implode(',', array_fill(0, count($skills_data), '?'));
-
-    $sql = "SELECT DISTINCT p.id_portafolio, p.id_usuario
+    $placeholders = str_repeat("?,", count($idHabilidades) - 1) . "?";
+    $sql = "SELECT p.* 
             FROM portafolios p
-            INNER JOIN portafolios_habilidades ph ON p.id_portafolio = ph.id_portafolio_habilidades
-            INNER JOIN habilidades h ON ph.id_habilidad_portafolios_habilidades = h.id_habilidades
-            WHERE h.id_habilidades IN ($skills_placeholder);";
+            JOIN portafolios_habilidades ph ON p.id_portafolio = ph.id_portafolio_portafolios_habilidades
+            WHERE ph.id_habilidad_portafolios_habilidades IN ($placeholders)";
 
-    $stmt = $conexion->prepare($sql);
+    $stmt_userData = $conexion->prepare($sql);
+    $stmt_userData->bind_param(str_repeat("i", count($idHabilidades)), ...$idHabilidades);
+    $stmt_userData->execute();
 
-    foreach ($skills_data as $index => $skill) {
-        $stmt->bind_param("i", $skill);
+    $result_userData = $stmt_userData->get_result();
+
+    if ($result_userData->num_rows < 1) {
+        return [];
     }
 
-    // Ejecutar la consulta
-    $stmt->execute();
+    $portafolios = [];
+    while ($row = $result_userData->fetch_assoc()) {
+        $portafolio = [
+            'id_portafolio' => $row['id_portafolio'],
+            'id_usuario_portafolio' => $row['id_usuario_portafolio'],
+            // Añadir los demás campos necesarios de la tabla 'portafolios'
+        ];
+        $portafolios[] = $portafolio;
+    }
 
-    // Obtener resultados
-    $result = $stmt->get_result();
-
-    // Obtener los portafolios
-    $portfolios = $result->fetch_all(MYSQLI_ASSOC);
-
-    // Cerrar la consulta
-    $stmt->close();
-
-    return $portfolios;
+    return $portafolios;
 }

@@ -10,33 +10,32 @@ $(document).ready(function () {
       $("#skills-div").show();
       getSkills("skills", "getSkillsPortfolios");
 
-      // Cambio en las categorias
-      $("#skills").on("change", "input[type='checkbox']", function () {
+      // Clic en el boton de filtrar
+      $("#btn_filter").click(function () {
         var selectedSkills = obtenerSeleccionados("skills");
 
-        $("#btn_filter")
-          .off()
-          .click(function () {
-            // Aqui poner la logica para agregar los portafolios a la página.
-            if (selectedSkills.length > 0) {
-              $.ajax({
-                url: "procesarInformacion/filters/filters.php",
-                type: "POST",
-                data: {
-                  skillsData: selectedSkills,
-                  action: "filterPostsBySkills",
-                },
-                success: function (response) {
-                  console.log(response);
-                },
-                error: function (xhr, status, error) {
-                  console.log(error);
-                },
-              });
-            } else {
-              mostrarModalDeAdvertencia("Seleccione una habilidad");
-            }
+        // Si no hay habilidades seleccionadas, muestra el mensaje de advertencia
+        if (selectedSkills.length === 0) {
+          mostrarModalDeAdvertencia("Seleccione una habilidad");
+        } else {
+          // Logica para poner los portafolios en la página
+          console.log("Selected skills > 0");
+          $.ajax({
+            url: "procesarInformacion/filters/filters.php",
+            type: "POST",
+            data: {
+              skillsData: selectedSkills,
+              action: "filterPostsBySkills",
+            },
+            success: function (response) {
+              console.log("Respuesta");
+              console.log(response);
+            },
+            error: function (xhr, status, error) {
+              console.log(error);
+            },
           });
+        }
       });
     }
   });

@@ -1,0 +1,56 @@
+* [33mc7e3079[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mjosue[m[33m)[m Filtros terminados para post y proyectos
+* [33mf771b43[m[33m ([m[1;31morigin/josue[m[33m)[m Cambio en la consulta SQL de los filtros
+* [33m2b79a3d[m Actualizacion en el archivo sql
+* [33md4d32dc[m Se añadio la funciondad de filtrar post
+* [33m1d60361[m Cambiando validacion de vacio a null
+* [33m7978ae7[m Filtros post
+* [33m22e3418[m Funcionalidad de filtrar
+* [33m1ce0ec0[m Actualizacion archivos
+* [33m2aecbbf[m Organizacion de la información
+* [33mac4eccf[m Se añadio el crear y mostrar portafolios sin validaciones
+* [33m2fe1596[m Creando portafolio
+* [33mf292712[m Se añaden los proyectos dinamicamente al portafolio
+* [33ma906543[m Mejoras en el estilo de la plantilla
+* [33m82ede42[m Carpeta plantilla añadida
+* [33m71a10ea[m Carpeta de la plantilla añadida
+*   [33mf1085d9[m Cambios del Joel y la carepta de plantillas
+[32m|[m[33m\[m  
+[32m|[m *   [33mc92a21e[m[33m ([m[1;31morigin/main[m[33m)[m Merge pull request #1 from JosGaar/master
+[32m|[m [34m|[m[35m\[m  
+[32m|[m [34m|[m * [33m1b41fc3[m Se actulizo el archivo updateUser
+[32m|[m [34m|[m *   [33m6703a5e[m Nuevos cambios
+[32m|[m [34m|[m [36m|[m[34m\[m  
+[32m|[m [34m|[m [36m|[m[34m/[m  
+[32m|[m [34m|[m[34m/[m[36m|[m   
+[32m|[m [34m|[m * [33meef4782[m Nuevos cambios.
+[32m|[m [34m|[m * [33m7b2b208[m Modulo de editar Version Estable V1
+[32m|[m [34m|[m * [33m87b543e[m Modulo de editar Usuario En proceso
+[32m|[m [34m|[m * [33m5bd7c44[m En esta version arregle la recuperacion de contraseña y cifre las contraseñas de los usuarios
+[32m|[m [34m|[m * [33mab76247[m En esta version añadi  el cambio de contraseña
+[32m|[m [34m|[m * [33mb959d75[m Version Casi Completada Del Login y Register
+[32m|[m [34m|[m * [33m498104b[m En esta version añadi validaciones al login y genere la conexion con el register de la base de datos
+[32m|[m [34m|[m * [33mfb39fa1[m En esta version añadi una validacion de campos en el register
+[32m|[m [34m|[m * [33m60aa93d[m En esta version tengo el disñeo del login y el register
+[32m|[m [34m|[m * [33m8b86e70[m En esta version separe por partes unas secciones
+[32m|[m [34m|[m * [33ma0dfdb2[m En esta parte tengo las partes para la parte inicial
+[32m|[m [34m|[m * [33m68e58b7[m Initial commit
+* [34m|[m [33m0a0f13f[m Se añadio la funcion de generar una pagina en funcion de datos dados por el usuario
+* [34m|[m   [33m0a2bb3e[m Trayendo cambios del davidMerge branch 'david' of github.com:JosGaar/proyecto-mds into josue
+[1;32m|[m[1;33m\[m [34m\[m  
+[1;32m|[m * [34m|[m [33m45fe619[m[33m ([m[1;31morigin/david[m[33m)[m Reparar rutas2
+* [1;33m|[m [34m|[m [33mce0bbe2[m Merge branch 'david' of github.com:JosGaar/proyecto-mds into josue Trayendo cambios de la rama David
+[1;34m|[m[1;33m\[m[1;33m|[m [34m|[m 
+[1;34m|[m * [34m|[m [33m6e99a46[m Reparar rutas
+* [1;35m|[m [34m|[m [33mfc084bd[m Modificando archivos
+* [1;35m|[m [34m|[m [33m6a03583[m Uniendo cambios de la rama David
+* [1;35m|[m [34m|[m [33md2abdad[m Merge remote-tracking branch 'origin/david' into josue Uniendo cambios de la rama David
+[1;36m|[m[1;35m\[m[1;35m|[m [34m|[m 
+[1;36m|[m * [34m|[m [33m500b4a0[m Ordenando proyecto
+[1;36m|[m * [34m|[m [33mb9f15c2[m algo
+[1;36m|[m * [34m|[m [33m5c659a9[m First commit:DM
+[1;36m|[m  [34m/[m  
+* [34m/[m [33me549ddb[m Probando cambios
+[34m|[m[34m/[m  
+* [33mb55c4d8[m[33m ([m[1;32mmain[m[33m)[m Se añadió el Login y Register.
+* [33me7d824b[m Trabajo
+* [33mc6e6dbc[m README.md

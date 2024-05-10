@@ -188,7 +188,6 @@ $stmt_state->close();
                 <!-- Botones para guardar y cerrar el modal -->
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                   <button type="button" class="btn btn-secondary me-md-2" data-bs-dismiss="modal">Close</button>
-
                   <button id="btn_project" type="button" class="btn btn-primary">Save</button>
                 </div>
               </form>
