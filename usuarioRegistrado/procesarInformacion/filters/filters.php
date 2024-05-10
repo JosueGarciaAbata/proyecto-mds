@@ -85,7 +85,7 @@ function filterPostsByCategories($conexion, $categories, $estado_post)
     return $postsArray;
 }
 
-// Trae los tags de una categoria
+// Trae los tags de una categoria. Usuario registrado
 function getOneCategoryTags($conexion, $id_category, $estado_post)
 {
     $sql = "SELECT id_etiqueta, nombre_etiqueta 
@@ -103,7 +103,7 @@ function getOneCategoryTags($conexion, $id_category, $estado_post)
     return $resultados;
 }
 
-// Traer los post que tengan esa etiqueta y categoria (solo una vez)
+// Traer los post que tengan esa etiqueta y categoria (solo una vez). Usuario registrado
 function filterPostByTags($conexion, $category, $tags, $estado_post)
 {
     // Tomar solo el primer valor del array de categorías
