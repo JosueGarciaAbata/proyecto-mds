@@ -58,7 +58,7 @@ $(document).ready(function () {
           //Cargar imagen del post o generica
 
           var imageUrl =
-            post.ubicacion_imagen_post &&
+            post.ubicacion_imagen_post != null &&
             post.ubicacion_imagen_post.trim() !== ""
               ? post.ubicacion_imagen_post
               : "../img/genericImagePost.jpg";
@@ -160,7 +160,7 @@ $(document).ready(function () {
                 $("#state").val(postInfo["id_estado_post"]);
 
                 // Actualizar la imagen del post
-                if (postInfo["ubicacion_imagen_post"] !== "") {
+                if (postInfo["ubicacion_imagen_post"] !== null) {
                   $("#postImage").attr(
                     "src",
                     postInfo["ubicacion_imagen_post"]
@@ -257,6 +257,12 @@ $(document).ready(function () {
         minlength: 10,
         maxlength: 50,
       },
+      categoria: {
+        required: true,
+      },
+      state: {
+        required: true,
+      },
       content_post: {
         required: true,
         minlength: 10,
@@ -268,6 +274,12 @@ $(document).ready(function () {
         required: "Please enter a name",
         minlength: "Please enter at least 10 characters",
         maxlength: "The maximum number of characters for the title is 50",
+      },
+      categoria: {
+        required: "Please select a category",
+      },
+      state: {
+        required: "Please select the post visibility",
       },
       content_post: {
         required: "Please enter content for the post",
@@ -381,6 +393,7 @@ $("#postFormImage").submit(function (event) {
 
       if (response == "false") {
         mostrarModalDeAdvertencia("Error al cargar la imagen");
+        $("#postInput").val("");
       } else {
         var imageUrl = response;
         $("#postImage").attr("src", imageUrl);
@@ -396,7 +409,11 @@ $("#postFormImage").submit(function (event) {
 $("#btn_create").click(function () {
   //Esta seccion le permite saber al modal que se usara para crear un post
   $("#btn_post").attr("data_info", "create");
-  $("#superiorTitle").text("Crear Post");
+  $("#superiorTitle").text("Create Post");
+
+  if ($("#btn_post").attr("data_id_post") !== undefined) {
+    $("#btn_post").removeAttr("data_id_post");
+  }
 });
 
 /*
@@ -418,6 +435,7 @@ $("#btn_post").click(function () {
     $("#categoria").val() !== null &&
     $("#state").val() != null
   ) {
+    $("#btn_post").prop("disabled", true);
     //Guardar etiquetas seleccionadas
     var labelsActive = [];
     $(".form-selectgroup input[type='checkbox']:checked").each(function () {
@@ -451,6 +469,7 @@ $("#btn_post").click(function () {
       contentType: false,
       processData: false,
       success: function (response) {
+        console.log(response);
         if (response == "true") {
           mostrarModalExito("Post Saved with Success");
           setTimeout(function () {
@@ -458,11 +477,13 @@ $("#btn_post").click(function () {
           }, 2500);
         } else {
           mostrarModalDeAdvertencia("Could not save the post");
+          $("#btn_post").prop("disabled", false);
         }
       },
       error: function (xhr, status, error) {
         console.error(error);
         mostrarModalDeAdvertencia("Connection error");
+        $("#btn_post").prop("disabled", false);
       },
     });
   } else {

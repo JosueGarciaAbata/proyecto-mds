@@ -2,9 +2,6 @@
 require_once ('header.php');
 require_once ('navbar.php');
 
-
-
-
 $stmt_categorias = $conexion->prepare("SELECT * FROM categorias");
 $stmt_categorias->execute();
 $result_categorias = $stmt_categorias->get_result();
@@ -16,7 +13,6 @@ $stmt_state->execute();
 $result_state = $stmt_state->get_result();
 $states = $result_state->fetch_all(MYSQLI_ASSOC);
 $stmt_state->close();
-
 
 ?>
 
@@ -53,20 +49,17 @@ $stmt_state->close();
           <!-- Page title actions -->
           <div class="col-auto ms-auto d-print-none">
             <div class="d-flex">
-              <div class="me-3">
-                <div class="input-icon">
-                  <input type="text" value="" class="form-control" placeholder="Search…">
-                  <span class="input-icon-addon">
-                    <!-- Download SVG icon from http://tabler-icons.io/i/search -->
-                    <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
-                      stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-                      <path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
-                      <path d="M21 21l-6 -6" />
-                    </svg>
-                  </span>
-                </div>
-              </div>
+              <!-- Principio boton filtrado -->
+              <button id="btn_apply_filter" type="button" class="btn btn-primary me-2" data-bs-toggle="modal"
+                data-bs-target="#filtroModalPost">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-filter"
+                  viewBox="0 0 16 16">
+                  <path
+                    d="M6 10.5a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h7a.5.5 0 0 1 0 1h-7a.5.5 0 0 1-.5-.5m-2-3a.5.5 0 0 1 .5-.5h11a.5.5 0 0 1 0 1h-11a.5.5 0 0 1-.5-.5" />
+                </svg>Apply filter
+              </button>
+              <!-- Fin boton filtrado -->
+              <!-- Inicio crear post -->
               <button id="btn_create" type="button" class="btn btn-primary" data-bs-toggle="modal"
                 data-bs-target="#imageModal">
                 <svg xmlns="http://www.w3.org/2000/svg" class="icon" width="24" height="24" viewBox="0 0 24 24"
@@ -74,8 +67,9 @@ $stmt_state->close();
                   <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                   <path d="M12 5l0 14"></path>
                   <path d="M5 12l14 0"></path>
-                </svg>New
+                </svg>New post
               </button>
+              <!-- Fin crear post -->
             </div>
           </div>
         </div>
@@ -85,13 +79,8 @@ $stmt_state->close();
     <div class="page-body">
       <div class="container-xl">
         <div class="row row-cards">
-
-
-
-
         </div>
         <div class="d-flex">
-
         </div>
       </div>
     </div>
@@ -153,7 +142,6 @@ $stmt_state->close();
               <div class="mb-3">
                 <label for="inputTitle" class="form-label">Tags</label>
                 <div class="form-selectgroup">
-
                 </div>
               </div>
               <!-- Sección para el título -->
@@ -182,7 +170,6 @@ $stmt_state->close();
               <!-- Botones para guardar y cerrar el modal -->
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button type="button" class="btn btn-secondary me-md-2" data-bs-dismiss="modal">Close</button>
-
                 <button id="btn_post" type="button" class="btn btn-primary">Save</button>
               </div>
             </form>
@@ -191,8 +178,14 @@ $stmt_state->close();
       </div>
     </div>
 
+    <?php require_once ('../filters/filters_posts.php'); ?>
+
+    <!-- Fin wrapper -->
   </div>
+
+  <!-- Fin page -->
 </div>
 <?php require_once ('footer.php'); ?>
 
 <script src="js/posts.js"></script>
+<script src="js/filters_posts.js"></script>

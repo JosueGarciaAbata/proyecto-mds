@@ -3,6 +3,8 @@ require_once ("../../../procesarInformacion/conexion.php");
 
 require_once ("../img/gestorImagenes.php");
 
+require_once ("../../../procesarInformacion/filter_input.php");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //Recuperar conexion
   $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
@@ -45,11 +47,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //Procesar nuevo proyecto
   elseif (isset($_POST['action']) && $_POST['action'] === 'createNewProject' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state']) && isset($_POST["date_start"]) && isset($_POST["date_end"])) {
 
+    $title = cleanText($_POST["title"]);
+
+    $content = cleanText($_POST["content"]);
+
+
     //Crear proyecto sin imagen
     if (!isset($_FILES['projectImage'])) {
       $sql = "INSERT INTO proyectos (id_usuario_proyecto, id_categoria_proyecto,id_estado_proyecto ,titulo_proyecto,descripcion_proyecto,fecha_inicio_proyecto,fecha_finalizacion_proyecto) VALUES (?, ?,?, ?, ?,?,?)";
       $stmt = $conexion->prepare($sql);
-      $stmt->bind_param("iiissss", $user_id, $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $_POST["date_start"], $_POST["date_end"]);
+      $stmt->bind_param("iiissss", $user_id, $_POST["id_category"], $_POST["state"], $title, $content, $_POST["date_start"], $_POST["date_end"]);
 
       if ($stmt->execute()) {
         $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -84,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         $sql = "INSERT INTO proyectos (id_usuario_proyecto, id_categoria_proyecto,id_estado_proyecto ,titulo_proyecto,descripcion_proyecto,fecha_inicio_proyecto,fecha_finalizacion_proyecto,ubicacion_imagen_proyecto) VALUES (?, ?,?, ?, ?,?,?,?)";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("iiisssss", $user_id, $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $_POST["date_start"], $_POST["date_end"], $routeImage);
+        $stmt->bind_param("iiisssss", $user_id, $_POST["id_category"], $_POST["state"], $title, $content, $_POST["date_start"], $_POST["date_end"], $routeImage);
 
         if ($stmt->execute()) {
           $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -121,12 +128,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     //Actualizar proyecto
   } elseif (isset($_POST['action']) && $_POST['action'] === 'updateProject' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state']) && isset($_POST['state']) && isset($_POST["date_start"]) && isset($_POST["date_end"])) {
+
+    $title = cleanText($_POST["title"]);
+
+    $content = cleanText($_POST["content"]);
+
     //Actualizar proyecto sin imagen
     if (!isset($_FILES['projectImage'])) {
       $sql = "UPDATE proyectos SET id_categoria_proyecto=?,id_estado_proyecto=?,titulo_proyecto=?,descripcion_proyecto=?,fecha_inicio_proyecto=?,fecha_finalizacion_proyecto=? WHERE id_proyecto=?  ";
 
       $stmt = $conexion->prepare($sql);
-      $stmt->bind_param("iissssi", $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $_POST["date_start"], $_POST["date_end"], $_POST["id_project"]);
+      $stmt->bind_param("iissssi", $_POST["id_category"], $_POST["state"], $title, $content, $_POST["date_start"], $_POST["date_end"], $_POST["id_project"]);
 
       if ($stmt->execute()) {
         $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -167,7 +179,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $sql = "UPDATE proyectos SET id_categoria_proyecto=?,id_estado_proyecto=?,titulo_proyecto=?,descripcion_proyecto=?,fecha_inicio_proyecto=?,fecha_finalizacion_proyecto=?,ubicacion_imagen_proyecto=? WHERE id_proyecto=?  ";
 
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("iisssssi", $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $_POST["date_start"], $_POST["date_end"], $routeImage, $_POST["id_project"]);
+        $stmt->bind_param("iisssssi", $_POST["id_category"], $_POST["state"], $title, $content, $_POST["date_start"], $_POST["date_end"], $routeImage, $_POST["id_project"]);
 
         if ($stmt->execute()) {
           $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];

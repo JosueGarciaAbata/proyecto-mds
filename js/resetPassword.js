@@ -68,6 +68,7 @@ $("#show_password").change(function () {
 
 $("#reset_password_button").click(function () {
   if ($("#reset_password_form").valid()) {
+    $("#reset_password_button").prop("disabled", true);
     $.ajax({
       url: "../procesarInformacion/validateResetPassword.php",
       data: {
@@ -84,10 +85,12 @@ $("#reset_password_button").click(function () {
           }, 2500);
         } else {
           mostrarModalDeAdvertencia("Error changing password");
+          $("#reset_password_button").prop("disabled", false);
         }
       },
       error: function () {
         mostrarModalDeAdvertencia("An error has occurred");
+        $("#reset_password_button").prop("disabled", false);
       },
     });
   }

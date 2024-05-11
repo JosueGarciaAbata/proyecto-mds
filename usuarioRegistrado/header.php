@@ -18,7 +18,6 @@ if (!isset($_SESSION['user_id'])) {
   $stmt_select_info_usuario->bind_result($fotoPerfil, $nombreUsuario);
   $stmt_select_info_usuario->fetch();
   $stmt_select_info_usuario->close();
-
 }
 ?>
 <?php
@@ -82,6 +81,7 @@ if (!isset($_SESSION['user_id'])) {
 </head>
 
 <body>
+
   <script src="../dist/js/demo-theme.min.js?1684106062"></script>
   <div class="page">
     <header class="navbar navbar-expand-md d-print-none">
@@ -158,7 +158,6 @@ if (!isset($_SESSION['user_id'])) {
               </div>
             </a>
             <div class="dropdown-menu dropdown-menu-end dropdown-menu-arrow">
-
               <a href="logout.php" class="dropdown-item">Logout</a>
               <a href="./settings.php" class="dropdown-item">Settings</a>
             </div>
