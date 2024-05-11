@@ -280,6 +280,12 @@ $(document).ready(function () {
         minlength: 10,
         maxlength: 50,
       },
+      categoria: {
+        required: true,
+      },
+      state: {
+        required: true,
+      },
       content_project: {
         required: true,
         minlength: 10,
@@ -298,6 +304,12 @@ $(document).ready(function () {
         required: "Please enter a name",
         minlength: "Please enter at least 10 characters",
         maxlength: "The maximum number of characters for the title is 50",
+      },
+      categoria: {
+        required: "Please select a category",
+      },
+      state: {
+        required: "Please select the project visibility",
       },
       content_project: {
         required: "Please enter content for the project",
@@ -419,6 +431,7 @@ $("#projectFormImage").submit(function (event) {
 
       if (response == "false") {
         mostrarModalDeAdvertencia("Error loading image");
+        $("#projectInput").val("");
       } else {
         var imageUrl = response;
         $("#projectImage").attr("src", imageUrl);
@@ -436,6 +449,10 @@ $("#projectFormImage").submit(function (event) {
 $("#btn_create").click(function () {
   $("#btn_project").attr("data_info", "create");
   $("#superiorTitle").text("Crear project");
+
+  if ($("#btn_project").attr("data_id_project") !== undefined) {
+    $("#btn_project").removeAttr("data_id_project");
+  }
 });
 
 /*
@@ -457,6 +474,7 @@ $("#btn_project").click(function () {
     $("#categoria").val() !== null &&
     $("#state").val() != null
   ) {
+    $("#btn_project").prop("disabled", true);
     //Guardar etiquetas seleccionadas
     var labelsActive = [];
     $(".form-selectgroup input[type='checkbox']:checked").each(function () {
@@ -500,11 +518,13 @@ $("#btn_project").click(function () {
           }, 2500);
         } else {
           mostrarModalDeAdvertencia("The project could not be saved");
+          $("#btn_project").prop("disabled", false);
         }
       },
       error: function (xhr, status, error) {
         console.error(error);
         mostrarModalDeAdvertencia("Connection error");
+        $("#btn_project").prop("disabled", false);
       },
     });
     //////////////

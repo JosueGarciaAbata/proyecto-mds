@@ -3,6 +3,8 @@ require_once ("../../../procesarInformacion/conexion.php");
 
 require_once ("../img/gestorImagenes.php");
 
+require_once ("../../../procesarInformacion/filter_input.php");
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //Recuperar conexion
   $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
@@ -53,12 +55,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   //Procesar nuevo post
   elseif (isset($_POST['action']) && $_POST['action'] === 'createNewPost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
 
-    //Crear post sin imagen
 
+
+    $title = cleanText($_POST["title"]);
+
+    $content = cleanText($_POST["content"]);
+
+
+    //Crear post sin imagen
     if (!isset($_FILES['postImage'])) {
+
+
       $sql = "INSERT INTO posts (id_usuario_post, id_categoria_post,id_estado_post ,titulo_post, contenido_textual_post) VALUES (?, ?,?, ?, ?)";
       $stmt = $conexion->prepare($sql);
-      $stmt->bind_param("iiiss", $user_id, $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"]);
+      $stmt->bind_param("iiiss", $user_id, $_POST["id_category"], $_POST["state"], $title, $content);
 
       if ($stmt->execute()) {
         $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -95,7 +105,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
         $sql = "INSERT INTO posts (id_usuario_post, id_categoria_post,id_estado_post ,titulo_post, contenido_textual_post, ubicacion_imagen_post) VALUES (?, ?,?, ?, ?, ?)";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("iiisss", $user_id, $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $routeImage);
+        $stmt->bind_param("iiisss", $user_id, $_POST["id_category"], $_POST["state"], $title, $content, $routeImage);
 
         if ($stmt->execute()) {
           $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -135,12 +145,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
   //Actualizar post
   elseif (isset($_POST['action']) && $_POST['action'] === 'updatePost' && isset($_POST['title']) && isset($_POST['content']) && isset($_POST['id_category']) && isset($_POST['state'])) {
+
+
+    $title = cleanText($_POST["title"]);
+
+    $content = cleanText($_POST["content"]);
+
     //Actualizar post sin imagen
     if (!isset($_FILES['postImage'])) {
       $sql = "UPDATE posts SET id_categoria_post=?,id_estado_post=?,titulo_post=?,contenido_textual_post=? WHERE id_post=?  ";
 
       $stmt = $conexion->prepare($sql);
-      $stmt->bind_param("iissi", $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $_POST["id_post"]);
+      $stmt->bind_param("iissi", $_POST["id_category"], $_POST["state"], $title, $content, $_POST["id_post"]);
 
       if ($stmt->execute()) {
         $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];
@@ -177,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $routeImage = preg_replace('/^\.\.\//', '', $routeImage);
         $sql = "UPDATE posts SET id_categoria_post=?,id_estado_post=?,titulo_post=?,contenido_textual_post=?,ubicacion_imagen_post=? WHERE id_post=? ";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("iisssi", $_POST["id_category"], $_POST["state"], $_POST["title"], $_POST["content"], $routeImage, $_POST["id_post"]);
+        $stmt->bind_param("iisssi", $_POST["id_category"], $_POST["state"], $title, $content, $routeImage, $_POST["id_post"]);
 
         if ($stmt->execute()) {
           $labelsActive = isset($_POST['labelsActive']) ? json_decode($_POST['labelsActive']) : [];

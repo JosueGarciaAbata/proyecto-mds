@@ -2,6 +2,8 @@
 
 require_once ("conexion.php");
 
+require_once ("filter_input.php");
+
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 
 
@@ -19,6 +21,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 //Crear cuenta de usuario
 function createAccount($conexion, $name, $email, $password)
 {
+  $name = cleanText($name);
+
+  $email = cleanText($email);
+
+  $password = cleanText($password);
 
   //Validar no existencia de la cuenta ingresada
   $sql_email = "SELECT * FROM usuarios WHERE correo_electronico_usuario = ? ";
@@ -71,6 +78,7 @@ function createAccount($conexion, $name, $email, $password)
     $_SESSION['password_user'] = $password;
     //Encriptar contraseña
     $password = hash("sha256", $password);
+
 
     //Generar usuario en la BD
     $sql_insert = "INSERT INTO usuarios (nombre_usuario, correo_electronico_usuario, contrasenia_usuario,ubicacion_foto_perfil_usuario,carpeta_usuario) VALUES (?, ?, ?,?,?)";

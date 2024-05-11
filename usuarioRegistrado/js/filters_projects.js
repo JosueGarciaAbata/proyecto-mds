@@ -206,6 +206,10 @@ $(document).ready(function () {
                           $("#superiorTitle").text("Editar project");
 
                           $("#imageModal").modal("show");
+
+                          // Antes de agregar las nuevas etiquetas, limpiar las existentes
+                          $(".form-selectgroup").empty();
+
                           // Recuperar las etiquetas asociadas al proyecto
                           var etiquetas = data["etiquetas"];
 
@@ -548,6 +552,9 @@ $(document).ready(function () {
                             $("#superiorTitle").text("Editar project");
 
                             $("#imageModal").modal("show");
+
+                            // Antes de agregar las nuevas etiquetas, limpiar las existentes
+                            $(".form-selectgroup").empty();
                             // Recuperar las etiquetas asociadas al proyecto
                             var etiquetas = data["etiquetas"];
 

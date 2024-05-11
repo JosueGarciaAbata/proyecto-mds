@@ -2,6 +2,7 @@
 
 require_once ("conexion.php");
 
+
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 
 

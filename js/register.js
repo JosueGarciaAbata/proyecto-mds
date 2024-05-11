@@ -97,10 +97,8 @@ $("#show_password").change(function () {
  */
 
 $("#register_button").click(function () {
-  var registerButton = $(this);
-
   if ($("#register-form").valid()) {
-    registerButton.prop("disabled", true);
+    $("#register_button").prop("disabled", true);
 
     user_name = $("#register_name").val();
     user_email = $("#register_mail").val();
@@ -119,18 +117,16 @@ $("#register_button").click(function () {
           mostrarModalExito("User created successfully");
           setTimeout(function () {
             window.location.href = "../usuarioRegistrado/index.php";
-          }, 2500);
+          }, 1000);
         } else {
           mostrarModalDeAdvertencia(
             "An account already exists with the information entered"
           );
+          $("#register_button").prop("disabled", false);
         }
       },
       error: function (xhr, status, error) {
         mostrarModalAdvertencia("An error occurred while creating the account");
-      },
-      complete: function () {
-        registerButton.prop("disabled", false);
       },
     });
   }

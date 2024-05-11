@@ -60,10 +60,8 @@ $("#show_password").change(function () {
  */
 
 $("#login_button").click(function () {
-  var loginButton = $(this);
-
   if ($("#login-form").valid()) {
-    loginButton.prop("disabled", true);
+    $("#login_button").prop("disabled", true);
 
     var user_email = $("#login_email").val();
     var user_password = $("#login_password").val();
@@ -80,16 +78,16 @@ $("#login_button").click(function () {
           mostrarModalExito("Successful login");
           setTimeout(function () {
             window.location.href = "../usuarioRegistrado/index.php";
-          }, 2500);
+          }, 1000);
         } else {
-          mostrarModalDeAdvertencia("The entered account was not found");
+          mostrarModalDeAdvertencia(
+            "The account entered does not exist or the password is incorrect."
+          );
+          $("#login_button").prop("disabled", false);
         }
       },
       error: function (xhr, status, error) {
         mostrarModalAdvertencia("An error occurred while logging in");
-      },
-      complete: function () {
-        loginButton.prop("disabled", false);
       },
     });
   }

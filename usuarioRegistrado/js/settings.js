@@ -118,6 +118,7 @@ $("#uploadForm").submit(function (event) {
       console.log(response);
       if (response == "false") {
         mostrarModalDeAdvertencia("Error loading image");
+        $("#uploadInput").val("");
       } else {
         var imageUrl = response;
         $(".avatar").css("background-image", "url(" + imageUrl + ")");
@@ -139,44 +140,41 @@ bntUpdate = document.getElementById("btnUpdate");
 
 btnUpdate.addEventListener("click", function () {
   if ($("#updateFormInfo").valid()) {
-    if ($("#updateFormInfo").valid()) {
-      // Obtener el archivo de imagen seleccionado
-      var imageFile = $("#uploadInput")[0].files[0];
+    // Obtener el archivo de imagen seleccionado
+    var imageFile = $("#uploadInput")[0].files[0];
 
-      // Verificar si se seleccionó una imagen
-      if (imageFile) {
-        // Crear un objeto FormData para enviar la imagen al servidor
-        var formData = new FormData();
-        formData.append("profileImage", imageFile);
-        formData.append("action", "imgPerfil");
-
-        formData.append("update_name", $("#update_name").val());
-        formData.append("update_email", $("#update_email").val());
-        formData.append("update_password", $("#update_password").val());
-
-        $.ajax({
-          url: "procesarInformacion/user/updateUser.php",
-          type: "POST",
-          data: formData,
-          contentType: false,
-          processData: false,
-          success: function (response) {
-            if (response !== "false") {
-              mostrarModalExito("Profile successfully updated");
-              setTimeout(function () {
-                window.location.href = "index.php";
-              }, 2500);
-            } else {
-              mostrarModalDeAdvertencia("Error updating profile ");
-            }
-          },
-          error: function (xhr, status, error) {
-            mostrarModalDeAdvertencia("Connection error");
-          },
-        });
-      } else {
-        mostrarModalDeAdvertencia("There is no loaded image");
-      }
+    // Crear un objeto FormData para enviar la imagen al servidor
+    var formData = new FormData();
+    formData.append("action", "imgPerfil");
+    if (imageFile) {
+      formData.append("profileImage", imageFile);
     }
+
+    formData.append("update_name", $("#update_name").val());
+    formData.append("update_email", $("#update_email").val());
+    formData.append("update_password", $("#update_password").val());
+
+    $.ajax({
+      url: "procesarInformacion/user/updateUser.php",
+      type: "POST",
+      data: formData,
+      contentType: false,
+      processData: false,
+      success: function (response) {
+        if (response !== "false") {
+          mostrarModalExito("Profile successfully updated");
+          setTimeout(function () {
+            window.location.href = "index.php";
+          }, 2500);
+        } else {
+          mostrarModalDeAdvertencia(
+            "An error occurred while updating an account"
+          );
+        }
+      },
+      error: function (xhr, status, error) {
+        mostrarModalDeAdvertencia("Connection error");
+      },
+    });
   }
 });
