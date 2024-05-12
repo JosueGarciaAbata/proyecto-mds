@@ -12,12 +12,12 @@ class ConexionBD
 
     // Variable para almacenar la conexión
     private $conexion;
-
+    private static $port=3307;
 
     private function __construct()
     {
         // Crear conexión
-        $this->conexion = new mysqli($this->servername, $this->username, $this->password, $this->database);
+        $this->conexion = new mysqli($this->servername, $this->username, $this->password, $this->database,self::$port);
 
         if ($this->conexion->connect_error) {
             die("Connection failed: " . $this->conexion->connect_error);

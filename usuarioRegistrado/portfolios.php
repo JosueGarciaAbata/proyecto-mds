@@ -1,8 +1,8 @@
 <?php
 require_once ('header.php');
 require_once ('navbar.php');
-require_once ('procesarInformacion/portfolios/getHabilidades.php');
-require_once ('procesarInformacion/portfolios/getProyectos.php');
+require_once ('procesarInformacion/portafolios/getHabilidades.php');
+require_once ('procesarInformacion/portafolios/getProyectos.php');
 
 $habilidades = sendHabilidades($conexion);
 
@@ -19,7 +19,7 @@ function generarOpcionesProyectos()
 
 
 //  HabT: {'HabTech':contentString}
-function generarOpcionesHabilidadesTec($habT)
+function generarOpcionesHabilidades($habT)
 {
     $response = "";
     foreach ($habT as $habilidad) {
@@ -28,36 +28,8 @@ function generarOpcionesHabilidadesTec($habT)
     echo $response;
 }
 
-function generarOpcionesHablidadesSoc($habS)
-{
-    $response = "";
-    foreach ($habS as $habilidad) {
-        $response .= '<option value="' . $habilidad["id"] . '">' . $habilidad["nombre"] . '</option>';
-    }
-    echo $response;
-}
 ?>
 
-<style>
-    .delete-icon {
-        width: 32px;
-        height: 32px;
-        stroke: red;
-        fill: none;
-    }
-
-    .modal-dialog {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .modal {
-        background-color: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-    }
-</style>
 
 <div class="page">
     <div class="page-wrapper">
@@ -140,36 +112,47 @@ function generarOpcionesHablidadesSoc($habS)
                     <div class="modal-body text-center">
                         <!-- Sección para el título y contenido -->
                         <form enctype="multipart/form-data" id="form-portafolio">
-
+                            <!--  titulo proyecto  -->
                             <div class="mb-3">
                                 <label for="titulo-portafolio" class="form-label">Titulo del proyecto:</label>
                                 <input type="text" name="titulo-portafolio" id="titulo-portafolio" class="form-control"
                                     required>
                             </div>
+                            <!-- mensaje bienvenida -->
                             <div class="mb-3">
                                 <label for="mensaje-bienvenida" class="form-label">Mensaje bienvenida:</label>
                                 <textarea type="text" name="mensaje-bienvenida" id="mensaje-bienvenida"
                                     class="form-control" required></textarea>
                             </div>
+                            <!-- foto perfil -->
                             <div class="mb-3">
                                 <label for="foto-perfil" class="form-label">Foto de perfil:</label>
                                 <input type="file" name="foto-perfil" id="foto-perfil" class="form-control"
                                     accept=".jpg, .jpeg, .png, .gif" required>
                             </div>
+                            <!-- foto fondo -->
+                            <div class="mb-3">
+                                <label for="foto-fondo" class="form-label">Foto de perfil:</label>
+                                <input type="file" name="foto-fondo" id="foto-fondo" class="form-control"
+                                    accept=".jpg, .jpeg, .png, .gif" required>
+                            </div>
+                            <!-- cv -->
                             <div class="mb-3">
                                 <label for="cv" class="form-label">Curriculum:</label>
                                 <input type="file" name="cv" id="cv" class="form-control" accept=".pdf" required>
                             </div>
 
-
+                            <!-- estudios -->
                             <div class="mb-3">
                                 <label for="estudios" class="form-label">Estudios:</label>
                                 <input type="text" name="estudios" id="estudios" class="form-control" required>
                             </div>
+                            <!-- sobre mi -->
                             <div class="mb-3">
                                 <label for="sobre-mi" class="form-label">Sobre mi:</label>
                                 <input type="text" name="sobre-mi" id="sobre-mi" class="form-control" required>
                             </div>
+                            <!-- habilidades tecnicas -->
                             <div class="mb-3">
                                 <label for="habilidades-Tecnicas" class="form-label">Seleccione sus habilidades
                                     tecnicas:</label>
@@ -177,7 +160,7 @@ function generarOpcionesHablidadesSoc($habS)
                                     class="form-select" multiple required>
                                     <option value="" disabled>Seleccionar...</option>
                                     <?php
-                                    generarOpcionesHabilidadesTec($habilidades["habilidadesTecnicas"]);
+                                    generarOpcionesHabilidades($habilidades["habilidadesTecnicas"]);
                                     ?>
                                 </select>
                                 <input type="text" id="technicalSkillInput" class="form-control"
@@ -187,6 +170,7 @@ function generarOpcionesHablidadesSoc($habS)
                                 <button id="deleteLastTechnicalSkill" type="button" class="btn btn-danger">Delete Last
                                     Skill</button>
                             </div>
+                            <!-- habilidades sociales -->
                             <div class="mb-3">
                                 <label for="habilidades-Sociales" class="form-label">Seleccione sus habilidades
                                     sociales:</label>
@@ -194,7 +178,7 @@ function generarOpcionesHablidadesSoc($habS)
                                     class="form-select" multiple required>
                                     <option value="" disabled>Seleccionar...</option>
                                     <?php
-                                    generarOpcionesHablidadesSoc($habilidades["habilidadesSociales"]);
+                                    generarOpcionesHabilidades($habilidades["habilidadesSociales"]);
                                     ?>
                                 </select>
                                 <input type="text" id="socialSkillInput" class="form-control"
@@ -205,10 +189,10 @@ function generarOpcionesHablidadesSoc($habS)
                                     Skill</button>
 
                             </div>
+                            <!-- proyectos del usuario -->
                             <div class="mb-3">
                                 <label for="proyectos" class="form-label">Seleccione los proyectos:</label>
-                                <select type="text" name="proyectos[]" id="proyectos" class="form-select" multiple
-                                    required>
+                                <select type="text" name="proyectos" id="proyectos" class="form-select" multiple>
                                     <option value="" disabled>Seleccionar...</option>
                                     <?php
                                     generarOpcionesProyectos();
@@ -218,9 +202,8 @@ function generarOpcionesHablidadesSoc($habS)
 
                             <!-- Botones para guardar y cerrar el modal -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" class="btn btn-secondary me-md-2"
-                                    data-bs-dismiss="modal">Close</button>
-                                <button id="btn_portfolio" type="button" class="btn btn-primary">Save</button>
+                                <button type="button" class="btn btn-secondary me-md-2" data-bs-dismiss="modal">Close</button>
+                                <input id="btn_portfolio" type="submit" class="btn btn-primary" value="Save">
                             </div>
                         </form>
                         <!-- Fin modal -->
@@ -237,5 +220,6 @@ function generarOpcionesHablidadesSoc($habS)
 </div>
 
 <?php require_once ('footer.php'); ?>
-<script src="js/filters_portfolios.js"></script>
-<script src="js/portfolios.js"></script>
+<script src="js/portafolio-handle.js" type="module"></script>
+<script src="js/filters_portafolios.js"></script>
+<script src="js/portafolios.js"></script>
