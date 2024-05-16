@@ -1,5 +1,6 @@
 /*
 Agregar y eliminar habilidades dinamicamente
+
 */
 
 $(document).ready(function () {

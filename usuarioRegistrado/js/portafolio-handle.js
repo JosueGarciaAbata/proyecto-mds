@@ -1,15 +1,15 @@
 
 import saveAll from "./guardar-portafolio.mjs";
-
+import getMyPortafolios from "./show-portafolios.mjs";
 const d = document;
 const $form = d.getElementById("form-portafolio");
 
 // function showPort
-/*
+
 d.addEventListener("DOMContentLoaded",e=>{
-    
+  getMyPortafolios();
 });
-*/
+
 
 
 

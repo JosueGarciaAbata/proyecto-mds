@@ -7,42 +7,62 @@ header("Content-Type: application/json");
 require_once ('../../../procesarInformacion/conexion.php');
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 //  array asociativo con la respuesta
-$data = json_decode(file_get_contents('php://input'), true);
+
 // Verificar si la petición es POST
 //  print_r($data);
 //  $response = [];
 switch ($_SERVER["REQUEST_METHOD"]) {
     case "GET":
-        //  retorna un array, toca volverlo json
-        $response = getPortafolio($conexion, $data["id"], $data["habilidades"]);
+        //  retorna un array, toca volverlo json, claro no los trae con los proyectos, pero se soluciona con un join a proyectos agrupados en cada iteracion para unirlo al array asociativo pertinente
+        if(empty($_POST)){
+            getPortafolio($conexion);
+        }else{
+            getPortafolio($conexion, $_POST["id"], $_POST["habilidades"]);
+        }
         break;
     case "POST":
-        //  print_r($_POST);
         $titulo = $_POST['titulo'];
         $mensaje = $_POST['mensaje'];
         $estudios = $_POST['estudios'];
         $sobreMi = $_POST['sobreMi'];
-        //$fotoP = $_FILES['fotoP'];
-        //$cv = $_FILES['cv'];
         $habilidadesTecnicas = $_POST['habilidadesTecnicas'];
         $habilidadesSociales = $_POST['habilidadesSociales'];
         $proyectos = $_POST['proyectos'];
         $dataBasic=[$titulo,$mensaje,$estudios,$sobreMi];
         $cosasAVer=array_merge($dataBasic,$habilidadesTecnicas,$habilidadesSociales);
-/*
+
         if(contieneCaracteresEspeciales($conexion,$titulo)){
             http_response_code(405);
             echo json_encode(["error" => "Los campos tienen valores inseguros"]);
             exit();
         }
-*/
+
         savePortafolio($conexion, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje,$proyectos);
         break;
     case "PUT":
-        //$response = updatePortafolio();
+        //  update por completo
+        $titulo = $_POST['titulo'];
+        $mensaje = $_POST['mensaje'];
+        $estudios = $_POST['estudios'];
+        $sobreMi = $_POST['sobreMi'];
+        $habilidadesTecnicas = $_POST['habilidadesTecnicas'];
+        $habilidadesSociales = $_POST['habilidadesSociales'];
+        $proyectos = $_POST['proyectos'];
+        $dataBasic=[$titulo,$mensaje,$estudios,$sobreMi];
+        $cosasAVer=array_merge($dataBasic,$habilidadesTecnicas,$habilidadesSociales);
+
+        if(contieneCaracteresEspeciales($conexion,$titulo)){
+            http_response_code(405);
+            echo json_encode(["error" => "Los campos tienen valores inseguros"]);
+            exit();
+        }
+
+        updatePortafolio($conexion, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje,$proyectos);
         break;
     case "DELETE":
-       // $response = deletePortafolio();
+        deletePortafolio($conexion, $_POST['id-portafolio']);
+
+        
         break;
         defaulft:
         // Si la petición no es POST, UPDATE,PUT o DELETE, devolvemos un error
@@ -50,7 +70,6 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         echo json_encode(["error" => "Método no permitido"]);
         break;
 }
-//  print_r($response);
 
 
 function getUserName($conexion, $id)
@@ -216,43 +235,29 @@ function subirArchivo($nombreCampo, $rutaDestino)
     return $rutaDestinoArchivo;
 }
 
-function updatePortafolio()
+function updatePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $mensaje, $proyectos)
 {
-    // Recibir los datos del cuerpo de la solicitud
-    $data = json_decode(file_get_contents("php://input"), true);
-
-    // Procesar los datos recibidos (actualizar un registro existente, por ejemplo)
-    // Aquí puedes realizar la lógica necesaria para actualizar los datos en tu base de datos
-    // Por ejemplo, podrías usar los datos recibidos para actualizar un registro existente en una tabla
-
-    // En este ejemplo, simplemente imprimimos los datos recibidos
-    echo json_encode($data);
+    
 }
-function deletePortafolio()
-{
-    $data = json_decode(file_get_contents("php://input"), true);
 
-    // Procesar los datos recibidos (eliminar un registro existente, por ejemplo)
-    // Aquí puedes realizar la lógica necesaria para eliminar los datos en tu base de datos
-    // Por ejemplo, podrías usar los datos recibidos para eliminar un registro existente en una tabla
-
-    // En este ejemplo, simplemente imprimimos los datos recibidos
-    echo json_encode($data);
-}
 //function getPortafolio($conexion, $id = 0, $idHabilidades=0)
-function getPortafolio($conexion, $id = 0, $idHabilidades = 0)
+function getPortafolio($conexion, $idHabilidades = 0)
 {
     //traer todos
-    if ($id === 0 && $idHabilidades !== null) {
+    session_start();
+    if ($idHabilidades !== 0) {
+
+        //  es un get general para todo portafolio visible por lo que se omite la revision del identificador del usuario
+
 
         //se puede consultar uno especificamente
         //  para formar n veces el "?,"
-        $placeholders = str_repeat("?,", count($idHabilidades) - 1) . "?";
+        //  $placeholders = str_repeat("?,", count($idHabilidades) - 1) . "?";
         //  vamos a traer todo el contenido de la tabla portafolios, siempre y cuando este entre los idHabilidadescorrespondientes en el array q se le pasa a este medoto
         $sql = "SELECT p.* 
                 FROM portafolios p
-                JOIN portafolios_habilidades ph ON p.id_portafolio = ph.idPortafolio_portafolios_habilidades
-                WHERE ph.idHabilidad_portafolios_habilidades IN ($placeholders)";
+                JOIN portafolios_habilidades ph ON p.id_portafolio = ph.id_portafolio_portafolios_habilidades
+                WHERE ph.id_habilidad_portafolios_habilidades IN ( ? )";
 
         $stmt_userData = $conexion->prepare($sql);
         $stmt_userData->bind_param(str_repeat("i", count($idHabilidades)), ...$idHabilidades);
@@ -261,23 +266,44 @@ function getPortafolio($conexion, $id = 0, $idHabilidades = 0)
         if ($result_userData->num_rows < 1) {
             return [];
         }
-        $portafolios = [];
+        $portafolios = array();
         while ($row = $result_userData->fetch_assoc()) {
-            $portafolio = [
+            //  si no es visible, primero ver si es el usuario el propietario, si lo es añadimos sino continuamos
+            if($row["id_estado_portafolio"]===0 && $_SESSION['user_id'] !== $row["id_usuario_portafolio"]){
+                continue;
+            }
+            $portafolio=array(
                 'id_portafolio' => $row['id_portafolio'],
                 'id_usuario_portafolio' => $row['id_usuario_portafolio'],
-                // Añadir los demás campos necesarios de la tabla 'portafolios'
-            ];
+                'titulo_portafolio' => $row['titulo_portafolio'],
+                'educacion_portafolio' => $row['educacion_portafolio'],
+                'sobre_mi_portafolio' => $row['sobre_mi_portafolio'],
+                'mensaje_bienvenida_portafolio' => $row['mensaje_bienvenida_portafolio'],
+                'carpetaPortafolio' => $row['ubicacion_portafolio'],
+                'foto_portafolio' => $row['foto_portafolio'],
+                'fondo_portafolio'=>$row['fondo_portafolio'],
+                'ubicacionCv_portafolio' => $row['cv_portafolio'],
+                'id_estado_portafolio'=>$row['id_estado_portafolio']
+            );
+            //  colocar habilidades relacionadas a un portafolio
+            $portafolio["habilidades"] = getHabilidadesById($conexion, $portafolio["id_portafolio"]);
             $portafolios[] = $portafolio;
         }
-        return $portafolios;
+        http_response_code(200);
+        echo json_encode($portafolios);
     } else {
-        //traer solo 1
-        $sql = "SELECT p.id_portafolio, p.id_usuario_portafolio, p.titulo_portafolio, p.educacion_portafolio, p.sobreMi_portafolio,
-        p.mensajeBienvenida_portafolio, p.ubicacionPortafolio_portafolio, p.foto_portafolio, p.cv_portafolio 
+        
+        if(empty($_SESSION['user_id'])){
+            http_response_code(500);
+            echo json_encode(["error" => "No existe un usuario en el sistema"]);
+            exit();
+        }
+        
+        //traer solo los del usuario
+        $sql = "SELECT p.id_portafolio, p.id_usuario_portafolio, p.titulo_portafolio, p.educacion_portafolio, p.sobre_mi_portafolio, p.mensaje_bienvenida_portafolio, p.ubicacion_portafolio, p.foto_portafolio, p.fondo_portafolio, p.cv_portafolio, p.id_estado_portafolio 
         FROM portafolios p WHERE p.id_usuario_portafolio = ?";
         $stmt_userData = $conexion->prepare($sql);
-        $stmt_userData->bind_param("s", $id);
+        $stmt_userData->bind_param("s", $_SESSION['user_id']);
         $stmt_userData->execute();
         $result_userData = $stmt_userData->get_result();
         if ($result_userData->num_rows < 1) {
@@ -286,29 +312,96 @@ function getPortafolio($conexion, $id = 0, $idHabilidades = 0)
         // Retornar los valores
         // $portafolios = [];
         // while ($row = $result_userData->fetch_assoc()) {
-        //  Solo es 1 resultado
-        $row = $result_userData->fetch_assoc();
-        $portafolio = array(
-            'id_portafolio' => $row['id_portafolio'],
-            'id_usuario_portafolio' => $row['id_usuario_portafolio'],
-            'titulo_portafolio' => $row['titulo_portafolio'],
-            'educacion_portafolio' => $row['educacion_portafolio'],
-            'sobreMi_portafolio' => $row['sobreMi_portafolio'],
-            'mensajeBienvenida_portafolio' => $row['mensajeBienvenida_portafolio'],
-            'carpetaPortafolio' => $row['ubicacionPortafolio_portafolio'],
-            'foto_portafolio' => $row['foto_portafolio'],
-            'ubicacionCv_portafolio' => $row['cv_portafolio']
-        );
-        $portafolio["habilidades"] = getHabilidadesById($conexion, $portafolio["id_portafolio"]);
-        return $portafolio;
+
+        $portafolios = array();
+        while ($row = $result_userData->fetch_assoc()) {
+            //  si no es visible, primero ver si es el usuario el propietario, si lo es añadimos sino continuamos
+            if($row["id_estado_portafolio"]===0 && $_SESSION['user_id'] !== $row["id_usuario_portafolio"]){
+                continue;
+            }
+            //  http://localhost/3/proyecto-mds/usersContent../usersContent/DRTX_13436/portafolio/664043dda0cd1/
+            $carpetaUsuario=obtenerCarpetaUsuario($conexion,$_SESSION['user_id']).$row['ubicacion_portafolio']."/";
+            $portafolio=array(
+                'id_portafolio' => $row['id_portafolio'],
+                'id_usuario_portafolio' => $row['id_usuario_portafolio'],
+                'titulo_portafolio' => $row['titulo_portafolio'],
+                'educacion_portafolio' => $row['educacion_portafolio'],
+                'sobre_mi_portafolio' => $row['sobre_mi_portafolio'],
+                'mensaje_bienvenida_portafolio' => $row['mensaje_bienvenida_portafolio'],
+                'foto_portafolio' => $carpetaUsuario.$row['foto_portafolio'],
+                'fondo_portafolio'=>$carpetaUsuario.$row['fondo_portafolio'],
+                'ubicacionCv_portafolio' => $row['cv_portafolio'],
+                'id_estado_portafolio'=>$row['id_estado_portafolio']
+            );
+            //  colocar habilidades relacionadas a un portafolio
+            $portafolio["habilidades"] = getHabilidadesById($conexion, $portafolio["id_portafolio"]);
+            $portafolios[] = $portafolio;
+        }
+        http_response_code(200);
+        echo json_encode($portafolios);
+
     }
 
-    //http_response_code(200);
 }
 
 
+function deletePortafolio($conexion, $id_portafolio) {
+    // Comprobar si el usuario tiene permiso para eliminar el portafolio
+    session_start();
+    $userId = $_SESSION['user_id'];
+    $id_usuario_portafolio = null; // Inicializar la variable
 
+    $sql = "SELECT id_usuario_portafolio FROM portafolios WHERE id_portafolio = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_portafolio);
+    $stmt->execute();
+    $stmt->store_result();
+    if ($stmt->num_rows == 0) {
+        http_response_code(404);
+        echo json_encode(["error" => "Portafolio no encontrado"]);
+        exit();
+    }
+    $stmt->bind_result($id_usuario_portafolio);
+    $stmt->fetch();
 
+    if ($id_usuario_portafolio != $userId) {
+        http_response_code(403);
+        echo json_encode(["error" => "No tiene permiso para eliminar este portafolio"]);
+        exit();
+    }
+
+    // Iniciar transacción
+    $conexion->begin_transaction();
+
+    // Eliminar portafolio de la base de datos
+    $sql = "DELETE FROM portafolios WHERE id_portafolio = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_portafolio);
+    if (!$stmt->execute()) {
+        $conexion->rollback();
+        http_response_code(500);
+        echo json_encode(["error" => "Error al eliminar el portafolio"]);
+        exit();
+    }
+
+    // Eliminar habilidades asociadas al portafolio
+    $sql = "DELETE FROM portafolios_habilidades WHERE id_portafolio_portafolios_habilidades = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_portafolio);
+    $stmt->execute();
+
+    // Eliminar proyectos asociados al portafolio
+    $sql = "DELETE FROM proyectos_agrupados_portafolio WHERE id_portafolio_proyectos_agrupados_portafolio = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_portafolio);
+    $stmt->execute();
+
+    // Confirmar transacción
+    $conexion->commit();
+
+    http_response_code(200);
+    echo json_encode(["message" => "Portafolio eliminado correctamente"]);
+}
 
 function getHabilidadesById($conexion, $idPortafolio)
 {
@@ -318,26 +411,26 @@ function getHabilidadesById($conexion, $idPortafolio)
     // Crear la consulta SQL para obtener la información de las habilidades
     $sql =
         "SELECT 
-                ph.idHabilidad_portafolios_habilidades, h.nombre_habilidades, h.tipo_habilidades
+                ph.id_habilidad_portafolios_habilidades, h.nombre_habilidades, h.tipo_habilidades
             FROM 
                 portafolios_habilidades ph
             JOIN 
-                habilidades h ON ph.idHabilidad_portafolios_habilidades = h.id_habilidades
+                habilidades h ON ph.id_habilidad_portafolios_habilidades = h.id_habilidades
             WHERE 
-                ph.idPortafolio_portafolios_habilidades = ?";
+                ph.id_portafolio_portafolios_habilidades = ?";
     $stmt = $conexion->prepare($sql);
     // Asignar los valores de los placeholders
     $stmt->bind_param("i", $idPortafolio);
     $stmt->execute();
     $result = $stmt->get_result();
-    $conexion->close();
+    //$conexion->close();
     // Obtener los datos de las habilidades
     $habilidades = [];
     $habilidadesTecnicas = [];
     $habilidadesSociales = [];
     while ($row = $result->fetch_assoc()) {
         $habilidad = [
-            "id" => $row["idHabilidad_portafolios_habilidades"],
+            "id" => $row["id_habilidad_portafolios_habilidades"],
             "nombre" => $row["nombre_habilidades"],
             "tipo" => $row["tipo_habilidades"]
         ];
@@ -354,6 +447,10 @@ function getHabilidadesById($conexion, $idPortafolio)
     return array("habilidadesTecnicas" => $habilidadesTecnicas, "habilidadesSociales" => $habilidadesSociales);
 
 }
+
+
+
+
 
 
 

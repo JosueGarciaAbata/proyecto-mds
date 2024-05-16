@@ -32,7 +32,7 @@ const saveAll= async function saveAll($form){
         selectedOptionsS = Array.from(selectElementS.selectedOptions).map(
             (option) => option.value
         ),
-        selectProjects = d.getElementById("habilidades-Sociales"),
+        selectProjects = d.getElementById("proyectos"),
         selectedProjects=Array.from(selectProjects.selectedOptions).map(
             (option) => option.value
         ),
@@ -70,7 +70,7 @@ const saveAll= async function saveAll($form){
             "afterend",
             `<p><b>Error ${err.status}: ${message}</b></p>`
         );
-        
+
     }
 };
 
@@ -78,8 +78,3 @@ const saveAll= async function saveAll($form){
 export default saveAll;
 
 
-
-/* 
-
-
-*/
