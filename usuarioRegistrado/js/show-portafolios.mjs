@@ -1,5 +1,146 @@
 const d = document;
 
+const editPortafolio=async function (portafolio) {
+
+  const formData = new FormData();
+  formData.append("id-portafolio", portafolio.id);
+  console.log(formData);
+  try {
+    let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
+        method: "PUT",
+        body: formData,
+    });
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
+
+    let json = await res.json();
+    console.log(json);
+
+
+    //  ahora si a controlar la respuesta
+
+    // Acceder a la información del post
+    const portafolioInfo = json["post_info"];
+    // Acceder a las etiquetas asociadas al post
+    const labels = json["etiquetas"];
+
+    // Rellenar los campos con la información del post
+    document.getElementById("title_post").value = portafolioInfo["titulo_post"];
+    document.getElementById("content_post").value =
+      portafolioInfo["contenido_textual_post"];
+    document.getElementById("state").value = portafolioInfo["id_estado_post"];
+
+    // Actualizar la imagen del post
+    if (portafolioInfo["ubicacion_imagen_post"] !== null) {
+      document.getElementById("postImage").setAttribute(
+        "src",
+        portafolioInfo["ubicacion_imagen_post"]
+      );
+    } else {
+      document.getElementById("postImage").setAttribute(
+        "src",
+        "../img/genericUploadImage.jpg"
+      );
+    }
+
+    // Rellenar la categoría del post
+    document.getElementById("categoria").value =
+      portafolioInfo["id_categoria_post"];
+
+    // Modificar el título superior
+    document.getElementById("superiorTitle").textContent = "Editar Post";
+
+    document.getElementById("imageModal").style.display = "block";
+
+    // Recuperar las etiquetas asociadas al post
+    const etiquetas = json["etiquetas"];
+
+    // Recuperar las etiquetas de la categoría del post
+
+    // Esta sección del código permite que se muestren activas las etiquetas asociadas al post
+    const etiquetasCategoria = json["etiquetas_categoria"];
+    const formSelectgroup = document.querySelector(".form-selectgroup");
+    if (etiquetas.length > 0) {
+      formSelectgroup.innerHTML = "";
+      etiquetasCategoria.forEach(function (etiquetaCategoria) {
+        const labelElement = document.createElement("label");
+        labelElement.classList.add("form-selectgroup-item");
+
+        const inputElement = document.createElement("input");
+        inputElement.type = "checkbox";
+        inputElement.name = "name";
+        inputElement.value = etiquetaCategoria.nombre_etiqueta;
+        inputElement.dataset.id = etiquetaCategoria.id_etiqueta;
+        inputElement.classList.add("form-selectgroup-input");
+
+        const spanElement = document.createElement("span");
+        spanElement.classList.add("form-selectgroup-label");
+        spanElement.textContent = etiquetaCategoria.nombre_etiqueta;
+
+        labelElement.appendChild(inputElement);
+        labelElement.appendChild(spanElement);
+
+        // Verificar si esta etiqueta está asociada al post actual y marcar el checkbox correspondiente
+        const etiquetaAsociada = etiquetas.find(function (etiqueta) {
+          return (
+            etiqueta.id_etiqueta === etiquetaCategoria.id_etiqueta
+          );
+        });
+
+        if (etiquetaAsociada) {
+          inputElement.checked = true;
+        }
+
+        formSelectgroup.appendChild(labelElement);
+      });
+    }
+} catch (err) {
+    let message = err.statusText || "Ocurrió un error";
+/*
+    $form.insertAdjacentHTML(
+        "afterend",
+        `<p><b>Error ${err.status}: ${message}</b></p>`
+    );
+*/
+    console.log(`${err.status}: ${message}`);
+}
+
+}
+
+
+const deletePortafolio=async function(portafolio) {
+  if (portafolio === null || portafolio === undefined || portafolio === '') {
+    return; // Termina la función si la variable está vacía
+  }
+  const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(portafolio)}`;
+  try {
+    let res = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+    });
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
+    let json = await res.json();
+    //console.log(json);
+    if (json.status === "OK") {
+      //  si va bn lo redirecciono a la pagina d portafolios, por ahora, que quiero que solo se elimine esa carta
+      /*
+      setTimeout(function () {
+        window.location.href = "portfolios.php";
+      }, 1500);
+      */
+      return true;
+    } else {
+      console.log(`${json.status}:${json.statusText}`);
+      mostrarModalDeAdvertencia("No se pudo eliminar el portafolio");
+    }
+  } catch (err) {
+      let message = err.statusText || "Ocurrió un error";
+      mostrarModalDeAdvertencia("Error de conexión");
+  }
+    return false;
+}
+
 const getMyPortafolios = async function () {
   try {
     let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
@@ -7,7 +148,14 @@ const getMyPortafolios = async function () {
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
-     show(json);
+
+    // Verificar si la respuesta indica que el usuario no tiene portafolios actualmente
+    if (json.status === "OK" && json.statusText === "El usuario no tiene portafolios actualmente.") {
+      console.log('El usuario no tiene portafolios actualmente');
+      return; // No hacer nada si el usuario no tiene portafolios actualmente
+    }
+
+    show(json);
   } catch (err) {
     let message = err.statusText || "Ocurrió un error";
     console.error(`Error ${err.status}: ${message}`);
@@ -15,13 +163,14 @@ const getMyPortafolios = async function () {
   }
 }
 
+
 function show(data) {
   const pageWrapper = document.querySelector(".row-cards");
   console.log(data);
   // Limpiar el contenido actual de pageWrapper antes de agregar nuevos posts
   pageWrapper.innerHTML = "";
   //Generar los contenedores con la informacion del post
-  data.forEach(function(portafolio) {
+  data.forEach(function (portafolio) {
     representData(portafolio, pageWrapper);
   });
   //LISTENNER EDIT - SELECT
@@ -29,17 +178,17 @@ function show(data) {
 }
 
 function representData(portafolio, pageWrapper) {
-  const cardCol = d.createElement("div");
+  const $cardCol = d.createElement("div");
   //cardCol.className = `col-sm-6 col-lg-4 portafolio ${portafolio.id}`;
-  cardCol.classList.add(
+  $cardCol.classList.add(
     "col-sm-6",
     "col-lg-4",
     "cardPortafolio",
-    //  portafolio.id
   );
-  const card = d.createElement("div");
 
-  card.classList.add("cardPortafolio", "card-sm", "position-relative");
+  const $card = d.createElement("div");
+  $card.classList.add("cardPortafolio", "card-sm", "position-relative");
+  $card.dataset.id = portafolio.id_portafolio;
   // SVG de borrado en la esquina superior derecha
   const deleteIcon = d.createElementNS("http://www.w3.org/2000/svg", "svg");
   deleteIcon.setAttribute("xmlns", "http://www.w3.org/2000/svg");
@@ -84,35 +233,39 @@ function representData(portafolio, pageWrapper) {
   title.className = "mb-0";
   title.textContent = portafolio.titulo_portafolio;
   //  seguir añadiendo
-  editIcon.setAttribute("data-id", portafolio.id_portafolio);
-  deleteIcon.setAttribute("data-id", portafolio.id_portafolio);
+  //editIcon.setAttribute("data-id", portafolio.id_portafolio);
+  //deleteIcon.setAttribute("data-id", portafolio.id_portafolio);
   cardBody.appendChild(title);
   cardBody.appendChild(editIcon);
-  card.appendChild(deleteIcon);
-  card.appendChild(anchor);
-  card.appendChild(cardBody);
-  cardCol.appendChild(card);
+  $card.appendChild(deleteIcon);
+  $card.appendChild(anchor);
+  $card.appendChild(cardBody);
+  $cardCol.appendChild($card);
   // Agregar la tarjeta al contenedor principal (pageWrapper)
-  pageWrapper.appendChild(cardCol);
+  pageWrapper.appendChild($cardCol);
 }
 
 function addListenerEditOrDelete() {
   const container = document.querySelector(".row-cards");
   // Agrega un event listener al contenedor padre
-  container.addEventListener("click", function (event) {
+  container.addEventListener("click", function (e) {
+    
     // Verifica si el objetivo del evento es un elemento con la clase 'cardPortafolio'
-    if (event.target.closest(".cardPortafolio")) {
-      const card = event.target.closest(".cardPortafolio");
-      const id = card.querySelector(".edit-icon").getAttribute("data-id");
+    if (e.target.closest(".cardPortafolio")) {
+      const $card = e.target.closest(".cardPortafolio");
+      // const id = card.querySelector(".edit-icon").getAttribute("data-id");
+      const id = $card.dataset.id;
       // Verifica si el evento proviene de la imagen con la clase 'delete-icon'
-      if (event.target.classList.contains("delete-icon")) {
+      if (e.target.classList.contains("delete-icon")) {
         // Ejecuta una función cuando se hace clic en la imagen con la clase 'delete-icon'
         console.log("Se hizo clic en la imagen con la clase delete-icon");
-        // Aquí puedes llamar a una función específica para eliminar el elemento correspondiente
-        deletePortafolio(id);
+        // Si se elimina tambien eliminamos la carta
+        if(deletePortafolio(id)){
+          $card.remove();
+        }
       }
       // Verifica si el evento proviene de la imagen con la clase 'edit-icon'
-      else if (event.target.classList.contains("edit-icon")) {
+      else if (e.target.classList.contains("edit-icon")) {
         // Ejecuta una función cuando se hace clic en la imagen con la clase 'edit-icon'
         console.log("Se hizo clic en la imagen con la clase edit-icon");
         // Aquí puedes llamar a una función específica para editar el elemento correspondiente
@@ -122,135 +275,6 @@ function addListenerEditOrDelete() {
   });
 }
 
-
-function editPortafolio(portafolio) {
-  const formData = new FormData();
-  formData.append("id-portafolio", portafolio.id);
-    console.log(formData);
-    fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
-      method: "UPDATE",
-      body:formData 
-    })
-      .then(function (response) {
-        return response.json();
-      })
-      .then(function (data) {
-        // Acceder a la información del post
-        const portafolioInfo = data["post_info"];
-        // Acceder a las etiquetas asociadas al post
-        const labels = data["etiquetas"];
-  
-        // Rellenar los campos con la información del post
-        document.getElementById("title_post").value = portafolioInfo["titulo_post"];
-        document.getElementById("content_post").value =
-          portafolioInfo["contenido_textual_post"];
-        document.getElementById("state").value = portafolioInfo["id_estado_post"];
-  
-        // Actualizar la imagen del post
-        if (portafolioInfo["ubicacion_imagen_post"] !== null) {
-          document.getElementById("postImage").setAttribute(
-            "src",
-            portafolioInfo["ubicacion_imagen_post"]
-          );
-        } else {
-          document.getElementById("postImage").setAttribute(
-            "src",
-            "../img/genericUploadImage.jpg"
-          );
-        }
-  
-        // Rellenar la categoría del post
-        document.getElementById("categoria").value =
-          portafolioInfo["id_categoria_post"];
-  
-        // Modificar el título superior
-        document.getElementById("superiorTitle").textContent = "Editar Post";
-  
-        document.getElementById("imageModal").style.display = "block";
-  
-        // Recuperar las etiquetas asociadas al post
-        const etiquetas = data["etiquetas"];
-  
-        // Recuperar las etiquetas de la categoría del post
-  
-        // Esta sección del código permite que se muestren activas las etiquetas asociadas al post
-        const etiquetasCategoria = data["etiquetas_categoria"];
-        const formSelectgroup = document.querySelector(".form-selectgroup");
-        if (etiquetas.length > 0) {
-          formSelectgroup.innerHTML = "";
-          etiquetasCategoria.forEach(function (etiquetaCategoria) {
-            const labelElement = document.createElement("label");
-            labelElement.classList.add("form-selectgroup-item");
-  
-            const inputElement = document.createElement("input");
-            inputElement.type = "checkbox";
-            inputElement.name = "name";
-            inputElement.value = etiquetaCategoria.nombre_etiqueta;
-            inputElement.dataset.id = etiquetaCategoria.id_etiqueta;
-            inputElement.classList.add("form-selectgroup-input");
-  
-            const spanElement = document.createElement("span");
-            spanElement.classList.add("form-selectgroup-label");
-            spanElement.textContent = etiquetaCategoria.nombre_etiqueta;
-  
-            labelElement.appendChild(inputElement);
-            labelElement.appendChild(spanElement);
-  
-            // Verificar si esta etiqueta está asociada al post actual y marcar el checkbox correspondiente
-            const etiquetaAsociada = etiquetas.find(function (etiqueta) {
-              return (
-                etiqueta.id_etiqueta === etiquetaCategoria.id_etiqueta
-              );
-            });
-  
-            if (etiquetaAsociada) {
-              inputElement.checked = true;
-            }
-  
-            formSelectgroup.appendChild(labelElement);
-          });
-        }
-      })
-      .catch(function (error) {
-        console.error(error);
-      });
-  }
-
-
-function deletePortafolio(portafolio) {
-  // Mostrar modal para eliminar
-  document.getElementById("deleteModal").style.display = "block";
-
-  // Configurar el botón de confirmar borrado
-  document.getElementById("deleteModalLabel").addEventListener("click", function () {
-    const formData = new FormData();
-    formData.append("id-portafolio", portafolio);
-    console.log(formData);
-    fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
-      method: "DELETE",
-      body: formData
-    })
-    .then(function (response) {
-      return response.json();
-    })
-    .then(function (response) {
-      if (response === "OK") {
-        mostrarModalExito("Portafolio eliminado");
-        setTimeout(function () {
-          window.location.href = "index.php";
-        }, 1500);
-      } else {
-        mostrarModalDeAdvertencia("No se pudo eliminar el portafolio");
-      }
-    })
-    .catch(function (error) {
-      console.error(error);
-      mostrarModalDeAdvertencia("Error de conexión");
-    });
-    // Ocultar modal de confirmación
-    document.getElementById("confirmModal").style.display = "none";
-  });
-}
 
 export default getMyPortafolios;
 

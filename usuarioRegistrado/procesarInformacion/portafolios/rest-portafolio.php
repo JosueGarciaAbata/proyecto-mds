@@ -31,7 +31,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         $dataBasic=[$titulo,$mensaje,$estudios,$sobreMi];
         $cosasAVer=array_merge($dataBasic,$habilidadesTecnicas,$habilidadesSociales);
 
-        if(contieneCaracteresEspeciales($conexion,$titulo)){
+        if(contieneCaracteresEspeciales($conexion,$cosasAVer)){
             http_response_code(405);
             echo json_encode(["error" => "Los campos tienen valores inseguros"]);
             exit();
@@ -60,9 +60,19 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         updatePortafolio($conexion, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje,$proyectos);
         break;
     case "DELETE":
-        deletePortafolio($conexion, $_POST['id-portafolio']);
-
-        
+        if (isset($_GET['id-portafolio'])) {
+            $idPortafolio = $_GET['id-portafolio'];
+            // Asegúrate de que el id no esté vacío
+            if (!empty($idPortafolio)) {
+                // Aquí puedes procesar el id-portafolio
+                deletePortafolio($conexion, $idPortafolio);  
+            } else {
+                echo json_encode(["status" => "BAD_REQUEST", "statusText" => "id-portafolio is empty"]);
+            }
+        } else {
+            echo json_encode(["status" => "BAD_REQUEST", "statusText" => "Missing id-portafolio"]);
+            exit;
+        }
         break;
         defaulft:
         // Si la petición no es POST, UPDATE,PUT o DELETE, devolvemos un error
@@ -135,8 +145,8 @@ function savePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $
     $mensaje = $conexion->real_escape_string($mensaje);
 */  
     // Subir archivos
-    $datosUsuario=obtenerCarpetaUsuario($conexion, $userId);
-    $rutaCarpetaUsuario = "../../../usersContent/" . $datosUsuario;
+    $rutaCarpetaUsuario="../../".obtenerCarpetaUsuario($conexion, $userId);
+    //$rutaCarpetaUsuario = "../../../usersContent/" . $datosUsuario;
     //echo "La carpeta del usuario es:" .$rutaCarpetaUsuario;
     $identificadorUnico = uniqid();
     
@@ -210,7 +220,7 @@ function subirArchivo($nombreCampo, $rutaDestino)
     $nombreArchivo = $_FILES[$nombreCampo]["name"];
     $extensionPermitida = pathinfo($nombreArchivo, PATHINFO_EXTENSION);
     $rutaDestinoArchivo = $rutaDestino . "/" . $nombreArchivo;
-
+    //echo "La ruta destino es: $rutaDestinoArchivo";
     // Si la carpeta de destino no existe, intenta crearla
     if (!file_exists($rutaDestino)) {
         if (!mkdir($rutaDestino, 0777, true)) {
@@ -219,7 +229,6 @@ function subirArchivo($nombreCampo, $rutaDestino)
             exit();
         }
     }
-
     if (in_array($extensionPermitida, ["jpeg", "jpg", "png", "gif", "svg", "pdf"])) {
         if (!move_uploaded_file($archivoTemporal, $rutaDestinoArchivo)) {
             http_response_code(500);
@@ -307,7 +316,10 @@ function getPortafolio($conexion, $idHabilidades = 0)
         $stmt_userData->execute();
         $result_userData = $stmt_userData->get_result();
         if ($result_userData->num_rows < 1) {
-            return [];
+            //  esta bien porque solo no encontro datos
+            http_response_code(200);
+            echo json_encode(["status" => "OK", "statusText" => "El usuario no tiene portafolios actualmente."]);
+            exit();
         }
         // Retornar los valores
         // $portafolios = [];
@@ -339,68 +351,75 @@ function getPortafolio($conexion, $idHabilidades = 0)
         }
         http_response_code(200);
         echo json_encode($portafolios);
-
     }
-
 }
 
-
 function deletePortafolio($conexion, $id_portafolio) {
-    // Comprobar si el usuario tiene permiso para eliminar el portafolio
     session_start();
     $userId = $_SESSION['user_id'];
-    $id_usuario_portafolio = null; // Inicializar la variable
+    session_write_close(); // Cierra la sesión para evitar bloqueos
 
-    $sql = "SELECT id_usuario_portafolio FROM portafolios WHERE id_portafolio = ?";
+    $sql = "SELECT id_usuario_portafolio, ubicacion_portafolio FROM portafolios WHERE id_portafolio = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id_portafolio);
     $stmt->execute();
-    $stmt->store_result();
-    if ($stmt->num_rows == 0) {
+    $result = $stmt->get_result();
+
+    if ($result->num_rows == 0) {
         http_response_code(404);
         echo json_encode(["error" => "Portafolio no encontrado"]);
         exit();
     }
-    $stmt->bind_result($id_usuario_portafolio);
-    $stmt->fetch();
 
-    if ($id_usuario_portafolio != $userId) {
+    $portfolioData = $result->fetch_assoc();
+    $stmt->close();
+
+    if ($portfolioData["id_usuario_portafolio"] != $userId) {
         http_response_code(403);
         echo json_encode(["error" => "No tiene permiso para eliminar este portafolio"]);
         exit();
     }
 
-    // Iniciar transacción
+    // Eliminar carpeta del portafolio: ../usersContent/_USER_/portafolios/_ID-PATH_/
+    $datosUsuario = "../../" .obtenerCarpetaUsuario($conexion, $userId);
+    $rutaCarpetaUsuario =  $datosUsuario . "/" . $portfolioData["ubicacion_portafolio"];
+    deleteDirectory($rutaCarpetaUsuario);
+
+    // Iniciar transacción para eliminación total, incluyendo sus archivos y directorios en el sistema de archivos
     $conexion->begin_transaction();
+
+    // Eliminar habilidades asociadas al portafolio
+    $sql = "DELETE FROM portafolios_habilidades WHERE id_portafolio_portafolios_habilidades = ?";
+    $stmtDeleteHabilidades = $conexion->prepare($sql);
+    $stmtDeleteHabilidades->bind_param("i", $id_portafolio);
+    $stmtDeleteHabilidades->execute();
+    $stmtDeleteHabilidades->close();
+
+    // Eliminar proyectos asociados al portafolio
+    $sql = "DELETE FROM proyectos_agrupados_portafolio WHERE id_portafolio_proyectos_agrupados_portafolio = ?";
+    $stmtDeleteProyectos = $conexion->prepare($sql);
+    $stmtDeleteProyectos->bind_param("i", $id_portafolio);
+    $stmtDeleteProyectos->execute();
+    $stmtDeleteProyectos->close();
 
     // Eliminar portafolio de la base de datos
     $sql = "DELETE FROM portafolios WHERE id_portafolio = ?";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_portafolio);
-    if (!$stmt->execute()) {
+    $stmtDeletePortafolio = $conexion->prepare($sql);
+    $stmtDeletePortafolio->bind_param("i", $id_portafolio);
+    if (!$stmtDeletePortafolio->execute()) {
         $conexion->rollback();
         http_response_code(500);
         echo json_encode(["error" => "Error al eliminar el portafolio"]);
         exit();
     }
 
-    // Eliminar habilidades asociadas al portafolio
-    $sql = "DELETE FROM portafolios_habilidades WHERE id_portafolio_portafolios_habilidades = ?";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_portafolio);
-    $stmt->execute();
-
-    // Eliminar proyectos asociados al portafolio
-    $sql = "DELETE FROM proyectos_agrupados_portafolio WHERE id_portafolio_proyectos_agrupados_portafolio = ?";
-    $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_portafolio);
-    $stmt->execute();
+    $stmtDeletePortafolio->close();
 
     // Confirmar transacción
     $conexion->commit();
 
     http_response_code(200);
-    echo json_encode(["message" => "Portafolio eliminado correctamente"]);
+    echo json_encode(["status" => "OK", "statusText" => "Portafolio eliminado correctamente"]);
 }
 
 function getHabilidadesById($conexion, $idPortafolio)
@@ -448,8 +467,23 @@ function getHabilidadesById($conexion, $idPortafolio)
 
 }
 
-
-
+function deleteDirectory($dir) {
+    if (!file_exists($dir)) {
+        return false;
+    }
+    if (!is_dir($dir)) {
+        return unlink($dir);
+    }
+    foreach (scandir($dir) as $item) {
+        if ($item == '.' || $item == '..') {
+            continue;
+        }
+        if (!deleteDirectory($dir . DIRECTORY_SEPARATOR . $item)) {
+            return false;
+        }
+    }
+    return rmdir($dir);
+}
 
 
 
