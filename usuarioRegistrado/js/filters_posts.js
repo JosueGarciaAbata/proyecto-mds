@@ -9,7 +9,7 @@ $(document).ready(function () {
 
     if (typeSelected === "tipo-categoria") {
       $("#categorias-div").show();
-      getCategories("categories", "getCategoriesPosts");
+      getCategories("categories", "getCategories");
 
       // Cambio en las categorias
       $("#categories").on("change", "input[type='checkbox']", function () {
@@ -270,8 +270,11 @@ $(document).ready(function () {
 
     if (typeSelected === "tipo-etiqueta") {
       $("#categorias-tags-div").show();
-      getCategories("categories-tags", "getCategoriesPosts");
+      getCategories("categories-tags", "getCategories");
       var selectedCategory = null;
+
+      // Eliminar lo anterior
+      $("#categories-tags").off("change", 'input[type="checkbox"]');
 
       $("#categories-tags").on("change", 'input[type="checkbox"]', function () {
         var selectedTags = [];
@@ -284,7 +287,7 @@ $(document).ready(function () {
             url: "procesarInformacion/filters/filters.php",
             type: "POST",
             data: {
-              action: "getOneCategoryTagsPost",
+              action: "getOneCategoryTags",
               categoryData: categoryId,
             },
             success: function (response) {
@@ -582,11 +585,6 @@ $(document).ready(function () {
     }
   });
 });
-
-/*
-Filtro en función de los post: btn_projects. Usuario registrado
-*/
-$(document).ready(function () {});
 
 function obtenerSeleccionados(contenedor) {
   return $("#" + contenedor + " input[type='checkbox']:checked")
