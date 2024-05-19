@@ -2,9 +2,9 @@
 require_once('header.php'); 
 require_once('navbar.php'); 
 require_once('funcionesComentarios.php');
-//require_once('cargarComentarios.php');
+
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
-// Asegúrate de que la sesión esté iniciada
+
 $id_usuario = $_SESSION['user_id'];
 $stmt_posts = $conexion->prepare("SELECT * FROM posts WHERE id_estado_post = 1");
 $stmt_posts->execute();
