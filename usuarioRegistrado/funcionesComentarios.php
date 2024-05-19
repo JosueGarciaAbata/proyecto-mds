@@ -1,0 +1,83 @@
+<?php
+require_once("../procesarInformacion/conexion.php");
+$conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
+
+function insertarComentario($conexion, $idPost, $idUsuarioComentario, $contenidoComentario) {
+    // Preparar la consulta con el campo id_estado_comentario
+    $stmt_insertar_comentario = $conexion->prepare("INSERT INTO comentarios (id_post_comentario, id_usuario_comentario, id_estado_comentario, contenido_comentario) VALUES (?, ?, 2, ?)");
+
+    // Enlazar los parámetros
+    $stmt_insertar_comentario->bind_param("iis", $idPost, $idUsuarioComentario, $contenidoComentario);
+    
+    // Ejecutar la consulta
+    if ($stmt_insertar_comentario->execute()) {
+        return true;
+    } else {
+        // Imprimir el mensaje de error para depuración
+        echo "Error al ejecutar la consulta: " . $stmt_insertar_comentario->error;
+        return false;
+    }
+
+    // Cerrar la declaración
+    $stmt_insertar_comentario->close();
+}
+
+function obtenerComentariosPorPost($conexion, $idPost) {
+    $stmt = $conexion->prepare("SELECT * FROM comentarios WHERE id_post_comentario = ?");
+    if ($stmt === false) {
+        error_log("Error en la preparación de la consulta: " . $conexion->error);
+        return false;
+    }
+    $stmt->bind_param("i", $idPost);
+    if (!$stmt->execute()) {
+        error_log("Error en la ejecución de la consulta: " . $stmt->error);
+        return false;
+    }
+    $result = $stmt->get_result();
+    if ($result === false) {
+        error_log("Error en la obtención de resultados: " . $stmt->error);
+        return false;
+    }
+    $comentarios = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $comentarios;
+}
+
+ function eliminarComentario($conexion, $idComentario){
+    $stmt_eliminar_comentario = $conexion->prepare("UPDATE comentarios SET id_estado_comentario = 2 WHERE id_comentario = ?");
+    $stmt_eliminar_comentario->bind_param("i", $idComentario);
+    if ($stmt_eliminar_comentario->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+
+    $stmt_eliminar_comentario->close();
+
+ }
+ function publicarComentario($conexion, $idComentario){
+    $stmt_publicar_comentario = $conexion->prepare("UPDATE comentarios SET id_estado_comentario = 1 WHERE id_comentario = ?");
+    $stmt_publicar_comentario->bind_param("i", $idComentario);
+    if ($stmt_publicar_comentario->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+
+    $stmt_publicar_comentario->close();
+ }
+
+function actualizarComentario($conexion, $idComentario, $nuevoContenido) {
+    $stmt_actualizar_comentario = $conexion->prepare("UPDATE comentarios SET contenido_comentario = ? WHERE id_comentario = ?");
+    $stmt_actualizar_comentario->bind_param("si", $nuevoContenido, $idComentario);
+    
+    if ($stmt_actualizar_comentario->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+
+    $stmt_actualizar_comentario->close();
+}
+
+?>
