@@ -67,6 +67,20 @@ function obtenerComentariosPorPost($conexion, $idPost) {
     $stmt_publicar_comentario->close();
  }
 
+ function publicarComentariosVisibles($conexion, $idEstadoComentario) {
+    $stmt_publicar_comentarios = $conexion->prepare("SELECT * FROM comentarios WHERE id_estado_comentario = ?");
+    $stmt_publicar_comentarios->bind_param("i", $idEstadoComentario);
+    if ($stmt_publicar_comentarios->execute()) {
+        $result = $stmt_publicar_comentarios->get_result();
+        $comentarios = $result->fetch_all(MYSQLI_ASSOC);
+        $stmt_publicar_comentarios->close();
+        return $comentarios;
+    } else {
+        return false;
+    }
+}
+
+
 function actualizarComentario($conexion, $idComentario, $nuevoContenido) {
     $stmt_actualizar_comentario = $conexion->prepare("UPDATE comentarios SET contenido_comentario = ? WHERE id_comentario = ?");
     $stmt_actualizar_comentario->bind_param("si", $nuevoContenido, $idComentario);
