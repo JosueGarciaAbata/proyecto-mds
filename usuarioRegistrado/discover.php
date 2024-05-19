@@ -67,12 +67,12 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost) {
                         <div class="card mb-3">
                             <div class="card-body">
                                 <p class="card-text"><?php echo obtenerUsuarioPost($conexion, $post['id_usuario_post']); ?></p>
-                                <h5 class="card-title"><?php echo $post['titulo_post']; ?></h5>
-                                <p class="card-text"><?php echo $post['contenido_textual_post']; ?></p>
+                                <h5 class="card-title"><?php echo htmlspecialchars($post['titulo_post']); ?></h5>
+                                <p class="card-text"><?php echo nl2br(htmlspecialchars($post['contenido_textual_post'])); ?></p>
                                 <p class="card-text">Categoría: <?php echo obtenerNombreCategoria($conexion, $post['id_categoria_post']); ?></p>
                                 <p class="card-text">Etiquetas: <?php echo obtenerNombresEtiquetas($conexion, $post['id_categoria_post']); ?></p>
                                 <?php if (!empty($post['ubicacion_imagen_post'])) { ?>
-                                    <img src="<?php echo $post['ubicacion_imagen_post']; ?>" class="img-fluid" alt="">
+                                    <img src="<?php echo htmlspecialchars($post['ubicacion_imagen_post']); ?>" class="img-fluid" alt="Imagen del post">
                                 <?php } ?>
                             </div>
                         </div>
@@ -81,10 +81,12 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost) {
                                 <h5 class="card-title">Comentarios</h5>
                                 <div id="comentarios_<?php echo $post['id_post']; ?>">
                                     <?php 
-                                    $comentarios = obtenerComentariosPorPost($conexion, $post['id_post']);
+                                    $comentarios = publicarComentariosVisibles($conexion, 1);
                                     if ($comentarios !== false && !empty($comentarios)) {
                                         foreach ($comentarios as $comentario) {
-                                            echo htmlspecialchars($comentario['contenido_comentario']) . '<br>';
+                                            if ($comentario['id_post_comentario'] == $post['id_post']) {
+                                                echo htmlspecialchars($comentario['contenido_comentario']) . '<br>';
+                                            }
                                         }
                                     } else {
                                         echo "No hay comentarios.";
@@ -92,15 +94,14 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost) {
                                     ?>
                                 </div>
                                 <form class="mt-3 comentario_form" id="comentario_form_<?php echo $post['id_post']; ?>" method="post">
-    <div class="mb-3">
-        <label for="comentario_<?php echo $post['id_post']; ?>" class="form-label">Escribe un comentario</label>
-        <textarea class="form-control" id="comentario_<?php echo $post['id_post']; ?>" name="contenido_comentario" rows="1"></textarea>
-    </div>
-    <input type="hidden" name="id_post_comentario" value="<?php echo $post['id_post']; ?>">
-    <input type="hidden" name="estado_comentario" value="2"> <!-- Estado oculto -->
-    <button type="submit" class="btn btn-primary">Enviar comentario</button>
-</form>
-
+                                    <div class="mb-3">
+                                        <label for="comentario_<?php echo $post['id_post']; ?>" class="form-label">Escribe un comentario</label>
+                                        <textarea class="form-control" id="comentario_<?php echo $post['id_post']; ?>" name="contenido_comentario" rows="1"></textarea>
+                                    </div>
+                                    <input type="hidden" name="id_post_comentario" value="<?php echo $post['id_post']; ?>">
+                                    <input type="hidden" name="estado_comentario" value="2"> <!-- Estado oculto -->
+                                    <button type="submit" class="btn btn-primary">Enviar comentario</button>
+                                </form>
                             </div>
                         </div>
                     </div>
