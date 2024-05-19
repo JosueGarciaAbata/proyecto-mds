@@ -80,18 +80,4 @@ function obtenerComentariosPorPost($conexion, $idPost) {
     }
 }
 
-
-function actualizarComentario($conexion, $idComentario, $nuevoContenido) {
-    $stmt_actualizar_comentario = $conexion->prepare("UPDATE comentarios SET contenido_comentario = ? WHERE id_comentario = ?");
-    $stmt_actualizar_comentario->bind_param("si", $nuevoContenido, $idComentario);
-    
-    if ($stmt_actualizar_comentario->execute()) {
-        return true;
-    } else {
-        return false;
-    }
-
-    $stmt_actualizar_comentario->close();
-}
-
 ?>
