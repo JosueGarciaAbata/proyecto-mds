@@ -80,4 +80,37 @@ function obtenerComentariosPorPost($conexion, $idPost) {
     }
 }
 
+
+function encontrarUsuarioComentario($conexion, $idUsuario) {
+    // Verificar si el idUsuario es 0 y devolver "Anonimo"
+    if ($idUsuario == 0) {
+        return "Anonimo";
+    }
+    
+    // Preparar la consulta SQL
+    $stmt_encontrar_usuario = $conexion->prepare("SELECT nombre_usuario FROM usuarios WHERE id_usuario = ?");
+    
+    // Vincular el parámetro a la consulta
+    $stmt_encontrar_usuario->bind_param("i", $idUsuario);
+    
+    // Ejecutar la consulta
+    if ($stmt_encontrar_usuario->execute()) {
+        // Obtener el resultado de la consulta
+        $resultado = $stmt_encontrar_usuario->get_result();
+        // Verificar si se encontró un usuario
+        if ($resultado->num_rows > 0) {
+            $usuario = $resultado->fetch_assoc();
+            $stmt_encontrar_usuario->close();
+            return $usuario['nombre_usuario'];
+        } else {
+            // Cerrar la declaración y devolver false si no se encontró ningún usuario
+            $stmt_encontrar_usuario->close();
+            return false;
+        }
+    } else {
+        // Devolver false en caso de falla en la ejecución de la consulta
+        return false;
+    }
+}
+
 ?>
