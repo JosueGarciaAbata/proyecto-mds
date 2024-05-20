@@ -2,9 +2,9 @@
 require_once('header.php'); 
 require_once('navbar.php'); 
 require_once('funcionesComentarios.php');
-
+//require_once('cargarComentarios.php');
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
-
+// Asegúrate de que la sesión esté iniciada
 $id_usuario = $_SESSION['user_id'];
 $stmt_posts = $conexion->prepare("SELECT * FROM posts WHERE id_estado_post = 1");
 $stmt_posts->execute();
@@ -85,6 +85,8 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost) {
                                     if ($comentarios !== false && !empty($comentarios)) {
                                         foreach ($comentarios as $comentario) {
                                             if ($comentario['id_post_comentario'] == $post['id_post']) {
+                                                $nombreUsuario = encontrarUsuarioComentario($conexion, $comentario['id_usuario_comentario']);
+                                                echo '<strong>' . htmlspecialchars($nombreUsuario) . '</strong><br>';
                                                 echo htmlspecialchars($comentario['contenido_comentario']) . '<br>';
                                             }
                                         }
