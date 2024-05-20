@@ -1,4 +1,5 @@
 const d = document;
+const $formPortafolio=d.getElementById("form-portafolio");
 
 const editPortafolio=async function (portafolio) {
 
@@ -106,7 +107,6 @@ const editPortafolio=async function (portafolio) {
 
 }
 
-
 const deletePortafolio=async function(portafolio) {
   if (portafolio === null || portafolio === undefined || portafolio === '') {
     return; // Termina la función si la variable está vacía
@@ -121,14 +121,8 @@ const deletePortafolio=async function(portafolio) {
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
-    //console.log(json);
+
     if (json.status === "OK") {
-      //  si va bn lo redirecciono a la pagina d portafolios, por ahora, que quiero que solo se elimine esa carta
-      /*
-      setTimeout(function () {
-        window.location.href = "portfolios.php";
-      }, 1500);
-      */
       return true;
     } else {
       console.log(`${json.status}:${json.statusText}`);
@@ -165,7 +159,7 @@ const getMyPortafolios = async function () {
 
 
 function show(data) {
-  const pageWrapper = document.querySelector(".row-cards");
+  const pageWrapper = d.querySelector(".row-cards");
   console.log(data);
   // Limpiar el contenido actual de pageWrapper antes de agregar nuevos posts
   pageWrapper.innerHTML = "";
@@ -215,13 +209,15 @@ function representData(portafolio, pageWrapper) {
   anchor.className = "d-block";
   //  modificar con la img q traigo
   const imageElement = d.createElement("img");
-  var imageUrl =
+  const imageUrl =
     portafolio.foto_portafolio != null &&
       portafolio.foto_portafolio.trim() !== ""
       ? portafolio.foto_portafolio
       : "../img/genericImagePost.jpg";
   imageElement.src = imageUrl;
   imageElement.className = "card-img-top";
+  imageElement.setAttribute("data-bs-toggle", "modal");
+  imageElement.setAttribute("data-bs-target", "#portfoliosModal");
 
   anchor.appendChild(imageElement);
 
@@ -243,6 +239,47 @@ function representData(portafolio, pageWrapper) {
   $cardCol.appendChild($card);
   // Agregar la tarjeta al contenedor principal (pageWrapper)
   pageWrapper.appendChild($cardCol);
+}
+
+const getPortfolioData=async function(idPortfolio){
+  //  send request
+  const formData = new FormData();
+  formData.append("id-portafolio",idPortfolio);
+  console.log(formData);
+  try {
+    let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
+      method: "GET",
+      body:formData
+    });
+    if (!res.ok) throw { status: res.status, statusText: res.statusText };
+    let json = await res.json();
+    console.log(json);
+    
+    $formPortafolio.getElementById("titulo-portafolio").value=json.titulo_portafolio;
+    $formPortafolio.getElementById("mensaje-bienvenida").value=json.mensaje_bienvenida_portafolio;
+    $formPortafolio.getElementById("estudios").value=json.educacion_portafolio;
+    $formPortafolio.getElementById("sobre-mi").value=json.sobre_mi_portafolio;
+    
+    //   no se como llenarles los select
+
+    //$formPortafolio.getElementById("habilidades-Tecnicas").value=json.;
+    //$formPortafolio.getElementById("habilidades-Sociales").value=json.;
+    //$formPortafolio.getElementById("proyectos").value=json.;
+    
+    //  toca crear una cajita para q se vean las imagenes
+
+    //$formPortafolio.getElementById("foto-perfil").value;
+    //$formPortafolio.getElementById("foto-fondo").value;
+    //$formPortafolio.getElementById("cv").value;
+    return true;
+  } catch (err) {
+    let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
+    console.error(`Error ${err.status}: ${message}`);
+    throw err;
+  }
+  //  change values 
+  
+  
 }
 
 function addListenerEditOrDelete() {
@@ -270,19 +307,15 @@ function addListenerEditOrDelete() {
         console.log("Se hizo clic en la imagen con la clase edit-icon");
         // Aquí puedes llamar a una función específica para editar el elemento correspondiente
         editPortafolio(id);
+      }else{//sino mostrar el modal con los datos actuales de ese portafolio
+        getPortfolioData(id);
+        
       }
     }
   });
 }
 
 
+
+
 export default getMyPortafolios;
-
-
-
-
-
-
-
-
-

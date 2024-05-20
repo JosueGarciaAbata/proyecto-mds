@@ -1,20 +1,4 @@
-
-
 const d = document;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const saveAll= async function saveAll($form){
     const titulo = d.getElementById("titulo-portafolio").value,
