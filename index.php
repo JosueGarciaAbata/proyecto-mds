@@ -1,3 +1,3 @@
 <?php
 
-header("Location: usuarioNuevo/index.php");
+header("Location: usuarioNuevo/discover.php");
