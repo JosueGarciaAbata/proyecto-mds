@@ -49,7 +49,6 @@ $posts= obtenerPostsPorUsuario($conexion, $id_usuario);
             <?php if ($comentarios): ?>
                 <?php foreach ($comentarios as $comentario): ?>
                     <div class="comment" id="comment-<?php echo $comentario['id_comentario']; ?>">
-                        <p><strong>ID del Comentario: </strong><?php echo $comentario['id_comentario']; ?></p>
                         <p><?php echo htmlspecialchars($comentario['contenido_comentario']); ?></p>
                         <div class="comment-actions">
                             <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" style="display: inline;">
