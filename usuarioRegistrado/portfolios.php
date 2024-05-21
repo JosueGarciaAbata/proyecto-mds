@@ -103,13 +103,13 @@ function generarOpcionesHabilidades($habT)
         <!-- Main modal -->
         <div class="modal fade" id="portfoliosModal" tabindex="-1" aria-labelledby="portfoliosModal" aria-hidden="true">
             <div class="modal-dialog modal-lg">
-                <div class="modal-content"
-                    style="position: absolute; top: 50px; left: 0; right: 0; bottom: 0; overflow: auto;">
+                <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="superiorTitle">Create New Portfolio</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
+                        
                         <!-- Sección para el título y contenido -->
                         <form enctype="multipart/form-data" id="form-portafolio">
                             <!--  titulo proyecto  -->
@@ -132,7 +132,7 @@ function generarOpcionesHabilidades($habT)
                             </div>
                             <!-- foto fondo -->
                             <div class="mb-3">
-                                <label for="foto-fondo" class="form-label">Foto de perfil:</label>
+                                <label for="foto-fondo" class="form-label">Fondo del portafolio:</label>
                                 <input type="file" name="foto-fondo" id="foto-fondo" class="form-control"
                                     accept=".jpg, .jpeg, .png, .gif" required>
                             </div>
@@ -202,7 +202,8 @@ function generarOpcionesHabilidades($habT)
 
                             <!-- Botones para guardar y cerrar el modal -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" class="btn btn-secondary me-md-2" data-bs-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-secondary me-md-2"
+                                    data-bs-dismiss="modal">Close</button>
                                 <input id="btn_portfolio" type="submit" class="btn btn-primary" value="Save">
                             </div>
                         </form>

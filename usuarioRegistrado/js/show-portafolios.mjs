@@ -1,111 +1,36 @@
 const d = document;
 const $formPortafolio=d.getElementById("form-portafolio");
+//  console.log($formPortafolio);
 
-const editPortafolio=async function (portafolio) {
-
-  const formData = new FormData();
-  formData.append("id-portafolio", portafolio.id);
-  console.log(formData);
-  try {
-    let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
-        method: "PUT",
-        body: formData,
-    });
-    if (!res.ok) throw { status: res.status, statusText: res.statusText };
-
-    let json = await res.json();
-    console.log(json);
-
-
-    //  ahora si a controlar la respuesta
-
-    // Acceder a la información del post
-    const portafolioInfo = json["post_info"];
-    // Acceder a las etiquetas asociadas al post
-    const labels = json["etiquetas"];
-
-    // Rellenar los campos con la información del post
-    document.getElementById("title_post").value = portafolioInfo["titulo_post"];
-    document.getElementById("content_post").value =
-      portafolioInfo["contenido_textual_post"];
-    document.getElementById("state").value = portafolioInfo["id_estado_post"];
-
-    // Actualizar la imagen del post
-    if (portafolioInfo["ubicacion_imagen_post"] !== null) {
-      document.getElementById("postImage").setAttribute(
-        "src",
-        portafolioInfo["ubicacion_imagen_post"]
-      );
-    } else {
-      document.getElementById("postImage").setAttribute(
-        "src",
-        "../img/genericUploadImage.jpg"
-      );
-    }
-
-    // Rellenar la categoría del post
-    document.getElementById("categoria").value =
-      portafolioInfo["id_categoria_post"];
-
-    // Modificar el título superior
-    document.getElementById("superiorTitle").textContent = "Editar Post";
-
-    document.getElementById("imageModal").style.display = "block";
-
-    // Recuperar las etiquetas asociadas al post
-    const etiquetas = json["etiquetas"];
-
-    // Recuperar las etiquetas de la categoría del post
-
-    // Esta sección del código permite que se muestren activas las etiquetas asociadas al post
-    const etiquetasCategoria = json["etiquetas_categoria"];
-    const formSelectgroup = document.querySelector(".form-selectgroup");
-    if (etiquetas.length > 0) {
-      formSelectgroup.innerHTML = "";
-      etiquetasCategoria.forEach(function (etiquetaCategoria) {
-        const labelElement = document.createElement("label");
-        labelElement.classList.add("form-selectgroup-item");
-
-        const inputElement = document.createElement("input");
-        inputElement.type = "checkbox";
-        inputElement.name = "name";
-        inputElement.value = etiquetaCategoria.nombre_etiqueta;
-        inputElement.dataset.id = etiquetaCategoria.id_etiqueta;
-        inputElement.classList.add("form-selectgroup-input");
-
-        const spanElement = document.createElement("span");
-        spanElement.classList.add("form-selectgroup-label");
-        spanElement.textContent = etiquetaCategoria.nombre_etiqueta;
-
-        labelElement.appendChild(inputElement);
-        labelElement.appendChild(spanElement);
-
-        // Verificar si esta etiqueta está asociada al post actual y marcar el checkbox correspondiente
-        const etiquetaAsociada = etiquetas.find(function (etiqueta) {
-          return (
-            etiqueta.id_etiqueta === etiquetaCategoria.id_etiqueta
-          );
-        });
-
-        if (etiquetaAsociada) {
-          inputElement.checked = true;
+const addListenerEditOrDelete= async function () {
+  const container = document.querySelector(".row-cards");
+  // Agrega un event listener al contenedor padre
+  container.addEventListener("click", function (e) {
+    
+    // Verifica si el objetivo del evento es un elemento con la clase 'cardPortafolio'
+    if (e.target.closest(".cardPortafolio")) {
+      const $card = e.target.closest(".cardPortafolio");
+      // const id = card.querySelector(".edit-icon").getAttribute("data-id");
+      const id = $card.dataset.id;
+      // Verifica si el evento proviene de la imagen con la clase 'delete-icon'
+      if (e.target.classList.contains("delete-icon")) {
+        // Ejecuta una función cuando se hace clic en la imagen con la clase 'delete-icon'
+        console.log("Se hizo clic en la imagen con la clase delete-icon");
+        // Si se elimina tambien eliminamos la carta
+        if(deletePortafolio(id)){
+          $card.remove();
         }
+      }
+      // Verifica si el evento proviene de la imagen con la clase 'edit-icon'
+      else if (!e.target.classList.contains("edit-icon")) {
+        console.log("Se hizo clic en la imagen con la clase edit-icon");
+        getPortfolioData(id);
+      }
 
-        formSelectgroup.appendChild(labelElement);
-      });
     }
-} catch (err) {
-    let message = err.statusText || "Ocurrió un error";
-/*
-    $form.insertAdjacentHTML(
-        "afterend",
-        `<p><b>Error ${err.status}: ${message}</b></p>`
-    );
-*/
-    console.log(`${err.status}: ${message}`);
+  });
 }
 
-}
 
 const deletePortafolio=async function(portafolio) {
   if (portafolio === null || portafolio === undefined || portafolio === '') {
@@ -160,7 +85,7 @@ const getMyPortafolios = async function () {
 
 function show(data) {
   const pageWrapper = d.querySelector(".row-cards");
-  console.log(data);
+  //  console.log(data);
   // Limpiar el contenido actual de pageWrapper antes de agregar nuevos posts
   pageWrapper.innerHTML = "";
   //Generar los contenedores con la informacion del post
@@ -241,37 +166,56 @@ function representData(portafolio, pageWrapper) {
   pageWrapper.appendChild($cardCol);
 }
 
+const checkSelect = function($select, habilidades) {
+  //  console.log($select.options);
+  //  console.log($select.options);
+  Array.from($select.options).forEach(option => {
+    //  TypeError: habilidades.some is not a function
+    if (habilidades.some(habilidad => habilidad.id == option.value)) {
+      option.selected = true;
+    }
+  });
+};
+
+
 const getPortfolioData=async function(idPortfolio){
   //  send request
-  const formData = new FormData();
-  formData.append("id-portafolio",idPortfolio);
-  console.log(formData);
+  const url=`./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(idPortfolio)}`;
+  
   try {
-    let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
+    let res = await fetch(url, {
       method: "GET",
-      body:formData
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
     console.log(json);
-    
-    $formPortafolio.getElementById("titulo-portafolio").value=json.titulo_portafolio;
-    $formPortafolio.getElementById("mensaje-bienvenida").value=json.mensaje_bienvenida_portafolio;
-    $formPortafolio.getElementById("estudios").value=json.educacion_portafolio;
-    $formPortafolio.getElementById("sobre-mi").value=json.sobre_mi_portafolio;
-    
-    //   no se como llenarles los select
+    $formPortafolio.dataset.id=idPortfolio;
+    const $titulo=$formPortafolio.querySelector("#titulo-portafolio");
+    $titulo.value=json.titulo_portafolio;
+    const $mensaje=$formPortafolio.querySelector("#mensaje-bienvenida");
+    $mensaje.value=json.mensaje_bienvenida_portafolio;
+    const $estudios=$formPortafolio.querySelector("#estudios");
+    $estudios.value=json.educacion_portafolio;
+    const $sobreMi=$formPortafolio.querySelector("#sobre-mi");
+    $sobreMi.value=json.sobre_mi_portafolio;
 
-    //$formPortafolio.getElementById("habilidades-Tecnicas").value=json.;
-    //$formPortafolio.getElementById("habilidades-Sociales").value=json.;
-    //$formPortafolio.getElementById("proyectos").value=json.;
-    
-    //  toca crear una cajita para q se vean las imagenes
+    //   no se como llenarles los select
+    //  console.log(json.habilidades.habilidadesTecnicas);
+    //  console.log(json.habilidades.habilidadesSociales);
+    const $selectHabT=$formPortafolio.querySelector("#habilidades-Tecnicas");
+    checkSelect($selectHabT,json.habilidades.habilidadesTecnicas);
+    const $selectHabS=$formPortafolio.querySelector("#habilidades-Sociales");
+    checkSelect($selectHabS,json.habilidades.habilidadesSociales);
+    const $selectProyectos=$formPortafolio.querySelector("#proyectos");
+    checkSelect($selectProyectos,json.proyectos);
+
+    //  toca crear una cajita para q se vean las imagenes y el cv
 
     //$formPortafolio.getElementById("foto-perfil").value;
     //$formPortafolio.getElementById("foto-fondo").value;
     //$formPortafolio.getElementById("cv").value;
-    return true;
+
+    //  enviar a un listener para q pueda ver si hubieron cambios, si es un si compararlo luego con la info del json cada vez q modifiq algo, si pasa eso toca modificarlo
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
     console.error(`Error ${err.status}: ${message}`);
@@ -282,40 +226,8 @@ const getPortfolioData=async function(idPortfolio){
   
 }
 
-function addListenerEditOrDelete() {
-  const container = document.querySelector(".row-cards");
-  // Agrega un event listener al contenedor padre
-  container.addEventListener("click", function (e) {
-    
-    // Verifica si el objetivo del evento es un elemento con la clase 'cardPortafolio'
-    if (e.target.closest(".cardPortafolio")) {
-      const $card = e.target.closest(".cardPortafolio");
-      // const id = card.querySelector(".edit-icon").getAttribute("data-id");
-      const id = $card.dataset.id;
-      // Verifica si el evento proviene de la imagen con la clase 'delete-icon'
-      if (e.target.classList.contains("delete-icon")) {
-        // Ejecuta una función cuando se hace clic en la imagen con la clase 'delete-icon'
-        console.log("Se hizo clic en la imagen con la clase delete-icon");
-        // Si se elimina tambien eliminamos la carta
-        if(deletePortafolio(id)){
-          $card.remove();
-        }
-      }
-      // Verifica si el evento proviene de la imagen con la clase 'edit-icon'
-      else if (e.target.classList.contains("edit-icon")) {
-        // Ejecuta una función cuando se hace clic en la imagen con la clase 'edit-icon'
-        console.log("Se hizo clic en la imagen con la clase edit-icon");
-        // Aquí puedes llamar a una función específica para editar el elemento correspondiente
-        editPortafolio(id);
-      }else{//sino mostrar el modal con los datos actuales de ese portafolio
-        getPortfolioData(id);
-        
-      }
-    }
-  });
-}
 
 
+const getEditPortafolio={getMyPortafolios};
 
-
-export default getMyPortafolios;
+export default getEditPortafolio;
