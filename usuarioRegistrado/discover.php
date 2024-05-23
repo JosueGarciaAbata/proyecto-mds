@@ -85,8 +85,6 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost) {
                                     if ($comentarios !== false && !empty($comentarios)) {
                                         foreach ($comentarios as $comentario) {
                                             if ($comentario['id_post_comentario'] == $post['id_post']) {
-                                                $nombreUsuario = encontrarUsuarioComentario($conexion, $comentario['id_usuario_comentario']);
-                                                echo '<strong>' . htmlspecialchars($nombreUsuario) . '</strong><br>';
                                                 echo htmlspecialchars($comentario['contenido_comentario']) . '<br>';
                                             }
                                         }
