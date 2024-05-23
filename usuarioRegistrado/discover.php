@@ -1,7 +1,16 @@
+<head>
+    <!-- SweetAlert2 CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
 <?php 
 require_once('header.php'); 
 require_once('navbar.php'); 
 require_once('funcionesComentarios.php');
+
 //require_once('cargarComentarios.php');
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 // Asegúrate de que la sesión esté iniciada
@@ -12,19 +21,45 @@ $posts = $stmt_posts->get_result()->fetch_all(MYSQLI_ASSOC);
 $stmt_posts->close();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['contenido_comentario'], $_POST['id_post_comentario'])) {
-        $id_usuario = $_SESSION['user_id'];
-        $comentario = $_POST['contenido_comentario'];
-        $id_post_comentario = $_POST['id_post_comentario'];
+    $id_usuario = $_SESSION['user_id'];
+    $comentario = trim($_POST['contenido_comentario']); // Trim whitespace
+    $id_post_comentario = $_POST['id_post_comentario'];
 
+    if (!empty($comentario)) {
         if (insertarComentario($conexion, $id_post_comentario, $id_usuario, $comentario)) {
-            echo '<script>alert("Comentario insertado correctamente.");</script>';
-            echo '<script>window.location.href = "discover.php";</script>';
+            echo '<script>
+                Swal.fire({
+                    icon: "success",
+                    title: "Comentario insertado correctamente.",
+                    showConfirmButton: false,
+                    timer: 1500
+                }).then(() => {
+                    window.location.href = "discover.php";
+                });
+            </script>';
             exit;
         } else {
-            echo '<script>alert("Error al insertar el comentario.");</script>';
+            echo '<script>
+                Swal.fire({
+                    icon: "error",
+                    title: "Error al insertar el comentario.",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            </script>';
         }
-    } 
-
+    } else {
+        echo '<script>
+            Swal.fire({
+                icon: "error",
+                title: "El comentario no puede estar vacío o solo contener espacios.",
+                showConfirmButton: false,
+                timer: 1500
+            });
+        </script>';
+    }
+}
+    
 function obtenerNombreCategoria($conexion, $idCategoriaPost) {
     $stmt_categoria = $conexion->prepare("SELECT nombre_categoria FROM categorias WHERE id_categoria = ?");
     $stmt_categoria->bind_param("i", $idCategoriaPost);
