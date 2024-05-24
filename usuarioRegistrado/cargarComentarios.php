@@ -1,6 +1,6 @@
-<?php 
-require_once('funcionesComentarios.php');
-require_once("../procesarInformacion/conexion.php");
+<?php
+require_once ('funcionesComentarios.php');
+require_once ("../procesarInformacion/conexion.php");
 $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 
 if (isset($_GET['id_post'])) {
@@ -14,5 +14,3 @@ if (isset($_GET['id_post'])) {
 } else {
     echo json_encode(["error" => "ID del post no recibido."]);
 }
-?>
-

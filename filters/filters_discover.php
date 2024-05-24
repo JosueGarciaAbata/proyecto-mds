@@ -48,7 +48,7 @@ $stmt_categorias->close();
                                     <option value="" disabled selected>Select...</option>
                                     <option value="tipo-posts">Post</option>
                                     <option value="tipo-projects">Projects</option>
-                                    <option value="tipo-portfolios">Portfolios</option>
+                                    <!-- <option value="tipo-portfolios">Portfolios</option> -->
                                 </select>
                             </div>
 
@@ -121,12 +121,12 @@ $stmt_categorias->close();
                                 </div>
                             </div>
 
-                            <!-- Div para los portafolios -->
+                            <!-- Div para los portafolios
                             <div class="mb-3" style="display: none;" id="portfolios-div">
                                 <label for="inputTitle" class="form-label">Skills</label>
                                 <div class="form-selectgroup" id="skills">
                                 </div>
-                            </div>
+                            </div> -->
 
                             <!-- Boton de filtros -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-center">
