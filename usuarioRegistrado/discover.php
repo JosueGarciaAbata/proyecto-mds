@@ -11,8 +11,6 @@ require_once ('header.php');
 require_once ('navbar.php');
 require_once ('funcionesComentarios.php');
 
-//require_once('cargarComentarios.php');
-$conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 // Asegúrate de que la sesión esté iniciada
 $id_usuario = $_SESSION['user_id'];
 $stmt_posts = $conexion->prepare("SELECT * FROM posts WHERE id_estado_post = 1");
@@ -110,9 +108,11 @@ function obtenerUsuarioPost($conexion, $idUsuarioPost)
                                 <p class="card-text"><?php echo nl2br(htmlspecialchars($post['contenido_textual_post'])); ?>
                                 </p>
                                 <p class="card-text">Categoría:
-                                    <?php echo obtenerNombreCategoria($conexion, $post['id_categoria_post']); ?></p>
+                                    <?php echo obtenerNombreCategoria($conexion, $post['id_categoria_post']); ?>
+                                </p>
                                 <p class="card-text">Etiquetas:
-                                    <?php echo obtenerNombresEtiquetas($conexion, $post['id_categoria_post']); ?></p>
+                                    <?php echo obtenerNombresEtiquetas($conexion, $post['id_categoria_post']); ?>
+                                </p>
                                 <?php if (!empty($post['ubicacion_imagen_post'])) { ?>
                                     <img src="<?php echo htmlspecialchars($post['ubicacion_imagen_post']); ?>" class="img-fluid"
                                         alt="Imagen del post">
