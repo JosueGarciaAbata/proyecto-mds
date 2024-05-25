@@ -37,46 +37,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
 
-    // Filtrado por categorias post. Usuario registrado
+    // Filtrado para usuarios registrados: posts, proyectos y portafolios
+
+    // Posts
     if (
-        isset($_POST['action']) && $_POST['action'] == "filterPostsByCategories" &&
+        isset($_POST['action']) && $_POST['action'] == "filterPostsByCategoriesRegister" &&
         isset($_POST['categoriesData'])
     ) {
-        echo json_encode(filterPostsByCategories($conexion, $_POST['categoriesData'], $id_usuario));
-        exit;
+        echo json_encode(filterPostsByCategoriesRegister($conexion, $_POST['categoriesData'], $id_usuario));
     }
 
-    // Filtrado por categorias proyectos. Usuario registrado
     if (
-        isset($_POST['action']) && $_POST['action'] == "filterProjectsByCategories" &&
+        isset($_POST['action']) && $_POST['action'] == "filterPostsByTagsRegister" &&
+        isset($_POST['categoryData']) && isset($_POST['tagsData'])
+    ) {
+        echo json_encode(filterPostByTagsRegister($conexion, $_POST['categoryData'], $_POST['tagsData'], $id_usuario));
+    }
+
+    // Proyecots
+    if (
+        isset($_POST['action']) && $_POST['action'] == "filterProjectsByCategoriesRegister" &&
         isset($_POST['categoriesData'])
     ) {
-        echo json_encode(filterProjectsByCategories($conexion, $_POST['categoriesData'], $id_usuario));
-        exit;
+        echo json_encode(filterProjectsByCategoriesRegister($conexion, $_POST['categoriesData'], $id_usuario));
     }
 
-    // Filtrado por etiquetas post. Usuario registrado
     if (
-        isset($_POST['action']) && $_POST['action'] == "filterPostsByTags" &&
+        isset($_POST['action']) && $_POST['action'] == "filterProjectsByTagsRegister" &&
         isset($_POST['categoryData']) && isset($_POST['tagsData'])
     ) {
-        echo json_encode(filterPostByTags($conexion, $_POST['categoryData'], $_POST['tagsData'], $id_usuario));
-    }
-
-    // Filtrado por etiquetas post. Usuario registrado
-    if (
-        isset($_POST['action']) && $_POST['action'] == "filterProjectsByTags" &&
-        isset($_POST['categoryData']) && isset($_POST['tagsData'])
-    ) {
-        echo json_encode(filterProjectsByTags($conexion, $_POST['categoryData'], $_POST['tagsData'], $id_usuario));
-    }
-
-    // Filtrado por habilidades portafolios. Usuario registrado
-    if (
-        isset($_POST['action']) && $_POST['action'] == "filterPostsBySkills" &&
-        isset($_POST['skillsData'])
-    ) {
-        echo json_encode(filterPortfoliosBySkills($conexion, $_POST['skillsData'], $id_usuario));
+        echo json_encode(filterProjectstByTagsRegister($conexion, $_POST['categoryData'], $_POST['tagsData'], $id_usuario));
     }
 }
 
@@ -119,43 +109,28 @@ function getOneCategoryTags($conexion, $id_category, $estado_post)
     return $resultados;
 }
 
-function getSkillsPortfolios($conexion)
-{
-    $sql = "SELECT id_habilidades, nombre_habilidades, tipo_habilidades 
-            FROM habilidades";
-    $stmt = $conexion->prepare($sql);
-    $stmt->execute();
-    $result = $stmt->get_result();
-
-    $categoriesArray = [];
-
-    while ($row = $result->fetch_assoc()) {
-        $categoriesArray[] = $row;
-    }
-    $stmt->close();
-    return $categoriesArray;
-}
 
 /*
-Filtrado para posts
+Filtrado para los usuarios registrados
 */
 
-// Trae los post en base a las categorias. Usuario registrado
-function filterPostsByCategories($conexion, $categories, $id_usuario)
+function filterPostsByCategoriesRegister($conexion, $categories, $id_usuario)
 {
     // Preparar los marcadores de posición para los IDs de categoría
     $placeholders = str_repeat('?,', count($categories) - 1) . '?';
 
     // Consulta SQL para filtrar posts por categorías y usuario
-    $sql = "SELECT DISTINCT id_post, id_usuario_post, id_categoria_post, id_estado_post, titulo_post, ubicacion_imagen_post
-        FROM posts
-        WHERE id_usuario_post = ? AND id_categoria_post IN ($placeholders)";
+    $sql = "SELECT DISTINCT posts.*, usuarios.*
+            FROM posts
+            LEFT JOIN usuarios ON posts.id_usuario_post = usuarios.id_usuario
+            WHERE posts.id_categoria_post IN ($placeholders)
+            AND (posts.id_estado_post = 1 OR usuarios.id_usuario = ?)";
 
     // Crear una cadena de tipos de parámetros para bind_param
-    $types = 'i' . str_repeat("i", count($categories));
+    $types = str_repeat("i", count($categories)) . "i"; // Agregar 'i' para el parámetro de ID de usuario
 
-    // Los parámetros de la consulta incluyen el ID de usuario seguido de los IDs de categoría
-    $params = array_merge([$id_usuario], $categories);
+    // Los parámetros incluyen los IDs de categoría y el ID de usuario
+    $params = array_merge($categories, [$id_usuario]);
 
     // Preparar la consulta
     $stmt = $conexion->prepare($sql);
@@ -184,8 +159,7 @@ function filterPostsByCategories($conexion, $categories, $id_usuario)
     return $postsArray;
 }
 
-// Traer los post que tengan esa etiqueta y categoria (solo una vez). Usuario registrado
-function filterPostByTags($conexion, $category, $tags, $id_usuario)
+function filterPostByTagsRegister($conexion, $category, $tags, $id_usuario)
 {
     // Tomar solo el primer valor del array de categorías
     $id_category = $category[0];
@@ -193,22 +167,24 @@ function filterPostByTags($conexion, $category, $tags, $id_usuario)
     // Crear marcadores de posición para los IDs de etiqueta
     $tagPlaceholders = implode(',', array_fill(0, count($tags), '?'));
 
-    // Consulta SQL para filtrar los posts por etiquetas y usuario
-    $sql = "SELECT DISTINCT p.id_post, p.id_usuario_post, p.titulo_post, p.contenido_textual_post, p.ubicacion_imagen_post, p.id_categoria_post, p.id_estado_post
+    // Consulta SQL para filtrar los posts por etiquetas
+    $sql = "SELECT DISTINCT p.*, u.*
             FROM posts p
             INNER JOIN etiquetas_agrupadas ea ON p.id_post = ea.id_post_etiquetas_agrupadas
             INNER JOIN etiquetas e ON ea.id_etiqueta_etiquetas_agrupadas = e.id_etiqueta
-            WHERE p.id_usuario_post = ? AND p.id_categoria_post = ?
-            AND e.id_etiqueta IN ($tagPlaceholders)";
+            INNER JOIN usuarios u ON p.id_usuario_post = u.id_usuario
+            WHERE p.id_categoria_post = ?
+            AND e.id_etiqueta IN ($tagPlaceholders)
+            AND (p.id_estado_post = 1 OR p.id_usuario_post = ?)";
 
     // Preparar la consulta
     $stmt = $conexion->prepare($sql);
 
     // Crear una cadena de tipos de parámetros para bind_param
-    $types = 'ii' . str_repeat('s', count($tags)); // Agregar 'ii' para los parámetros de ID de usuario y categoría
+    $types = 'i' . str_repeat('s', count($tags)) . 'i'; // Agregar 'i' para el parámetro de ID de categoría y usuario
 
-    // Los parámetros incluyen el ID de usuario, el ID de categoría y los IDs de etiqueta
-    $params = array_merge([$id_usuario, $id_category], $tags);
+    // Los parámetros incluyen el ID de categoría, los IDs de etiqueta y el ID de usuario
+    $params = array_merge([$id_category], $tags, [$id_usuario]);
 
     // Vincular los parámetros
     $stmt->bind_param($types, ...$params);
@@ -234,25 +210,23 @@ function filterPostByTags($conexion, $category, $tags, $id_usuario)
     return $post_array;
 }
 
-/*
-Filtrado para proyectos
-*/
-
-function filterProjectsByCategories($conexion, $categories, $id_usuario)
+function filterProjectsByCategoriesRegister($conexion, $categories, $id_usuario)
 {
     // Preparar los marcadores de posición para los IDs de categoría
     $placeholders = str_repeat('?,', count($categories) - 1) . '?';
 
-    // Consulta SQL para filtrar proyectos por categorías y usuario
-    $sql = "SELECT DISTINCT id_proyecto, id_usuario_proyecto, id_categoria_proyecto, id_estado_proyecto, titulo_proyecto, ubicacion_imagen_proyecto
-        FROM proyectos
-        WHERE id_usuario_proyecto = ? AND id_categoria_proyecto IN ($placeholders)";
+    // Consulta SQL para filtrar proyectos por categorías
+    $sql = "SELECT DISTINCT p.*, u.*
+        FROM proyectos p
+        JOIN usuarios u ON p.id_usuario_proyecto = u.id_usuario
+        WHERE p.id_categoria_proyecto IN ($placeholders)
+        AND (p.id_estado_proyecto = 1 OR p.id_usuario_proyecto = ?)";
 
     // Crear una cadena de tipos de parámetros para bind_param
-    $types = 'i' . str_repeat("i", count($categories));
+    $types = str_repeat("i", count($categories)) . "i"; // Agregar 'i' para el parámetro de ID de usuario
 
-    // Los parámetros incluyen el ID de usuario seguido de los IDs de categoría
-    $params = array_merge([$id_usuario], $categories);
+    // Los parámetros incluyen los IDs de categoría y el ID de usuario
+    $params = array_merge($categories, [$id_usuario]);
 
     // Preparar la consulta
     $stmt = $conexion->prepare($sql);
@@ -281,7 +255,7 @@ function filterProjectsByCategories($conexion, $categories, $id_usuario)
     return $projectsArray;
 }
 
-function filterProjectsByTags($conexion, $category, $tags, $id_usuario)
+function filterProjectstByTagsRegister($conexion, $category, $tags, $id_usuario)
 {
     // Tomar solo el primer valor del array de categorías
     $id_category = $category[0];
@@ -289,19 +263,21 @@ function filterProjectsByTags($conexion, $category, $tags, $id_usuario)
     // Crear marcadores de posición para los IDs de etiqueta
     $tagPlaceholders = implode(',', array_fill(0, count($tags), '?'));
 
-    // Consulta SQL para filtrar proyectos por etiquetas y usuario
-    $sql = "SELECT DISTINCT p.id_proyecto, p.id_usuario_proyecto,  p.id_categoria_proyecto, p.id_estado_proyecto, p.titulo_proyecto, p.ubicacion_imagen_proyecto
+    // Consulta SQL para filtrar proyectos por etiquetas
+    $sql = "SELECT DISTINCT p.*, u.*
             FROM proyectos p
             INNER JOIN etiquetas_agrupadas_proyectos ea ON p.id_proyecto = ea.id_proyecto_etiquetas_agrupadas
             INNER JOIN etiquetas e ON ea.id_etiqueta_etiquetas_agrupadas = e.id_etiqueta
-            WHERE p.id_usuario_proyecto = ? AND p.id_categoria_proyecto = ?
-            AND e.id_etiqueta IN ($tagPlaceholders)";
+            INNER JOIN usuarios u ON p.id_usuario_proyecto = u.id_usuario
+            WHERE p.id_categoria_proyecto = ?
+            AND e.id_etiqueta IN ($tagPlaceholders)
+            AND (p.id_estado_proyecto = 1 OR p.id_usuario_proyecto = ?)";
 
     // Crear una cadena de tipos de parámetros para bind_param
-    $types = 'ii' . str_repeat('s', count($tags)); // Agregar 'ii' para los parámetros de ID de usuario y categoría
+    $types = 'i' . str_repeat('s', count($tags)) . 'i'; // Agregar 'i' para el parámetro de ID de categoría y usuario
 
-    // Los parámetros incluyen el ID de usuario, el ID de categoría y los IDs de etiqueta
-    $params = array_merge([$id_usuario, $id_category], $tags);
+    // Los parámetros incluyen el ID de categoría, los IDs de etiqueta y el ID de usuario
+    $params = array_merge([$id_category], $tags, [$id_usuario]);
 
     // Preparar la consulta
     $stmt = $conexion->prepare($sql);
@@ -328,46 +304,4 @@ function filterProjectsByTags($conexion, $category, $tags, $id_usuario)
 
     // Devolver el array de proyectos filtrados
     return $project_array;
-}
-
-/*
-Filtrado para portafolios
-*/
-
-function filterPortfoliosBySkills($conexion, $idHabilidades, $id_usuario)
-{
-    $placeholders = str_repeat("?,", count($idHabilidades) - 1) . "?";
-    $sql = "SELECT p.* 
-            FROM portafolios p
-            JOIN portafolios_habilidades ph ON p.id_portafolio = ph.id_portafolio_portafolios_habilidades
-            WHERE p.id_usuario_portafolio = ? AND ph.id_habilidad_portafolios_habilidades IN ($placeholders)";
-
-    // Preparar la consulta
-    $stmt = $conexion->prepare($sql);
-
-    // Crear una cadena de tipos de parámetros para bind_param
-    $types = 'i' . str_repeat('i', count($idHabilidades)); // Agregar 'i' para el parámetro de ID de usuario
-
-    // Los parámetros incluyen el ID de usuario y los IDs de habilidades
-    $params = array_merge([$id_usuario], $idHabilidades);
-
-    // Vincular los parámetros
-    $stmt->bind_param($types, ...$params);
-
-    // Ejecutar la consulta
-    $stmt->execute();
-
-    // Obtener el resultado
-    $result = $stmt->get_result();
-
-    // Array para almacenar los portafolios filtrados
-    $portfoliosArray = [];
-
-    // Iterar sobre el resultado y almacenar los portafolios en el array
-    while ($row = $result->fetch_assoc()) {
-        $portfoliosArray[] = $row;
-    }
-
-    // Devolver el array de portafolios filtrados
-    return $portfoliosArray;
 }

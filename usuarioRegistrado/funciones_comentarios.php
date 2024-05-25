@@ -42,7 +42,29 @@ function obtenerComentariosPorPost($conexion, $idPost)
     return $comentarios;
 }
 
-function eliminarComentario($conexion, $idComentario)
+function obtenerComentariosPorProyecto($conexion, $id_proyecto)
+{
+    $stmt = $conexion->prepare("SELECT * FROM comentarios_proyectos WHERE id_proyecto_comentario = ?");
+    if ($stmt === false) {
+        error_log("Error en la preparación de la consulta: " . $conexion->error);
+        return false;
+    }
+    $stmt->bind_param("i", $id_proyecto);
+    if (!$stmt->execute()) {
+        error_log("Error en la ejecución de la consulta: " . $stmt->error);
+        return false;
+    }
+    $result = $stmt->get_result();
+    if ($result === false) {
+        error_log("Error en la obtención de resultados: " . $stmt->error);
+        return false;
+    }
+    $comentarios = $result->fetch_all(MYSQLI_ASSOC);
+    $stmt->close();
+    return $comentarios;
+}
+
+function eliminarComentarioPosts($conexion, $idComentario)
 {
     $stmt_eliminar_comentario = $conexion->prepare("UPDATE comentarios SET id_estado_comentario = 2 WHERE id_comentario = ?");
     $stmt_eliminar_comentario->bind_param("i", $idComentario);
@@ -53,7 +75,7 @@ function eliminarComentario($conexion, $idComentario)
     }
 
 }
-function publicarComentario($conexion, $idComentario)
+function publicarComentarioPosts($conexion, $idComentario)
 {
     $stmt_publicar_comentario = $conexion->prepare("UPDATE comentarios SET id_estado_comentario = 1 WHERE id_comentario = ?");
     $stmt_publicar_comentario->bind_param("i", $idComentario);
@@ -64,6 +86,41 @@ function publicarComentario($conexion, $idComentario)
     }
 
 }
+
+function eliminarComentarioProjects($conexion, $idComentario)
+{
+    $stmt_eliminar_comentario = $conexion->prepare("UPDATE comentarios_proyectos SET id_estado_comentario = 2 WHERE id_comentario = ?");
+    $stmt_eliminar_comentario->bind_param("i", $idComentario);
+    if ($stmt_eliminar_comentario->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+function publicarComentarioProjects($conexion, $idComentario)
+{
+    $stmt_publicar_comentario = $conexion->prepare("UPDATE comentarios_proyectos SET id_estado_comentario = 1 WHERE id_comentario = ?");
+    $stmt_publicar_comentario->bind_param("i", $idComentario);
+    if ($stmt_publicar_comentario->execute()) {
+        return true;
+    } else {
+        return false;
+    }
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 function publicarComentariosVisibles($conexion, $idEstadoComentario)
 {

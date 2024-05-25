@@ -42,7 +42,8 @@ require_once ("../procesarInformacion/conexion.php");
     </div>
 
     <?php require_once ('../filters/filters_discover.php'); ?>
-    <?php require_once ('../procesarInformacion/comments_no_register/comments_modal.php'); ?>
+    <?php require_once ('../procesarInformacion/comments_no_register/comments_modal_posts.php'); ?>
+    <?php require_once ('../procesarInformacion/comments_no_register/comments_modal_projects.php'); ?>
 </div>
 
 <?php require_once ('footer.php'); ?>

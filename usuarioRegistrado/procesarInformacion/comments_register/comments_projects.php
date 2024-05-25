@@ -7,21 +7,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
 
     if (
-        isset($_POST['action']) && $_POST['action'] == "getPostsRegister" &&
+        isset($_POST['action']) && $_POST['action'] == "getProjectsRegister" &&
         isset($_SESSION['user_id'])
     ) {
         $id_usuario = intval($_SESSION['user_id']);
-        echo json_encode(getPostsRegister($conexion, $id_usuario));
+        echo json_encode(getProjectsRegister($conexion, $id_usuario));
     }
 }
 
-function getPostsRegister($conexion, $id_usuario)
+function getProjectsRegister($conexion, $id_usuario)
 {
-    $sql = "SELECT posts.*, usuarios.nombre_usuario, usuarios.ubicacion_foto_perfil_usuario
-            FROM posts 
-            INNER JOIN usuarios ON posts.id_usuario_post = usuarios.id_usuario 
-            WHERE (posts.id_estado_post = 1 OR posts.id_usuario_post = ?)
-            ORDER BY posts.id_post DESC";
+    $sql = "SELECT proyectos.*, usuarios.nombre_usuario, usuarios.ubicacion_foto_perfil_usuario
+            FROM proyectos
+            INNER JOIN usuarios ON proyectos.id_usuario_proyecto = usuarios.id_usuario 
+            WHERE (proyectos.id_estado_proyecto = 1 OR proyectos.id_usuario_proyecto = ?)
+            ORDER BY proyectos.id_proyecto DESC";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id_usuario);
     $stmt->execute();

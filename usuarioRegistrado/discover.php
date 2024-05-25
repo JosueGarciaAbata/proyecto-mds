@@ -41,9 +41,10 @@ require_once ("../procesarInformacion/conexion.php");
     </div>
 
     <?php require_once ('../filters/filters_discover.php'); ?>
-    <?php require_once ('../procesarInformacion/comments_no_register/comments_modal.php'); ?>
+    <?php require_once ('procesarInformacion/comments_register/comments_modal_posts.php'); ?>
+    <?php require_once ('procesarInformacion/comments_register/comments_modal_projects.php'); ?>
 </div>
 
 <?php require_once ('footer.php'); ?>
 <script src="js/discover_register.js"></script>
-<script src="../js/filters_discover.js"></script>
+<script src="js/filters_discover_register.js"></script>

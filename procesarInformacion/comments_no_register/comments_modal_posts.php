@@ -46,7 +46,7 @@ $stmt_categorias->close();
                             <p id="noCommentsMessage" style="margin-bottom: 20px; display: none;">Sé el primer
                                 comentario!</p>
 
-                            <!-- Área de texto para el comentario -->
+                            <!-- Área de texto para el comentario del posts-->
                             <div class="input-group mb-3" style="border-radius: 20px;">
                                 <textarea class="form-control" placeholder="Escribe tu comentario..."
                                     aria-label="Escribe tu comentario..." id="commentText" rows="3"></textarea>

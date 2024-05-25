@@ -46,7 +46,7 @@ $(document).ready(function () {
         console.log("ID del post:", postId);
 
         $.ajax({
-          url: "../procesarInformacion/comments_no_register/validar_comentarios_posts.php",
+          url: "procesarInformacion/comments_no_register/validar_comentarios_posts.php",
           type: "POST",
           data: {
             action: "insertComment",
@@ -83,7 +83,7 @@ $(document).ready(function () {
         console.log("Enviando comentario:", commentContent);
         console.log("ID del post:", projectId);
         $.ajax({
-          url: "../procesarInformacion/comments_no_register/validar_comentarios_projects.php",
+          url: "procesarInformacion/comments_no_register/validar_comentarios_projects.php",
           type: "POST",
           data: {
             action: "insertComment",
@@ -128,11 +128,11 @@ function filtroPosts(tipoPosts) {
           if (selectedCategories.length > 0) {
             // Enviando solicitud para las categorias
             $.ajax({
-              url: "../procesarInformacion/comments_no_register/comments_filters.php",
+              url: "procesarInformacion/filters/comments_filters.php",
               type: "POST",
               data: {
                 categoriesData: selectedCategories,
-                action: "filterPostsByCategoriesVisitor",
+                action: "filterPostsByCategoriesRegister",
               },
               success: function (response) {
                 var pageWrapper = $(".row-cards");
@@ -246,7 +246,7 @@ function filtroPosts(tipoPosts) {
 
                     // Realizar una solicitud AJAX para obtener los datos del post
                     $.ajax({
-                      url: "../procesarInformacion/comments_no_register/obtener_datos_posts.php",
+                      url: "procesarInformacion/comments_register/obtener_datos_posts.php",
                       method: "POST",
                       data: {
                         action: "get_data_post",
@@ -363,7 +363,7 @@ function filtroPosts(tipoPosts) {
       if (selectedCategory.length > 0) {
         var categoryId = $(this).data("id");
         $.ajax({
-          url: "../procesarInformacion/comments_no_register/comments_filters.php",
+          url: "procesarInformacion/filters/comments_filters.php",
           type: "POST",
           data: {
             action: "getOneCategoryTags",
@@ -420,12 +420,12 @@ function filtroPosts(tipoPosts) {
           if (selectedCategory.length > 0) {
             if (selectedTags.length > 0) {
               $.ajax({
-                url: "../procesarInformacion/comments_no_register/comments_filters.php",
+                url: "procesarInformacion/filters/comments_filters.php",
                 type: "POST",
                 data: {
                   categoryData: selectedCategory,
                   tagsData: selectedTags,
-                  action: "filterPostsByTagsVisitor",
+                  action: "filterPostsByTagsRegister",
                 },
                 success: function (response) {
                   console.log(response);
@@ -538,7 +538,7 @@ function filtroPosts(tipoPosts) {
 
                       // Realizar una solicitud AJAX para obtener los datos del post
                       $.ajax({
-                        url: "../procesarInformacion/comments_no_register/obtener_datos_posts.php",
+                        url: "procesarInformacion/comments_register/obtener_datos_posts.php",
                         method: "POST",
                         data: {
                           action: "get_data_post",
@@ -663,11 +663,11 @@ function filtroProjects(tipoProjects) {
             if (selectedCategories.length > 0) {
               // Enviando solicitud para las categorias
               $.ajax({
-                url: "../procesarInformacion/comments_no_register/comments_filters.php",
+                url: "procesarInformacion/filters/comments_filters.php",
                 type: "POST",
                 data: {
                   categoriesData: selectedCategories,
-                  action: "filterProjectsByCategoriesVisitor",
+                  action: "filterProjectsByCategoriesRegister",
                 },
                 success: function (response) {
                   console.log(response);
@@ -778,7 +778,7 @@ function filtroProjects(tipoProjects) {
 
                       // Realizar una solicitud AJAX para obtener los datos del post
                       $.ajax({
-                        url: "../procesarInformacion/comments_no_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
+                        url: "procesarInformacion/comments_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
                         method: "POST",
                         data: {
                           action: "get_data_projects",
@@ -897,7 +897,7 @@ function filtroProjects(tipoProjects) {
         if (selectedCategory.length > 0) {
           var categoryId = $(this).data("id");
           $.ajax({
-            url: "../procesarInformacion/comments_no_register/comments_filters.php",
+            url: "procesarInformacion/filters/comments_filters.php",
             type: "POST",
             data: {
               action: "getOneCategoryTags",
@@ -954,12 +954,12 @@ function filtroProjects(tipoProjects) {
             if (selectedCategory.length > 0) {
               if (selectedTags.length > 0) {
                 $.ajax({
-                  url: "../procesarInformacion/comments_no_register/comments_filters.php",
+                  url: "procesarInformacion/filters/comments_filters.php",
                   type: "POST",
                   data: {
                     categoryData: selectedCategory,
                     tagsData: selectedTags,
-                    action: "filterProjectsByTagsVisitor",
+                    action: "filterProjectsByTagsRegister",
                   },
                   success: function (response) {
                     console.log(response);
@@ -1071,7 +1071,7 @@ function filtroProjects(tipoProjects) {
 
                         // Realizar una solicitud AJAX para obtener los datos del post
                         $.ajax({
-                          url: "../procesarInformacion/comments_no_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
+                          url: "procesarInformacion/comments_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
                           method: "POST",
                           data: {
                             action: "get_data_projects",
@@ -1185,7 +1185,7 @@ function obtenerSeleccionados(contenedor) {
 
 function getCategories(tipoContenedor, tipoAccion) {
   $.ajax({
-    url: "../procesarInformacion/comments_no_register/comments_filters.php",
+    url: "procesarInformacion/filters/comments_filters.php",
     type: "POST",
     data: {
       action: tipoAccion,
@@ -1229,7 +1229,7 @@ function getCategories(tipoContenedor, tipoAccion) {
 
 function getSkills(tipoContenedor, tipoAccion) {
   $.ajax({
-    url: "../procesarInformacion/comments_no_register/comments_filters.php",
+    url: "procesarInformacion/filters/comments_filters.php",
     type: "POST",
     data: {
       action: tipoAccion,

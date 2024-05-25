@@ -9,10 +9,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         isset($_POST['action']) && $_POST['action'] == "get_data_post" &&
         isset($_POST['postId'])
     ) {
-        echo json_encode(getPosts($conexion, $_POST['postId']));
+        echo json_encode(getPostsData($conexion, $_POST['postId']));
     }
 }
-function getPosts($conexion, $id_post)
+function getPostsData($conexion, $id_post)
 {
     $sql = "SELECT posts.*, usuarios.*, comentarios.*
         FROM posts 
