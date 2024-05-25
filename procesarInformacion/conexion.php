@@ -9,9 +9,7 @@ class ConexionBD
     private $username = "modelamientoProyecto";
     private $password = "EKQuY92.ovMe7xin"; // EKQuY92ovMe7xin
     private $database = "my_creative_portfolio";
-
     private static $port = 3007;
-
     // Variable para almacenar la conexión
     private $conexion;
 
@@ -42,6 +40,4 @@ class ConexionBD
     {
         return $this->conexion;
     }
-
-
 }
