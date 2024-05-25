@@ -1,7 +1,4 @@
 $(document).ready(function () {
-  var postId = -1;
-  var projectId = -1;
-
   $("#tipo-filtro").change(function () {
     // Elimina cualquier cosa anterior hecha
     $("#tipo-filtro-post").off("change");
@@ -258,19 +255,15 @@ function filtroPosts(tipoPosts) {
                         var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                         console.log(data);
                         $(".h1-title-post").text(
-                          data[0].nombre_usuario +
+                          data.nombre_usuario +
                             "'s" +
                             " Post" +
                             " - " +
-                            data[0].titulo_post
+                            data.titulo_post
                         );
 
-                        if (
-                          data.some(
-                            (item) => item.contenido_comentario !== null
-                          )
-                        ) {
-                          data.forEach(function (comment) {
+                        if (data.comentarios.length > 0) {
+                          data.comentarios.forEach(function (comment) {
                             // Crear el contenedor del comentario
                             var commentContainer = $(
                               '<div class="comment-container"></div>'
@@ -314,7 +307,6 @@ function filtroPosts(tipoPosts) {
                             // Adjuntar el contenedor del comentario al formulario de comentarios
                             $("#commentsContainer").append(commentContainer);
                           });
-
                           $("#noCommentsMessage").hide();
                         } else {
                           $("#noCommentsMessage").show();
@@ -550,19 +542,15 @@ function filtroPosts(tipoPosts) {
                           var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                           console.log(data);
                           $(".h1-title-post").text(
-                            data[0].nombre_usuario +
+                            data.nombre_usuario +
                               "'s" +
                               " Post" +
                               " - " +
-                              data[0].titulo_post
+                              data.titulo_post
                           );
 
-                          if (
-                            data.some(
-                              (item) => item.contenido_comentario !== null
-                            )
-                          ) {
-                            data.forEach(function (comment) {
+                          if (data.comentarios.length > 0) {
+                            data.comentarios.forEach(function (comment) {
                               // Crear el contenedor del comentario
                               var commentContainer = $(
                                 '<div class="comment-container"></div>'
@@ -606,7 +594,6 @@ function filtroPosts(tipoPosts) {
                               // Adjuntar el contenedor del comentario al formulario de comentarios
                               $("#commentsContainer").append(commentContainer);
                             });
-
                             $("#noCommentsMessage").hide();
                           } else {
                             $("#noCommentsMessage").show();
@@ -788,20 +775,17 @@ function filtroProjects(tipoProjects) {
                         success: function (response) {
                           console.log("Entrado a llenar el modal...");
                           var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                          console.log(data);
                           $(".h1-title-projects").text(
-                            data[0].nombre_usuario +
+                            data.nombre_usuario +
                               "'s" +
                               " Project" +
                               " - " +
-                              data[0].titulo_proyecto
+                              data.titulo_proyecto
                           );
 
-                          if (
-                            data.some(
-                              (item) => item.contenido_comentario !== null
-                            )
-                          ) {
-                            data.forEach(function (comment) {
+                          if (data.comentarios.length > 0) {
+                            data.comentarios.forEach(function (comment) {
                               // Crear el contenedor del comentario
                               var commentContainer = $(
                                 '<div class="comment-container-projects"></div>'
@@ -847,7 +831,6 @@ function filtroProjects(tipoProjects) {
                                 commentContainer
                               );
                             });
-
                             $("#noCommentsMessageProjects").hide();
                           } else {
                             $("#noCommentsMessageProjects").show();
@@ -1081,20 +1064,17 @@ function filtroProjects(tipoProjects) {
                           success: function (response) {
                             console.log("Entrado a llenar el modal...");
                             var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                            console.log(data);
                             $(".h1-title-projects").text(
-                              data[0].nombre_usuario +
+                              data.nombre_usuario +
                                 "'s" +
                                 " Project" +
                                 " - " +
-                                data[0].titulo_proyecto
+                                data.titulo_proyecto
                             );
 
-                            if (
-                              data.some(
-                                (item) => item.contenido_comentario !== null
-                              )
-                            ) {
-                              data.forEach(function (comment) {
+                            if (data.comentarios.length > 0) {
+                              data.comentarios.forEach(function (comment) {
                                 // Crear el contenedor del comentario
                                 var commentContainer = $(
                                   '<div class="comment-container-projects"></div>'
@@ -1140,7 +1120,6 @@ function filtroProjects(tipoProjects) {
                                   commentContainer
                                 );
                               });
-
                               $("#noCommentsMessageProjects").hide();
                             } else {
                               $("#noCommentsMessageProjects").show();

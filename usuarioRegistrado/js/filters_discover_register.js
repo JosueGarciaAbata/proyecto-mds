@@ -1,7 +1,4 @@
 $(document).ready(function () {
-  var postId = -1;
-  var projectId = -1;
-
   $("#tipo-filtro").change(function () {
     // Elimina cualquier cosa anterior hecha
     $("#tipo-filtro-post").off("change");
@@ -34,7 +31,7 @@ $(document).ready(function () {
     }
   });
 
-  // Boton de enviar post
+  // Enviar los comentarios del post
   $("#sendCommentBtn")
     .off()
     .on("click", function () {
@@ -46,7 +43,7 @@ $(document).ready(function () {
         console.log("ID del post:", postId);
 
         $.ajax({
-          url: "procesarInformacion/comments_no_register/validar_comentarios_posts.php",
+          url: "procesarInformacion/comments_register/validar_comentarios_posts.php",
           type: "POST",
           data: {
             action: "insertComment",
@@ -55,8 +52,11 @@ $(document).ready(function () {
           },
           success: function (response) {
             console.log(response);
-            if (response == "true") {
-              mostrarModalExito("Comentario enviado a revision");
+
+            if (response === "true") {
+              mostrarModalExito("Comentario enviado a revisión");
+            } else if (response === "trueRegister") {
+              mostrarModalExito("Comentario añadido exitosamente");
             } else {
               mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
             }
@@ -71,6 +71,7 @@ $(document).ready(function () {
       }
     });
 
+  // Enviar los comentarios de los proyectos
   // Boton de enviar proyecto
   $("#sendCommentBtnProjects")
     .off()
@@ -78,22 +79,24 @@ $(document).ready(function () {
       var commentContent = $("#commentTextProjects").val().trim();
 
       // Verificar si el comentario no está vacío antes de enviarlo
-      if (commentContent !== "" && projectId != -1) {
+      if (commentContent !== "" && proyectoId != -1) {
         // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
         console.log("Enviando comentario:", commentContent);
-        console.log("ID del post:", projectId);
+        console.log("ID del post:", proyectoId);
         $.ajax({
-          url: "procesarInformacion/comments_no_register/validar_comentarios_projects.php",
+          url: "procesarInformacion/comments_register/validar_comentarios_projects.php",
           type: "POST",
           data: {
             action: "insertComment",
-            projectId: projectId,
+            projectId: proyectoId,
             commentContent: commentContent,
           },
           success: function (response) {
             console.log(response);
             if (response == "true") {
               mostrarModalExito("Comentario enviado a revision");
+            } else if (response == "trueRegister") {
+              mostrarModalExito("Comentario añadido exitosamente");
             } else {
               mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
             }
@@ -249,7 +252,7 @@ function filtroPosts(tipoPosts) {
                       url: "procesarInformacion/comments_register/obtener_datos_posts.php",
                       method: "POST",
                       data: {
-                        action: "get_data_post",
+                        action: "get_data_post_register",
                         postId: postId,
                       },
                       // Entra a llenar el modal
@@ -258,19 +261,15 @@ function filtroPosts(tipoPosts) {
                         var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                         console.log(data);
                         $(".h1-title-post").text(
-                          data[0].nombre_usuario +
+                          data.nombre_usuario +
                             "'s" +
                             " Post" +
                             " - " +
-                            data[0].titulo_post
+                            data.titulo_post
                         );
 
-                        if (
-                          data.some(
-                            (item) => item.contenido_comentario !== null
-                          )
-                        ) {
-                          data.forEach(function (comment) {
+                        if (data.comentarios.length > 0) {
+                          data.comentarios.forEach(function (comment) {
                             // Crear el contenedor del comentario
                             var commentContainer = $(
                               '<div class="comment-container"></div>'
@@ -314,7 +313,6 @@ function filtroPosts(tipoPosts) {
                             // Adjuntar el contenedor del comentario al formulario de comentarios
                             $("#commentsContainer").append(commentContainer);
                           });
-
                           $("#noCommentsMessage").hide();
                         } else {
                           $("#noCommentsMessage").show();
@@ -541,7 +539,7 @@ function filtroPosts(tipoPosts) {
                         url: "procesarInformacion/comments_register/obtener_datos_posts.php",
                         method: "POST",
                         data: {
-                          action: "get_data_post",
+                          action: "get_data_post_register",
                           postId: postId,
                         },
                         // Entra a llenar el modal
@@ -550,19 +548,15 @@ function filtroPosts(tipoPosts) {
                           var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                           console.log(data);
                           $(".h1-title-post").text(
-                            data[0].nombre_usuario +
+                            data.nombre_usuario +
                               "'s" +
                               " Post" +
                               " - " +
-                              data[0].titulo_post
+                              data.titulo_post
                           );
 
-                          if (
-                            data.some(
-                              (item) => item.contenido_comentario !== null
-                            )
-                          ) {
-                            data.forEach(function (comment) {
+                          if (data.comentarios.length > 0) {
+                            data.comentarios.forEach(function (comment) {
                               // Crear el contenedor del comentario
                               var commentContainer = $(
                                 '<div class="comment-container"></div>'
@@ -606,7 +600,6 @@ function filtroPosts(tipoPosts) {
                               // Adjuntar el contenedor del comentario al formulario de comentarios
                               $("#commentsContainer").append(commentContainer);
                             });
-
                             $("#noCommentsMessage").hide();
                           } else {
                             $("#noCommentsMessage").show();
@@ -770,38 +763,35 @@ function filtroProjects(tipoProjects) {
                     //Generar funcionalidad al boton de comentar.
                     // Aqui modificar y dar la implementacion para "mostrar" y generar comentarios.
                     commentIcon.on("click", function () {
-                      projectId = $(this).data("id");
-                      console.log("id proyecto: " + projectId);
+                      proyectoId = $(this).data("id");
+                      console.log("id proyecto: " + proyectoId);
 
                       $("#commentsContainerProjects").empty();
-                      $("#sendCommentBtnProjects").attr("data-id", projectId);
+                      $("#sendCommentBtnProjects").attr("data-id", proyectoId);
 
                       // Realizar una solicitud AJAX para obtener los datos del post
                       $.ajax({
                         url: "procesarInformacion/comments_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
                         method: "POST",
                         data: {
-                          action: "get_data_projects",
-                          proyectoId: projectId,
+                          action: "get_data_projects_register",
+                          proyectoId: proyectoId,
                         },
                         // Entra a llenar el modal
                         success: function (response) {
                           console.log("Entrado a llenar el modal...");
                           var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                          console.log(data);
                           $(".h1-title-projects").text(
-                            data[0].nombre_usuario +
+                            data.nombre_usuario +
                               "'s" +
                               " Project" +
                               " - " +
-                              data[0].titulo_proyecto
+                              data.titulo_proyecto
                           );
 
-                          if (
-                            data.some(
-                              (item) => item.contenido_comentario !== null
-                            )
-                          ) {
-                            data.forEach(function (comment) {
+                          if (data.comentarios.length > 0) {
+                            data.comentarios.forEach(function (comment) {
                               // Crear el contenedor del comentario
                               var commentContainer = $(
                                 '<div class="comment-container-projects"></div>'
@@ -847,7 +837,6 @@ function filtroProjects(tipoProjects) {
                                 commentContainer
                               );
                             });
-
                             $("#noCommentsMessageProjects").hide();
                           } else {
                             $("#noCommentsMessageProjects").show();
@@ -1063,38 +1052,38 @@ function filtroProjects(tipoProjects) {
                       //Generar funcionalidad al boton de comentar.
                       // Aqui modificar y dar la implementacion para "mostrar" y generar comentarios.
                       commentIcon.on("click", function () {
-                        projectId = $(this).data("id");
-                        console.log("id proyecto: " + projectId);
+                        proyectoId = $(this).data("id");
+                        console.log("id proyecto: " + proyectoId);
 
                         $("#commentsContainerProjects").empty();
-                        $("#sendCommentBtnProjects").attr("data-id", projectId);
+                        $("#sendCommentBtnProjects").attr(
+                          "data-id",
+                          proyectoId
+                        );
 
                         // Realizar una solicitud AJAX para obtener los datos del post
                         $.ajax({
                           url: "procesarInformacion/comments_register/obtener_datos_projects.php", // Cambia "obtener_datos_post.php" por la ruta real de tu script para obtener datos del post
                           method: "POST",
                           data: {
-                            action: "get_data_projects",
-                            proyectoId: projectId,
+                            action: "get_data_projects_register",
+                            proyectoId: proyectoId,
                           },
                           // Entra a llenar el modal
                           success: function (response) {
                             console.log("Entrado a llenar el modal...");
                             var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                            console.log(data);
                             $(".h1-title-projects").text(
-                              data[0].nombre_usuario +
+                              data.nombre_usuario +
                                 "'s" +
                                 " Project" +
                                 " - " +
-                                data[0].titulo_proyecto
+                                data.titulo_proyecto
                             );
 
-                            if (
-                              data.some(
-                                (item) => item.contenido_comentario !== null
-                              )
-                            ) {
-                              data.forEach(function (comment) {
+                            if (data.comentarios.length > 0) {
+                              data.comentarios.forEach(function (comment) {
                                 // Crear el contenedor del comentario
                                 var commentContainer = $(
                                   '<div class="comment-container-projects"></div>'
@@ -1140,7 +1129,6 @@ function filtroProjects(tipoProjects) {
                                   commentContainer
                                 );
                               });
-
                               $("#noCommentsMessageProjects").hide();
                             } else {
                               $("#noCommentsMessageProjects").show();

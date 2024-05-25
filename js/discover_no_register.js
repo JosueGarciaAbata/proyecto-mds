@@ -5,13 +5,11 @@
  *
  *
  */
-
-var tipoConsulta = null;
+var projectId = -1;
+var postId = -1;
 
 $(document).ready(function () {
   var pageWrapper = $(".row-cards");
-  var postId = -1;
-  var projectId = -1;
 
   function getPosts() {
     $.ajax({
@@ -138,16 +136,17 @@ $(document).ready(function () {
               success: function (response) {
                 console.log("Entrado a llenar el modal...");
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                console.log(data);
                 $(".h1-title-post").text(
-                  data[0].nombre_usuario +
+                  data.nombre_usuario +
                     "'s" +
                     " Post" +
                     " - " +
-                    data[0].titulo_post
+                    data.titulo_post
                 );
 
-                if (data.some((item) => item.contenido_comentario !== null)) {
-                  data.forEach(function (comment) {
+                if (data.comentarios.length > 0) {
+                  data.comentarios.forEach(function (comment) {
                     // Crear el contenedor del comentario
                     var commentContainer = $(
                       '<div class="comment-container"></div>'
@@ -187,7 +186,6 @@ $(document).ready(function () {
                     // Adjuntar el contenedor del comentario al formulario de comentarios
                     $("#commentsContainer").append(commentContainer);
                   });
-
                   $("#noCommentsMessage").hide();
                 } else {
                   $("#noCommentsMessage").show();
@@ -330,16 +328,17 @@ $(document).ready(function () {
               success: function (response) {
                 console.log("Entrado a llenar el modal...");
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+                console.log(data);
                 $(".h1-title-projects").text(
-                  data[0].nombre_usuario +
+                  data.nombre_usuario +
                     "'s" +
                     " Project" +
                     " - " +
-                    data[0].titulo_proyecto
+                    data.titulo_proyecto
                 );
 
-                if (data.some((item) => item.contenido_comentario !== null)) {
-                  data.forEach(function (comment) {
+                if (data.comentarios.length > 0) {
+                  data.comentarios.forEach(function (comment) {
                     // Crear el contenedor del comentario
                     var commentContainer = $(
                       '<div class="comment-container-projects"></div>'
@@ -379,7 +378,6 @@ $(document).ready(function () {
                     // Adjuntar el contenedor del comentario al formulario de comentarios
                     $("#commentsContainerProjects").append(commentContainer);
                   });
-
                   $("#noCommentsMessageProjects").hide();
                 } else {
                   $("#noCommentsMessageProjects").show();
@@ -406,78 +404,4 @@ $(document).ready(function () {
 
   // Mostrar proyectos
   getProjects();
-
-  // Boton de enviar post
-  $("#sendCommentBtn")
-    .off()
-    .on("click", function () {
-      var commentContent = $("#commentText").val().trim();
-      // Verificar si el comentario no está vacío antes de enviarlo
-      if (commentContent !== "" && postId != -1) {
-        // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
-        console.log("Enviando comentario:", commentContent);
-        console.log("ID del post:", postId);
-
-        $.ajax({
-          url: "../procesarInformacion/comments_no_register/validar_comentarios_posts.php",
-          type: "POST",
-          data: {
-            action: "insertComment",
-            postId: postId,
-            commentContent: commentContent,
-          },
-          success: function (response) {
-            console.log(response);
-            if (response == "true") {
-              mostrarModalExito("Comentario enviado a revision");
-            } else {
-              mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error("Error al enviar el comentario:", error);
-          },
-        });
-      } else {
-        // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
-      }
-    });
-
-  // Boton de enviar proyecto
-  $("#sendCommentBtnProjects")
-    .off()
-    .on("click", function () {
-      var commentContent = $("#commentTextProjects").val().trim();
-
-      // Verificar si el comentario no está vacío antes de enviarlo
-      if (commentContent !== "" && projectId != -1) {
-        // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
-        console.log("Enviando comentario:", commentContent);
-        console.log("ID del post:", projectId);
-        $.ajax({
-          url: "../procesarInformacion/comments_no_register/validar_comentarios_projects.php",
-          type: "POST",
-          data: {
-            action: "insertComment",
-            projectId: projectId,
-            commentContent: commentContent,
-          },
-          success: function (response) {
-            console.log(response);
-            if (response == "true") {
-              mostrarModalExito("Comentario enviado a revision");
-            } else {
-              mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error("Error al enviar el comentario:", error);
-          },
-        });
-      } else {
-        // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
-      }
-    });
 });

@@ -14,22 +14,40 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 function getPostsData($conexion, $id_post)
 {
-    $sql = "SELECT posts.*, usuarios.*, comentarios.*
-        FROM posts 
-        LEFT JOIN usuarios ON posts.id_usuario_post = usuarios.id_usuario
-        LEFT JOIN (SELECT * FROM comentarios WHERE id_estado_comentario = 1) AS comentarios ON posts.id_post = comentarios.id_post_comentario
-        WHERE posts.id_estado_post = 1 
-        AND posts.id_post = ?
-        ORDER BY posts.id_post DESC";
+    // Consulta para obtener los datos del post y del usuario creador del post
+    $sql = "SELECT posts.*, usuarios.*
+            FROM posts 
+            LEFT JOIN usuarios ON posts.id_usuario_post = usuarios.id_usuario
+            WHERE posts.id_estado_post = 1 
+            AND posts.id_post = ?";
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id_post);
     $stmt->execute();
     $result = $stmt->get_result();
 
-    $data = [];
+    // Obtener los datos del post y del usuario creador del post
+    $postData = $result->fetch_assoc();
+
+    // Consulta para obtener los comentarios relacionados con el post
+    $sql = "SELECT comentarios.*, usuarios.* 
+            FROM comentarios 
+            LEFT JOIN usuarios ON comentarios.id_usuario_comentario = usuarios.id_usuario
+            WHERE comentarios.id_estado_comentario = 1 
+            AND comentarios.id_post_comentario = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_post);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Array para almacenar los comentarios
+    $commentsData = [];
     while ($row = $result->fetch_assoc()) {
-        $data[] = $row;
+        $commentsData[] = $row;
     }
 
-    return $data;
+    // Combinar los datos del post y del usuario con los datos de los comentarios
+    $postData['comentarios'] = $commentsData;
+
+    // Devolver los datos combinados del post y los comentarios
+    return $postData;
 }
