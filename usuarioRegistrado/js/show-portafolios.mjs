@@ -1,8 +1,8 @@
 const d = document;
-const $formPortafolio=d.getElementById("form-portafolio");
+let $formPortafolio=d.getElementById("form-portafolio");
 //  console.log($formPortafolio);
 
-const addListenerEditOrDelete= async function () {
+let addListenerEditOrDelete= async function () {
   const container = document.querySelector(".row-cards");
   // Agrega un event listener al contenedor padre
   container.addEventListener("click", function (e) {
@@ -32,7 +32,7 @@ const addListenerEditOrDelete= async function () {
 }
 
 
-const deletePortafolio=async function(portafolio) {
+let deletePortafolio=async function(portafolio) {
   if (portafolio === null || portafolio === undefined || portafolio === '') {
     return; // Termina la función si la variable está vacía
   }
@@ -60,7 +60,7 @@ const deletePortafolio=async function(portafolio) {
     return false;
 }
 
-const getMyPortafolios = async function () {
+let getMyPortafolios = async function () {
   try {
     let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
       method: "GET",
@@ -188,7 +188,7 @@ const getPortfolioData=async function(idPortfolio){
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
-    console.log(json);
+    //console.log(json);
     $formPortafolio.dataset.id=idPortfolio;
     const $titulo=$formPortafolio.querySelector("#titulo-portafolio");
     $titulo.value=json.titulo_portafolio;
@@ -198,10 +198,6 @@ const getPortfolioData=async function(idPortfolio){
     $estudios.value=json.educacion_portafolio;
     const $sobreMi=$formPortafolio.querySelector("#sobre-mi");
     $sobreMi.value=json.sobre_mi_portafolio;
-
-    //   no se como llenarles los select
-    //  console.log(json.habilidades.habilidadesTecnicas);
-    //  console.log(json.habilidades.habilidadesSociales);
     const $selectHabT=$formPortafolio.querySelector("#habilidades-Tecnicas");
     checkSelect($selectHabT,json.habilidades.habilidadesTecnicas);
     const $selectHabS=$formPortafolio.querySelector("#habilidades-Sociales");
@@ -210,9 +206,16 @@ const getPortfolioData=async function(idPortfolio){
     checkSelect($selectProyectos,json.proyectos);
 
     //  toca crear una cajita para q se vean las imagenes y el cv
-
+    $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
+    const $fPerfilBox=$formPortafolio.querySelector("#show-img-perfil");
+    $fPerfilBox.setAttribute("src",json.foto_portafolio);
     //$formPortafolio.getElementById("foto-perfil").value;
+    $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
+    const $fFondoBox=$formPortafolio.querySelector("#show-img-fondo");
+    $fFondoBox.setAttribute("src",json.fondo_portafolio);
     //$formPortafolio.getElementById("foto-fondo").value;
+    $formPortafolio.querySelector("#cv").removeAttribute("required");
+    
     //$formPortafolio.getElementById("cv").value;
 
     //  enviar a un listener para q pueda ver si hubieron cambios, si es un si compararlo luego con la info del json cada vez q modifiq algo, si pasa eso toca modificarlo
@@ -226,7 +229,18 @@ const getPortfolioData=async function(idPortfolio){
   
 }
 
-
+const limpiarCaja=()=>{
+  defectImage="";
+  $formPortafolio.removeAttribute("data-id");
+    //$formPortafolio.setAttribute("require","true");
+    $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
+    $formPortafolio.querySelector("#show-img-perfil");
+    $fPerfilBox.setAttribute("src",json.foto_portafolio);
+    //$formPortafolio.getElementById("foto-perfil").value;
+    $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
+    $formPortafolio.querySelector("#show-img-fondo");
+    $fFondoBox.setAttribute("src",json.fondo_portafolio);
+};
 
 const getEditPortafolio={getMyPortafolios};
 

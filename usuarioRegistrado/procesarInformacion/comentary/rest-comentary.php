@@ -189,7 +189,6 @@ function getLabelName($conexion, $idCategoria)
 }
 
 function deleteComentary($conexion, $id_portafolio) {
-
     http_response_code(200);
     echo json_encode(["status" => "OK", "statusText" => "Portafolio eliminado correctamente"]);
 }

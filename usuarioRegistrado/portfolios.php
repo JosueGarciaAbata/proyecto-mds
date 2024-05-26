@@ -124,11 +124,19 @@ function generarOpcionesHabilidades($habT)
                                 <textarea type="text" name="mensaje-bienvenida" id="mensaje-bienvenida"
                                     class="form-control" required></textarea>
                             </div>
+                            <!-- mostrar img -->
+                            <div class="mb-3 show-image">
+                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Foto de perfil" id="show-img-perfil">
+                            </div>
                             <!-- foto perfil -->
                             <div class="mb-3">
                                 <label for="foto-perfil" class="form-label">Foto de perfil:</label>
                                 <input type="file" name="foto-perfil" id="foto-perfil" class="form-control"
                                     accept=".jpg, .jpeg, .png, .gif" required>
+                            </div>
+                            <!-- mostrar img -->
+                            <div class="mb-3 show-image">
+                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Imagen de fondo" id="show-img-fondo">
                             </div>
                             <!-- foto fondo -->
                             <div class="mb-3">
@@ -136,6 +144,7 @@ function generarOpcionesHabilidades($habT)
                                 <input type="file" name="foto-fondo" id="foto-fondo" class="form-control"
                                     accept=".jpg, .jpeg, .png, .gif" required>
                             </div>
+                            
                             <!-- cv -->
                             <div class="mb-3">
                                 <label for="cv" class="form-label">Curriculum:</label>
@@ -157,7 +166,7 @@ function generarOpcionesHabilidades($habT)
                                 <label for="habilidades-Tecnicas" class="form-label">Seleccione sus habilidades
                                     tecnicas:</label>
                                 <select type="text" name="habilidades-Tecnicas" id="habilidades-Tecnicas"
-                                    class="form-select" multiple required>
+                                    class="form-select" data-id="1" multiple required>
                                     <option value="" disabled>Seleccionar...</option>
                                     <?php
                                     generarOpcionesHabilidades($habilidades["habilidadesTecnicas"]);
@@ -175,7 +184,7 @@ function generarOpcionesHabilidades($habT)
                                 <label for="habilidades-Sociales" class="form-label">Seleccione sus habilidades
                                     sociales:</label>
                                 <select type="text" name="habilidades-Sociales" id="habilidades-Sociales"
-                                    class="form-select" multiple required>
+                                    class="form-select" data-id="0" multiple required>
                                     <option value="" disabled>Seleccionar...</option>
                                     <?php
                                     generarOpcionesHabilidades($habilidades["habilidadesSociales"]);
@@ -223,4 +232,3 @@ function generarOpcionesHabilidades($habT)
 <?php require_once ('footer.php'); ?>
 <script src="js/portafolio-handle.js" type="module"></script>
 <script src="js/filters_portafolios.js"></script>
-<script src="js/portafolios.js"></script>
