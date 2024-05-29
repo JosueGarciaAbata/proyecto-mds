@@ -1,12 +1,12 @@
 const d = document;
-let $formPortafolio=d.getElementById("form-portafolio");
+let $formPortafolio = d.getElementById("form-portafolio");
 //  console.log($formPortafolio);
 
-let addListenerEditOrDelete= async function () {
+let addListenerEditOrDelete = async function () {
   const container = document.querySelector(".row-cards");
   // Agrega un event listener al contenedor padre
   container.addEventListener("click", function (e) {
-    
+
     // Verifica si el objetivo del evento es un elemento con la clase 'cardPortafolio'
     if (e.target.closest(".cardPortafolio")) {
       const $card = e.target.closest(".cardPortafolio");
@@ -17,7 +17,7 @@ let addListenerEditOrDelete= async function () {
         // Ejecuta una función cuando se hace clic en la imagen con la clase 'delete-icon'
         console.log("Se hizo clic en la imagen con la clase delete-icon");
         // Si se elimina tambien eliminamos la carta
-        if(deletePortafolio(id)){
+        if (deletePortafolio(id)) {
           $card.remove();
         }
       }
@@ -32,17 +32,17 @@ let addListenerEditOrDelete= async function () {
 }
 
 
-let deletePortafolio=async function(portafolio) {
+let deletePortafolio = async function (portafolio) {
   if (portafolio === null || portafolio === undefined || portafolio === '') {
     return; // Termina la función si la variable está vacía
   }
   const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(portafolio)}`;
   try {
     let res = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          'Content-Type': 'application/json'
-        },
+      method: "DELETE",
+      headers: {
+        'Content-Type': 'application/json'
+      },
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
@@ -54,10 +54,10 @@ let deletePortafolio=async function(portafolio) {
       mostrarModalDeAdvertencia("No se pudo eliminar el portafolio");
     }
   } catch (err) {
-      let message = err.statusText || "Ocurrió un error";
-      mostrarModalDeAdvertencia("Error de conexión");
+    let message = err.statusText || "Ocurrió un error";
+    mostrarModalDeAdvertencia("Error de conexión");
   }
-    return false;
+  return false;
 }
 
 let getMyPortafolios = async function () {
@@ -166,7 +166,7 @@ function representData(portafolio, pageWrapper) {
   pageWrapper.appendChild($cardCol);
 }
 
-const checkSelect = function($select, habilidades) {
+const checkSelect = function ($select, habilidades) {
   //  console.log($select.options);
   //  console.log($select.options);
   Array.from($select.options).forEach(option => {
@@ -178,10 +178,10 @@ const checkSelect = function($select, habilidades) {
 };
 
 
-const getPortfolioData=async function(idPortfolio){
+const getPortfolioData = async function (idPortfolio) {
   //  send request
-  const url=`./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(idPortfolio)}`;
-  
+  const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(idPortfolio)}`;
+
   try {
     let res = await fetch(url, {
       method: "GET",
@@ -189,35 +189,39 @@ const getPortfolioData=async function(idPortfolio){
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     let json = await res.json();
     //console.log(json);
-    $formPortafolio.dataset.id=idPortfolio;
-    const $titulo=$formPortafolio.querySelector("#titulo-portafolio");
-    $titulo.value=json.titulo_portafolio;
-    const $mensaje=$formPortafolio.querySelector("#mensaje-bienvenida");
-    $mensaje.value=json.mensaje_bienvenida_portafolio;
-    const $estudios=$formPortafolio.querySelector("#estudios");
-    $estudios.value=json.educacion_portafolio;
-    const $sobreMi=$formPortafolio.querySelector("#sobre-mi");
-    $sobreMi.value=json.sobre_mi_portafolio;
-    const $selectHabT=$formPortafolio.querySelector("#habilidades-Tecnicas");
-    checkSelect($selectHabT,json.habilidades.habilidadesTecnicas);
-    const $selectHabS=$formPortafolio.querySelector("#habilidades-Sociales");
-    checkSelect($selectHabS,json.habilidades.habilidadesSociales);
-    const $selectProyectos=$formPortafolio.querySelector("#proyectos");
-    checkSelect($selectProyectos,json.proyectos);
+    $formPortafolio.dataset.id = idPortfolio;
+    const $titulo = $formPortafolio.querySelector("#titulo-portafolio");
+    $titulo.value = json.titulo_portafolio;
+    const $mensaje = $formPortafolio.querySelector("#mensaje-bienvenida");
+    $mensaje.value = json.mensaje_bienvenida_portafolio;
+    const $estudios = $formPortafolio.querySelector("#estudios");
+    $estudios.value = json.educacion_portafolio;
+    const $sobreMi = $formPortafolio.querySelector("#sobre-mi");
+    $sobreMi.value = json.sobre_mi_portafolio;
+    const $selectHabT = $formPortafolio.querySelector("#habilidades-Tecnicas");
+    checkSelect($selectHabT, json.habilidades.habilidadesTecnicas);
+    const $selectHabS = $formPortafolio.querySelector("#habilidades-Sociales");
+    checkSelect($selectHabS, json.habilidades.habilidadesSociales);
+    const $selectProyectos = $formPortafolio.querySelector("#proyectos");
+    checkSelect($selectProyectos, json.proyectos);
 
+    const defaultImage = "../img/genericUploadImage.jpg";
     //  toca crear una cajita para q se vean las imagenes y el cv
-    $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
-    const $fPerfilBox=$formPortafolio.querySelector("#show-img-perfil");
-    $fPerfilBox.setAttribute("src",json.foto_portafolio);
-    //$formPortafolio.getElementById("foto-perfil").value;
-    $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
-    const $fFondoBox=$formPortafolio.querySelector("#show-img-fondo");
-    $fFondoBox.setAttribute("src",json.fondo_portafolio);
-    //$formPortafolio.getElementById("foto-fondo").value;
-    $formPortafolio.querySelector("#cv").removeAttribute("required");
-    
-    //$formPortafolio.getElementById("cv").value;
-
+    const $fotoPerfil = $formPortafolio.querySelector("#foto-perfil");
+    $fotoPerfil.removeAttribute("required");
+    const $fPerfilBox = $formPortafolio.querySelector("#show-img-perfil");
+    let srcContent = (json.foto_portafolio) ? json.foto_portafolio : defaultImage;
+    $fPerfilBox.setAttribute("src", srcContent);
+    $fotoPerfil.value = "";
+    const $fotoFondo = $formPortafolio.querySelector("#foto-fondo");
+    $fotoFondo.removeAttribute("required");
+    const $fFondoBox = $formPortafolio.querySelector("#show-img-fondo");
+    srcContent = (json.fondo_portafolio) ? json.fondo_portafolio : defaultImage;
+    $fFondoBox.setAttribute("src", srcContent);
+    $fotoFondo.value = "";
+    const $cvBox = $formPortafolio.querySelector("#cv");
+    $cvBox.removeAttribute("required");
+    $cvBox.value = "";
     //  enviar a un listener para q pueda ver si hubieron cambios, si es un si compararlo luego con la info del json cada vez q modifiq algo, si pasa eso toca modificarlo
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
@@ -225,23 +229,33 @@ const getPortfolioData=async function(idPortfolio){
     throw err;
   }
   //  change values 
-  
-  
+
+
 }
 
-const limpiarCaja=()=>{
-  defectImage="";
+const limpiarCaja = () => {
+  defectImage = "";
   $formPortafolio.removeAttribute("data-id");
-    //$formPortafolio.setAttribute("require","true");
-    $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
-    $formPortafolio.querySelector("#show-img-perfil");
-    $fPerfilBox.setAttribute("src",json.foto_portafolio);
-    //$formPortafolio.getElementById("foto-perfil").value;
-    $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
-    $formPortafolio.querySelector("#show-img-fondo");
-    $fFondoBox.setAttribute("src",json.fondo_portafolio);
+  $formPortafolio.setAttribute("require", "true");
+  $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
+  $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", json.foto_portafolio);
+  $formPortafolio.getElementById("foto-perfil").value = "";
+  $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
+  $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", json.fondo_portafolio);
+  $formPortafolio.getElementById("foto-fondo").value = "";
 };
 
-const getEditPortafolio={getMyPortafolios};
+const setImageInBox = (ev,$element) => {
+  const file = ev.target.files[0];
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function (e) {
+      $element.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+}
+
+const getEditPortafolio = { getMyPortafolios,setImageInBox,limpiarCaja };
 
 export default getEditPortafolio;

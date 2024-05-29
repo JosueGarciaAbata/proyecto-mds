@@ -16,14 +16,12 @@ d.addEventListener("DOMContentLoaded",e=>{
       if($form.getAttribute('data-id')){
         //  entonces es como si estuviese desde 0
         $form.removeAttribute("data-id");
-        
+        getEditPortafolio.limpiarCaja();
       }
   });
   habilityFunctions.setForm("form-portafolio");
   habilityFunctions.habilityListener("addTechnicalSkill","deleteLastTechnicalSkill","technicalSkillInput","habilidades-Tecnicas");
-  habilityFunctions.habilityListener("addSocialSkill","deleteLastSocialSkill","socialSkillInput","habilidades-Sociales");
-
-  
+  habilityFunctions.habilityListener("addSocialSkill","deleteLastSocialSkill","socialSkillInput","habilidades-Sociales");  
 });
 
 
@@ -47,3 +45,22 @@ $form.addEventListener("submit", async e => {
       
     }
   });
+
+const $btnFotoPerfil=$form.querySelector("#foto-perfil");
+
+$btnFotoPerfil.addEventListener("change",e=>{
+  getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-perfil"));
+});
+
+const $btnFotFondo=$form.querySelector("#foto-fondo");
+
+$btnFotFondo.addEventListener("change",e=>{
+  getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-fondo"));
+});
+
+
+
+
+
+
+

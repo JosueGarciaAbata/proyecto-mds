@@ -53,7 +53,7 @@ const saveHability = async () => {
       habilidades.sociales.push(option.text);
     }
   });
-console.log(habilidades);
+  console.log(habilidades);
   const formData = new FormData();
   
   formData.append("skills", JSON.stringify(habilidades));
