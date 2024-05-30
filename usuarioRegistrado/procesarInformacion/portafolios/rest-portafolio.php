@@ -285,7 +285,7 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
         // Eliminar carpeta del portafolio anterior
         $datosUsuario = "../../" . obtenerCarpetaUsuario($conexion, $userId);
         $rutaCarpetaUsuario = $datosUsuario . "/" . $portfolioData["ubicacion_portafolio"];
-        print_r($rutaCarpetaUsuario);
+        
         // Actualizar el portafolio
         $sql = "UPDATE portafolios SET titulo_portafolio = ?, educacion_portafolio = ?, sobre_mi_portafolio = ?, mensaje_bienvenida_portafolio = ? WHERE id_portafolio = ?";
         $stmt = $conexion->prepare($sql);
@@ -294,38 +294,31 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
         if (!$stmt->execute()) {
             throw new Exception("Error al actualizar el portafolio");
         }
-
+        
         // Actualizar archivos si existen
-        if(!empty($FILES)){
-            print_r($FILES);
+        if(!empty($_FILES)){
+            
             if(!empty($_FILES['fotoP'])){
                 // eliminar archivo y ponerlo en el mismo sitio
-                deleteFile($rutaCarpetaUsuario.$portfolioData["foto_portafolio"]);
+                deleteFile($rutaCarpetaUsuario.'/'.$portfolioData["foto_portafolio"]);
                 //  subir a la misma ruta
                 subirArchivo("fotoP", $rutaCarpetaUsuario);
                 //actualizar
                 updatePortfolioColumn($conexion,$_FILES['fotoP']['name'],"foto_portafolio", $portafolioId);
             }
             if(!empty($_FILES['fotoF'])){
-                deleteFile($rutaCarpetaUsuario.$portfolioData["fondo_portafolio"]);
+                deleteFile($rutaCarpetaUsuario.'/'.$portfolioData["fondo_portafolio"]);
+                
                 subirArchivo("fotoF", $rutaCarpetaUsuario);
                 updatePortfolioColumn($conexion,$_FILES['fotoF']['name'],"fondo_portafolio",$portafolioId);
             }
-
             if(!empty($_FILES['cv'])){
-                deleteFile($rutaCarpetaUsuario.$portfolioData["cv_portafolio"]);
+                deleteFile($rutaCarpetaUsuario.'/'.$portfolioData["cv_portafolio"]);
                 subirArchivo("cv", $rutaCarpetaUsuario);
                 updatePortfolioColumn($conexion,$_FILES['cv']['name'],"cv_portafolio",$portafolioId);
             }
         }
         
-        $sql = "UPDATE portafolios SET foto_portafolio = ?, fondo_portafolio = ?, cv_portafolio = ? WHERE id_portafolio = ? AND id_usuario_portafolio = ?";
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("sssss", $_FILES['fotoP']['name'], $_FILES['fotoF']['name'], $_FILES['cv']['name'], $portafolioId, $userId);
-
-        if (!$stmt->execute()) {
-            throw new Exception("Error al actualizar los archivos del portafolio");
-        }
         // Actualizar habilidades si existen
         if (!empty($habT) || !empty($habS)) {
             $habilidades = array_merge($habT, $habS);
@@ -372,14 +365,22 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
     }
 }
 
-function deleteFile($ruta){
-    if (file_exists($ruta)) {
-        // Intentar eliminar el archivo
-        if (!unlink($ruta)) {
-            echo "Error al intentar eliminar el archivo $ruta.";
+function deleteFile($ruta) {
+    try {
+        if (file_exists($ruta)) {
+            // Intentar eliminar el archivo
+            if (unlink($ruta)) {
+                return true; // El archivo fue eliminado exitosamente
+            } else {
+                throw new Exception("Error al intentar eliminar el archivo $ruta.");
+            }
+        } else {
+            throw new Exception("El archivo $ruta no existe.");
         }
-    } else {
-        echo "El archivo $ruta no existe.";
+    } catch (Exception $e) {
+        // Manejo de excepciones y errores
+        echo $e->getMessage();
+        return false; // Indica que hubo un error
     }
 }
 
@@ -708,7 +709,7 @@ function deleteDirectory($dir)
 function updatePortfolioColumn($conexion, $valueColumn, $columna, $portfolioId){
     $sql = "UPDATE portafolios SET $columna = ? WHERE id_portafolio = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("s", $valueColumn,$portfolioId);
+    $stmt->bind_param("ss", $valueColumn,$portfolioId);
     if (!$stmt->execute()) {
         throw new Exception("Error al actualizar los archivos del portafolio");
     }

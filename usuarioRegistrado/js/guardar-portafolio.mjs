@@ -87,9 +87,6 @@ const editPortafolio = async function () {
     mensaje = $mensaje.value,
     estudios = $studios.value,
     sobreMi = $sobreMi.value,
-    fotoP = $fotoP.files[0],
-    fotoF = $fotoF.files[0],
-    cv = $cv.files[0],
     selectedOptionsT = Array.from($selectElementT.selectedOptions).map(
       (option) => option.value
     ),
@@ -107,14 +104,14 @@ const editPortafolio = async function () {
     formData.append("estudios", estudios);
     formData.append("sobreMi", sobreMi);
 
-  if(fotoP){
-    formData.append("fotoP", fotoP);
+  if($fotoP.files.length > 0){
+    formData.append("fotoP", $fotoP.files[0]);
   }
-  if(fotoF){
-    formData.append("fotoF", fotoF);
+  if($fotoF.files.length > 0){
+    formData.append("fotoF", $fotoF.files[0]);
   }
-  if(cv){
-    formData.append("cv", cv);
+  if($cv.files.length > 0){
+    formData.append("cv", $cv.files[0]);
   }
 
   selectedOptionsT.forEach((option) =>

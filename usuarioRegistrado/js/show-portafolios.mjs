@@ -234,16 +234,26 @@ const getPortfolioData = async function (idPortfolio) {
 }
 
 const limpiarCaja = () => {
-  defectImage = "";
+  let defectImage = "../img/genericUploadImage.jpg";
+  
+  // Elimina el atributo "data-id" del formulario
   $formPortafolio.removeAttribute("data-id");
-  $formPortafolio.setAttribute("require", "true");
-  $formPortafolio.querySelector("#foto-perfil").removeAttribute("required");
-  $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", json.foto_portafolio);
-  $formPortafolio.getElementById("foto-perfil").value = "";
-  $formPortafolio.querySelector("#foto-fondo").removeAttribute("required");
-  $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", json.fondo_portafolio);
-  $formPortafolio.getElementById("foto-fondo").value = "";
+  
+  // Configura los campos como requeridos
+  $formPortafolio.querySelector("#foto-perfil").setAttribute("required", "true");
+  $formPortafolio.querySelector("#foto-fondo").setAttribute("required", "true");
+  $formPortafolio.querySelector("#cv").setAttribute("required", "true");
+
+  // Restablece las imágenes de perfil y fondo a la imagen por defecto
+  $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", defectImage);
+  $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", defectImage);
+
+  // Limpia los campos de tipo file
+  $formPortafolio.querySelector("#foto-perfil").value = "";
+  $formPortafolio.querySelector("#foto-fondo").value = "";
+  $formPortafolio.querySelector("#cv").value = "";
 };
+
 
 const setImageInBox = (ev,$element) => {
   const file = ev.target.files[0];

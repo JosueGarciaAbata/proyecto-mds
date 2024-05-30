@@ -13,6 +13,7 @@ const habilityListener = (nameBtnAdd, nameBtnDelete, inputHability, select) => {
           option.value = -1;
           option.text = $hability.value.trim();
           option.className = "added-skill";
+          option.selected=true;
           $select.appendChild(option);
           $hability.value = ""; // Limpiar el input después de agregar la habilidad
       }
