@@ -8,15 +8,21 @@ const habilityListener = (nameBtnAdd, nameBtnDelete, inputHability, select) => {
   const $select = d.getElementById(select);
 
   const addHability = () => {
-      if ($hability.value.trim()) {
-          const option = d.createElement("option");
-          option.value = -1;
-          option.text = $hability.value.trim();
-          option.className = "added-skill";
-          option.selected=true;
-          $select.appendChild(option);
-          $hability.value = ""; // Limpiar el input después de agregar la habilidad
-      }
+    const newOption = $hability.value.trim();
+    // Seleccionar todas las opciones del select
+    const options = $form.querySelectorAll("option");
+    // Comprobar si ya existe una opción con el mismo texto
+    const optionExists = Array.from(options).some(option => option.text === newOption);
+    if (newOption && !optionExists) {
+      const option = document.createElement("option");
+      option.value = -1;
+      option.text = newOption;
+      option.className = "added-skill";
+      option.selected = true;
+      $select.appendChild(option);
+    }
+    //limpiar
+    $hability.value = "";
   }
 
   const deleteHability = () => {
@@ -68,13 +74,13 @@ const saveHability = async () => {
 
     let json = await res.json();
     console.log(json);
-    /*
     let i = 0;
     newOptions.forEach(option => {
-      option.value = json["id"][i];
+      option.value = json["ids"][i];
       i++;
     });
-    */
+    
+
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al crear el portafolio";
     $form.insertAdjacentHTML(

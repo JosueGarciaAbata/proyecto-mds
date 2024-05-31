@@ -20,8 +20,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         }
         break;
     case "POST":
-        print_r($_POST["skills"]);
-        saveSkills($conexion, $_POST["skills"]);       
+        saveSkills($conexion, json_decode($_POST["skills"],true));       
         break;
     case "DELETE":
         if (!empty($_GET['id-skill'])) {
@@ -48,15 +47,16 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
 function saveSkills($conexion, $skills){
     if(!empty($skills)){
-        $idsSkills=array();
+        $idsSkillsTechnique=array();
+        $idsSkillsSocial=array();
         if(!empty($skills["tecnicas"])){
-            $idsSkills["tecnicas"]=insertarHabilidades($conexion, $skills["tecnicas"], "tecnica");
+            $idsSkillsTechnique=insertarHabilidades($conexion, $skills["tecnicas"], "tecnica");
         }
         if(!empty($skills["sociales"])){
-            $idsSkills["sociales"]=insertarHabilidades($conexion, $skills["sociales"], "social");
+            $idsSkillsSocial=insertarHabilidades($conexion, $skills["sociales"], "social");
         }
         http_response_code(200);
-        echo json_encode(["status" => "OK", "statusText" => "Habilidad guardada correctamente","ids"=>$idsSkills]);
+        echo json_encode(["status" => "OK", "statusText" => "Habilidad guardada correctamente","ids"=>array_merge($idsSkillsTechnique,$idsSkillsSocial)]);
     } else {
         http_response_code(405);
         echo json_encode(["status" => "BAD_REQUEST", "statusText" => "No existen habilidades a guardar"]);
@@ -66,8 +66,6 @@ function saveSkills($conexion, $skills){
 function insertarHabilidades($conexion, $habilidades, $tipo) {
     $identificadores = array();
     $tipo = ($tipo === "tecnica") ? 1 : 0;
-    print_r($habilidades);
-
     // Iniciar una transacción
     $conexion->begin_transaction();
 

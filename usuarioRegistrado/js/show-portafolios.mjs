@@ -233,6 +233,13 @@ const getPortfolioData = async function (idPortfolio) {
 
 }
 
+const cleanFiles=()=>{
+  // Limpia los campos de tipo file
+  $formPortafolio.querySelector("#foto-perfil").value = "";
+  $formPortafolio.querySelector("#foto-fondo").value = "";
+  $formPortafolio.querySelector("#cv").value = "";
+};
+
 const limpiarCaja = () => {
   let defectImage = "../img/genericUploadImage.jpg";
   
@@ -247,12 +254,9 @@ const limpiarCaja = () => {
   // Restablece las imágenes de perfil y fondo a la imagen por defecto
   $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", defectImage);
   $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", defectImage);
-
-  // Limpia los campos de tipo file
-  $formPortafolio.querySelector("#foto-perfil").value = "";
-  $formPortafolio.querySelector("#foto-fondo").value = "";
-  $formPortafolio.querySelector("#cv").value = "";
+  cleanFiles();
 };
+
 
 
 const setImageInBox = (ev,$element) => {
@@ -266,6 +270,6 @@ const setImageInBox = (ev,$element) => {
   }
 }
 
-const getEditPortafolio = { getMyPortafolios,setImageInBox,limpiarCaja };
+const getEditPortafolio = { getMyPortafolios,setImageInBox,limpiarCaja,cleanFiles };
 
 export default getEditPortafolio;

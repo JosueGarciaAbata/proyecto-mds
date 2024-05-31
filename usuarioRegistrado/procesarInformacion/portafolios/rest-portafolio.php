@@ -58,14 +58,11 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $habilidadesSociales = $_POST['habilidadesSociales'];
             $proyectos = $_POST['proyectos'];
             $dataBasic = [$titulo, $mensaje, $estudios, $sobreMi, $portafolioId];
-            $cosasAVer = array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales);
-            if (contieneCaracteresEspeciales($conexion, $cosasAVer)) {
+            if (contieneCaracteresEspeciales($conexion, array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales))) {
                 http_response_code(405);
                 echo json_encode(["error" => "Los campos tienen valores inseguros"]);
                 exit();
             }
-
-            //updatePortafolio($conexion, $userId, $portafolioId, $titulo, $habT, $habS, $estudios, $sobreMi, $mensaje, $proyectos)
             updatePortafolio($conexion, $portafolioId,$titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje, $proyectos);
         }
         break;
@@ -355,8 +352,12 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
         }
         // Confirmar la transacción
         $conexion->commit();
+        $imageData = [
+            "fPerfil" => $rutaCarpetaUsuario . '/' . $_FILES['fotoP']['name'],
+            "fFondo" => $rutaCarpetaUsuario . '/' . $_FILES['fotoF']['name']
+        ];
         http_response_code(200);
-        echo json_encode(["message" => "Portafolio actualizado correctamente"]);
+        echo json_encode(["message" => "Portafolio actualizado correctamente", "content"=>$imageData]);
     } catch (Exception $e) {
         // Si hay algún error, revertir la transacción
         $conexion->rollback();

@@ -123,7 +123,7 @@ const editPortafolio = async function () {
   selectedProjects.forEach((option) =>
     formData.append("proyectos[]", option)
   );
-  console.log(formData);
+  //console.log(formData);
   try {
     let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
       method: "POST",
@@ -133,6 +133,8 @@ const editPortafolio = async function () {
 
     let json = await res.json();
     console.log(json);
+    //  lo d abajo era para modificar la box con la img del portafolio modificado
+    //d.querySelector(`.cardPortafolio data-id=${dataId}`).closest("img .card-img-top").src=json.content.;
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al editar el portafolio";
     $form.insertAdjacentHTML(

@@ -32,18 +32,16 @@ $form.addEventListener("submit", async e => {
       e.preventDefault();
       habilityFunctions.saveHability();
       //primero insertar las habilidades nuevas
-    /*
-      
       saveEditPortafolio.setPropertys($form,"titulo-portafolio","mensaje-bienvenida","estudios","sobre-mi","foto-perfil","foto-fondo","cv","habilidades-Tecnicas","habilidades-Sociales","proyectos");
       //luego continuar, si hay un id en el fotm entonces crear, sino editar
       const dataId = $form.getAttribute('data-id');
+      //  actualizar card en ambos casos
       if(dataId){
         saveEditPortafolio.editPortafolio();
       }else{
         saveEditPortafolio.saveAll();
       }
-      getEditPortafolio.limpiarCaja();
-  */    
+      getEditPortafolio.cleanFiles(); 
     }
   });
 
