@@ -178,59 +178,9 @@ const checkSelect = function ($select, habilidades) {
 };
 
 
-const getPortfolioData = async function (idPortfolio) {
+const getPortfolioData = async function () {
   //  send request
-  const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(idPortfolio)}`;
-
-  try {
-    let res = await fetch(url, {
-      method: "GET",
-    });
-    if (!res.ok) throw { status: res.status, statusText: res.statusText };
-    let json = await res.json();
-    //console.log(json);
-    $formPortafolio.dataset.id = idPortfolio;
-    const $titulo = $formPortafolio.querySelector("#titulo-portafolio");
-    $titulo.value = json.titulo_portafolio;
-    const $mensaje = $formPortafolio.querySelector("#mensaje-bienvenida");
-    $mensaje.value = json.mensaje_bienvenida_portafolio;
-    const $estudios = $formPortafolio.querySelector("#estudios");
-    $estudios.value = json.educacion_portafolio;
-    const $sobreMi = $formPortafolio.querySelector("#sobre-mi");
-    $sobreMi.value = json.sobre_mi_portafolio;
-    const $selectHabT = $formPortafolio.querySelector("#habilidades-Tecnicas");
-    checkSelect($selectHabT, json.habilidades.habilidadesTecnicas);
-    const $selectHabS = $formPortafolio.querySelector("#habilidades-Sociales");
-    checkSelect($selectHabS, json.habilidades.habilidadesSociales);
-    const $selectProyectos = $formPortafolio.querySelector("#proyectos");
-    checkSelect($selectProyectos, json.proyectos);
-
-    const defaultImage = "../img/genericUploadImage.jpg";
-    //  toca crear una cajita para q se vean las imagenes y el cv
-    const $fotoPerfil = $formPortafolio.querySelector("#foto-perfil");
-    $fotoPerfil.removeAttribute("required");
-    const $fPerfilBox = $formPortafolio.querySelector("#show-img-perfil");
-    let srcContent = (json.foto_portafolio) ? json.foto_portafolio : defaultImage;
-    $fPerfilBox.setAttribute("src", srcContent);
-    $fotoPerfil.value = "";
-    const $fotoFondo = $formPortafolio.querySelector("#foto-fondo");
-    $fotoFondo.removeAttribute("required");
-    const $fFondoBox = $formPortafolio.querySelector("#show-img-fondo");
-    srcContent = (json.fondo_portafolio) ? json.fondo_portafolio : defaultImage;
-    $fFondoBox.setAttribute("src", srcContent);
-    $fotoFondo.value = "";
-    const $cvBox = $formPortafolio.querySelector("#cv");
-    $cvBox.removeAttribute("required");
-    $cvBox.value = "";
-    //  enviar a un listener para q pueda ver si hubieron cambios, si es un si compararlo luego con la info del json cada vez q modifiq algo, si pasa eso toca modificarlo
-  } catch (err) {
-    let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
-    console.error(`Error ${err.status}: ${message}`);
-    throw err;
-  }
-  //  change values 
-
-
+  const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent($formPortafolio.getAttribute('data-id'))}`;
 }
 
 const cleanFiles=()=>{
@@ -251,6 +201,7 @@ const limpiarCaja = () => {
   
   // Elimina el atributo "data-id" del formulario
   $formPortafolio.removeAttribute("data-id");
+  $formPortafolio.querySelector("#show-page-portfolio").style.display = "none";
   // quitar lo q este en titulo y mensaje
   
   $formPortafolio.querySelector("#titulo-portafolio").value = '';
@@ -266,12 +217,15 @@ const limpiarCaja = () => {
   cleanFiles();
 
   // clean check-box
-    uncheckSelect($formPortafolio.querySelector("#habilidades-Tecnicas"));
-    uncheckSelect($formPortafolio.querySelector("#habilidades-Sociales"));
-    uncheckSelect($formPortafolio.querySelector("#proyectos"));
+  uncheckSelect($formPortafolio.querySelector("#habilidades-Tecnicas"));
+  uncheckSelect($formPortafolio.querySelector("#habilidades-Sociales"));
+  uncheckSelect($formPortafolio.querySelector("#proyectos"));
 };
 
-
+const getDataForPage=async function(){
+  const url = `../templates/plantilla/plantilla.php?id-portafolio=${$}`;
+  window.open(url, '_blank');
+};
 
 const setImageInBox = (ev,$element) => {
   const file = ev.target.files[0];

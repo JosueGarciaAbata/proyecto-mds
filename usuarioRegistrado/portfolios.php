@@ -109,9 +109,9 @@ function generarOpcionesHabilidades($habT)
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
-                        
                         <!-- Sección para el título y contenido -->
                         <form enctype="multipart/form-data" id="form-portafolio">
+                            
                             <!--  titulo proyecto  -->
                             <div class="mb-3">
                                 <label for="titulo-portafolio" class="form-label">Titulo del proyecto:</label>
@@ -126,7 +126,8 @@ function generarOpcionesHabilidades($habT)
                             </div>
                             <!-- mostrar img -->
                             <div class="mb-3 show-image">
-                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Foto de perfil" id="show-img-perfil">
+                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Foto de perfil"
+                                    id="show-img-perfil">
                             </div>
                             <!-- foto perfil -->
                             <div class="mb-3">
@@ -136,7 +137,8 @@ function generarOpcionesHabilidades($habT)
                             </div>
                             <!-- mostrar img -->
                             <div class="mb-3 show-image">
-                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Imagen de fondo" id="show-img-fondo">
+                                <img src="../img/genericUploadImage.jpg" class="img-fluid rounded" alt="Imagen de fondo"
+                                    id="show-img-fondo">
                             </div>
                             <!-- foto fondo -->
                             <div class="mb-3">
@@ -144,7 +146,7 @@ function generarOpcionesHabilidades($habT)
                                 <input type="file" name="foto-fondo" id="foto-fondo" class="form-control"
                                     accept=".jpg, .jpeg, .png, .gif" required>
                             </div>
-                            
+
                             <!-- cv -->
                             <div class="mb-3">
                                 <label for="cv" class="form-label">Curriculum:</label>
@@ -211,6 +213,7 @@ function generarOpcionesHabilidades($habT)
 
                             <!-- Botones para guardar y cerrar el modal -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary me-md-2" id="show-page-portfolio">Ver Pagina</button>
                                 <button type="button" class="btn btn-secondary me-md-2"
                                     data-bs-dismiss="modal">Close</button>
                                 <input id="btn_portfolio" type="submit" class="btn btn-primary" value="Save">

@@ -1,7 +1,12 @@
+const d = document;
 let menuVisible = false;
-// Funcion que oculta o muestra el menu
+const seleccionar=()=> {
+  // Ocultar el menu una vez que selecciona una opcion
+  document.getElementById("nav").classList = "";
+  menuVisible = false;
+}
 
-function mostrarOcultarMenu() {
+const mostrarOcultarMenu=()=> {
   if (menuVisible) {
     document.getElementById("nav").classList = "";
     menuVisible = false;
@@ -11,13 +16,19 @@ function mostrarOcultarMenu() {
   }
 }
 
-function seleccionar() {
-  // Ocultar el menu una vez que selecciona una opcion
-  document.getElementById("nav").classList = "";
-  menuVisible = false;
-}
-
-// Deteectar el scrolling
+d.addEventListener("click",ev=>{
+  switch(ev.target){
+    case ".main-menu-item":
+      seleccionar();
+      break;
+    case "main-menu-nav":
+      mostrarOcultarMenu();
+      break;
+  }
+})
+//  ni idea d q intento hacer el josue
 window.onscroll = function () {
-  efectoHabilidades();
+  //efectoHabilidades();
 };
+
+

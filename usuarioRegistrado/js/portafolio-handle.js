@@ -57,6 +57,11 @@ $btnFotFondo.addEventListener("change",e=>{
   getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-fondo"));
 });
 
+$form.querySelector("#show-page-portfolio").addEventListener("click",()=>{
+  console.log("funciona");
+  //tomar id y consultar sus datos, input pueden estar modificados
+  getPortfolioData();
+});
 
 
 
