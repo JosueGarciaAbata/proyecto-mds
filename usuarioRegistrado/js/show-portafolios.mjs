@@ -240,12 +240,21 @@ const cleanFiles=()=>{
   $formPortafolio.querySelector("#cv").value = "";
 };
 
+const uncheckSelect=($select)=>{
+  Array.from($select.options).forEach(option => {
+      option.selected = false;
+  });
+};
+
 const limpiarCaja = () => {
   let defectImage = "../img/genericUploadImage.jpg";
   
   // Elimina el atributo "data-id" del formulario
   $formPortafolio.removeAttribute("data-id");
+  // quitar lo q este en titulo y mensaje
   
+  $formPortafolio.querySelector("#titulo-portafolio").value = '';
+  $formPortafolio.querySelector("#mensaje-bienvenida").value = '';
   // Configura los campos como requeridos
   $formPortafolio.querySelector("#foto-perfil").setAttribute("required", "true");
   $formPortafolio.querySelector("#foto-fondo").setAttribute("required", "true");
@@ -255,6 +264,11 @@ const limpiarCaja = () => {
   $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", defectImage);
   $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", defectImage);
   cleanFiles();
+
+  // clean check-box
+    uncheckSelect($formPortafolio.querySelector("#habilidades-Tecnicas"));
+    uncheckSelect($formPortafolio.querySelector("#habilidades-Sociales"));
+    uncheckSelect($formPortafolio.querySelector("#proyectos"));
 };
 
 

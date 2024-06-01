@@ -130,11 +130,13 @@ const editPortafolio = async function () {
       body: formData,
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
-
     let json = await res.json();
     console.log(json);
     //  lo d abajo era para modificar la box con la img del portafolio modificado
-    //d.querySelector(`.cardPortafolio data-id=${dataId}`).closest("img .card-img-top").src=json.content.;
+    const element=document.querySelector(`.cardPortafolio[data-id='${$form.dataset.id}']`).querySelector("img.card-img-top");
+    console.log(element);
+    element.setAttribute("src", json.content);
+
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al editar el portafolio";
     $form.insertAdjacentHTML(
@@ -144,16 +146,6 @@ const editPortafolio = async function () {
   }
 
 };
-
-
-
-
-
-
-
-
-
-
 
 const saveEditPortafolio = { setPropertys,saveAll, editPortafolio };
 
