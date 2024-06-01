@@ -198,6 +198,8 @@ $(document).ready(function () {
             $("#commentsModal").modal("show");
           });
         });
+
+        getProjects();
       },
       error: function (xhr, status, error) {
         mostrarModalDeAdvertencia("An error has occurred");
@@ -398,9 +400,6 @@ $(document).ready(function () {
     });
   }
 
-  //Obtener los posts
+  //Obtener los posts y proyecto
   getPosts();
-
-  //Obtener los proyectos
-  getProjects();
 });

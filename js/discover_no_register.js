@@ -136,7 +136,7 @@ $(document).ready(function () {
               success: function (response) {
                 console.log("Entrado a llenar el modal...");
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
-                console.log(data);
+                console.log("usuarioPosts..." + data.nombre_usuario);
                 $(".h1-title-post").text(
                   data.nombre_usuario +
                     "'s" +
@@ -159,7 +159,8 @@ $(document).ready(function () {
                     // Agregar la imagen del autor del comentario
                     var authorImageUrl = comment.ubicacion_foto_perfil_usuario
                       ? comment.ubicacion_foto_perfil_usuario
-                      : "../img/defaulAvatar.png";
+                      : "../img/defaulAvatarDiscover.png";
+
                     var authorImage = $(
                       '<img src="' +
                         authorImageUrl +
@@ -171,11 +172,19 @@ $(document).ready(function () {
                       : "Anonimo";
 
                     // Agregar el nombre del autor del comentario
-                    var authorName = $("<p>" + valitedAuthorName + ": </p>");
+                    var authorName = $(
+                      "<p style='text-align: left; margin-top: auto; margin-bottom: auto;'>" +
+                        valitedAuthorName +
+                        ": </p>"
+                    ).css({
+                      marginRight: "10px", // Espacio entre la imagen y el nombre del autor
+                    });
 
                     // Crear el contenido del comentario
                     var commentContent = $(
-                      "<p>" + comment.contenido_comentario + "</p>"
+                      "<p style='text-align: left; margin-top: auto; margin-bottom: auto;'>" +
+                        comment.contenido_comentario +
+                        "</p>"
                     );
 
                     // Adjuntar la imagen, el nombre del autor y el contenido del comentario al contenedor del comentario
@@ -200,6 +209,8 @@ $(document).ready(function () {
             $("#commentsModal").modal("show");
           });
         });
+
+        getProjects();
       },
       error: function (xhr, status, error) {
         mostrarModalDeAdvertencia("An error has occurred");
@@ -218,6 +229,7 @@ $(document).ready(function () {
       },
       success: function (response) {
         var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
+        console.log(response);
 
         //Generar los contenedores con la informacion del post
         data.forEach(function (proyecto) {
@@ -239,7 +251,7 @@ $(document).ready(function () {
           var imageUrl =
             proyecto.ubicacion_imagen_proyecto != null &&
             proyecto.ubicacion_imagen_proyecto.trim() !== ""
-              ? post.ubicacion_imagen_post
+              ? proyecto.ubicacion_imagen_proyecto
               : "../img/genericImagePost.jpg";
 
           //Asignar imagen
@@ -267,7 +279,11 @@ $(document).ready(function () {
               '" alt="Autor" class="rounded-circle" style="width: 30px; height: 30px; margin: 10px 10px;">'
           );
 
-          var authorName = $("<span>" + proyecto.nombre_usuario + "</span>");
+          var authorName = $(
+            "<span>" +
+              (proyecto.nombre_usuario ? proyecto.nombre_usuario : "Anonimo") +
+              "</span>"
+          );
 
           var authorContainer = $(
             '<div class="d-flex align-items-center"></div>'
@@ -328,7 +344,7 @@ $(document).ready(function () {
               success: function (response) {
                 console.log("Entrado a llenar el modal...");
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
-                console.log(data);
+                console.log("usuarioProj..." + data.nombre_usuario);
                 $(".h1-title-projects").text(
                   data.nombre_usuario +
                     "'s" +
@@ -401,7 +417,4 @@ $(document).ready(function () {
 
   //Obtener los posts
   getPosts();
-
-  // Mostrar proyectos
-  getProjects();
 });

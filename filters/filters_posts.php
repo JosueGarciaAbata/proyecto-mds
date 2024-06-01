@@ -5,26 +5,7 @@ $result_categorias = $stmt_categorias->get_result();
 $categorias = $result_categorias->fetch_all(MYSQLI_ASSOC);
 $stmt_categorias->close();
 ?>
-<style>
-    .delete-icon {
-        width: 32px;
-        height: 32px;
-        stroke: red;
-        fill: none;
-    }
 
-    .modal-dialog {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-    }
-
-    .modal {
-        background-color: rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-    }
-</style>
 
 <!-- Main content -->
 <div class="page">

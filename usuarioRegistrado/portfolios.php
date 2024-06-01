@@ -221,6 +221,6 @@ function generarOpcionesHabilidades($habT)
 </div>
 
 <?php require_once ('footer.php'); ?>
-<script src="js/portafolio-handle.js" type="module"></script>
 <script src="js/filters_portafolios.js"></script>
-<script src="js/portafolios.js"></script>
+<!-- <script src="js/portafolio-handle.js" type="module"></script> -->
+<!-- <script src="js/portafolios.js"></script> -->

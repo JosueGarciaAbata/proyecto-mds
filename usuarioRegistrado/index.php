@@ -178,8 +178,7 @@ $stmt_state->close();
       </div>
     </div>
 
-    <?php require_once ('../filters/filters_posts.php'); ?>
-
+ <?php require_once ('../filters/filters_posts.php'); ?>
     <!-- Fin wrapper -->
   </div>
 

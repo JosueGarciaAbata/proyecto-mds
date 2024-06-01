@@ -690,7 +690,7 @@ function filtroProjects(tipoProjects) {
                     var imageUrl =
                       proyecto.ubicacion_imagen_proyecto != null &&
                       proyecto.ubicacion_imagen_proyecto.trim() !== ""
-                        ? post.ubicacion_imagen_post
+                        ? proyecto.ubicacion_imagen_proyecto
                         : "../img/genericImagePost.jpg";
 
                     //Asignar imagen

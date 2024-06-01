@@ -1,69 +1,69 @@
 .delete-icon {
-    position: absolute;
-    top: 0;
-    right: 0;
-    margin: 3px;
-    width: 32px;
-    height: 32px;
-    stroke-width: 2;
-    stroke: red;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    top: -10px;
-    cursor: pointer;
+  position: absolute;
+  top: 0;
+  right: 0;
+  margin: 3px;
+  width: 32px;
+  height: 32px;
+  stroke-width: 2;
+  stroke: red;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  top: -10px;
+  cursor: pointer;
 }
 
 .card-img-top {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    max-height: 200px;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  max-height: 200px;
 }
 
-.mb-0{
-    margin-left: 10px;
+.mb-0 {
+  margin-left: 10px;
 }
 
 .edit-icon {
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
-    stroke: currentColor;
-    fill: none;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    cursor: pointer;
+  width: 24px;
+  height: 24px;
+  stroke-width: 2;
+  stroke: currentColor;
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  cursor: pointer;
 }
 
-
 .modal-dialog {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
 }
 
 .modal {
-    background-color: rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
 }
 
-.modal-content{
-    position: absolute; 
-    top: 50px; 
-    left: 0; 
-    right: 0; 
-    bottom: 0; 
-    overflow: auto;
+.modal-content {
+  position: relative;
+  top: 50px;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: auto;
 }
 
-.ImgBox{
-    max-height: 500px; 
-    overflow: hidden;
+.ImgBox {
+  max-height: 500px;
+  overflow: hidden;
 }
 
-.img-fluid{
-    width: 100%; height: 100%; object-fit: cover;
+.img-fluid {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
-
