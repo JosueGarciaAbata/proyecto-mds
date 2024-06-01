@@ -72,8 +72,7 @@ html {
       to top,
       rgba(30, 35, 38, 0.8),
       rgba(30, 35, 38, 1)
-    ),
-    url(img/fondo.jpg);
+    );
   background-size: cover;
   height: 100vh;
   color: #ffffff;
@@ -483,4 +482,13 @@ footer .arriba {
   .proyectos .galeria .proyecto img {
     width: 100%;
   }
+}
+
+
+
+/* añadido por el cv */
+
+button a{
+  color: inherit;
+  text-decoration: none;
 }

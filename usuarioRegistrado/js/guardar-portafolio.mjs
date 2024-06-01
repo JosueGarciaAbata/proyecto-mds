@@ -133,9 +133,11 @@ const editPortafolio = async function () {
     let json = await res.json();
     console.log(json);
     //  lo d abajo era para modificar la box con la img del portafolio modificado
-    const element=document.querySelector(`.cardPortafolio[data-id='${$form.dataset.id}']`).querySelector("img.card-img-top");
-    console.log(element);
-    element.setAttribute("src", json.content);
+    if($fotoP.files.length > 0){
+      const element=document.querySelector(`.cardPortafolio[data-id='${$form.dataset.id}']`).querySelector("img.card-img-top");
+      console.log(element);
+      element.setAttribute("src", json.content);
+    }
 
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al editar el portafolio";

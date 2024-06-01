@@ -516,7 +516,7 @@ function getPortafolio($conexion, $idPortfolio)
         'mensaje_bienvenida_portafolio' => $row['mensaje_bienvenida_portafolio'],
         'foto_portafolio' => $carpetaUsuario . $row['foto_portafolio'],
         'fondo_portafolio' => $carpetaUsuario . $row['fondo_portafolio'],
-        'ubicacionCv_portafolio' => $row['cv_portafolio'],
+        'ubicacionCv_portafolio' => $carpetaUsuario .$row['cv_portafolio'],
         'id_estado_portafolio' => $row['id_estado_portafolio']
     );
     //  colocar habilidades relacionadas a un portafolio
@@ -532,7 +532,7 @@ function getProyectosByPortfolioId($conexion, $idProyecto)
         return [];
     }
     $sql = "SELECT 
-	        p.id_proyecto AS 'id', p.id_estado_proyecto, p.titulo_proyecto, p.id_categoria_proyecto
+	        p.id_proyecto AS 'id', p.id_estado_proyecto, p.id_categoria_proyecto
 	FROM 
 		proyectos_agrupados_portafolio pa 
 	JOIN

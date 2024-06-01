@@ -60,7 +60,7 @@ $btnFotFondo.addEventListener("change",e=>{
 $form.querySelector("#show-page-portfolio").addEventListener("click",()=>{
   console.log("funciona");
   //tomar id y consultar sus datos, input pueden estar modificados
-  getPortfolioData();
+  getEditPortafolio.getDataForPage();
 });
 
 

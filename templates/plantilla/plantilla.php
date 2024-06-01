@@ -1,48 +1,4 @@
 
-<?php
-if(empty($_GET) || empty($_GET["id-portfolio"]))
-    die("Acceso no autorizado");
-
-require_once ('../../../procesarInformacion/conexion.php');
-
-
-
-function generarHTMLHabilidades($habilidades) {
-    // Inicia la estructura HTML
-    $html = '<div class="fila">';
-
-    // Genera la columna para habilidades técnicas
-    if (isset($habilidades['tecnicas']) && is_array($habilidades['tecnicas'])) {
-        $html .= '<div class="col">';
-        $html .= '<h3>Técnicas</h3>';
-        foreach ($habilidades['tecnicas'] as $habilidad) {
-            $html .= '<div class="skill">';
-            $html .= '<span>' . htmlspecialchars($habilidad) . '</span>';
-            $html .= '</div>';
-        }
-        $html .= '</div>';
-    }
-
-    // Genera la columna para habilidades sociales (o blandas)
-    if (isset($habilidades['sociales']) && is_array($habilidades['sociales'])) {
-        $html .= '<div class="col">';
-        $html .= '<h3>Blandas</h3>';
-        foreach ($habilidades['sociales'] as $habilidad) {
-            $html .= '<div class="skill">';
-            $html .= '<span>' . htmlspecialchars($habilidad) . '</span>';
-            $html .= '</div>';
-        }
-        $html .= '</div>';
-    }
-
-    // Cierra la estructura HTML
-    $html .= '</div>';
-
-    return $html;
-}
-
-
-?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -52,9 +8,8 @@ function generarHTMLHabilidades($habilidades) {
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"
         integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLJAJ9/2PkPKZ5QiAj6Ta86w+fsb2TkcmfRyVX3pBnMFcV7oQPJkl9QevSCWr3W6A=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <link rel="stylesheet" href=".../datos_plantilla/estilos.css">
-    <!-- <title><?php echo $template->get('titulo_portafolio') ?></title> -->
-    <title><?php echo $_SESSION["title"]?></title>
+    <link rel="stylesheet" href="./../datos_plantilla/estilos.css">
+    <title>My creative portfolio</title>
 </head>
 
 <body>
@@ -63,7 +18,7 @@ function generarHTMLHabilidades($habilidades) {
 
         <header>
             <div class="logo">
-                <a href="#"><?php echo $_SESSION["nombres"]?></a>
+                <a href="#"><span id="name-user"></span></a>
             </div>
             <nav id="nav">
                 <ul>
@@ -73,7 +28,7 @@ function generarHTMLHabilidades($habilidades) {
                     <li><a href="#proyectos" class="main-menu-item">Proyectos</a></li>
                 </ul>
             </nav>
-            <div class="nav-responsive" class="main-menu-nav" onclick="mostrarOcultarMenu()">
+            <div class="nav-responsive" class="main-menu-nav">
                 <i class="fa-solid fa-bars"></i>
             </div>
         </header>
@@ -83,11 +38,9 @@ function generarHTMLHabilidades($habilidades) {
     <section id="inicio" class="inicio">
         <div class="contenido-banner">
             <div class="contenedor-img">
-                <img src='<?php echo $_SESSION["fotoP"]?>' alt="">
+                <img src='#' alt="" id="img-portfolio">
             </div>
-            <h1><?php echo $_SESSION["nombres"]?></h1>
-            <!-- Modificar o borrar. -->
-            <h2>Ingeniero de Software</h2>
+            <h1></h1>
         </div>
     </section>
 
@@ -96,20 +49,20 @@ function generarHTMLHabilidades($habilidades) {
         <div class="contenido-seccion">
             <!-- Modificar, datos provenientes del modal -->
             <h2>Sobre mi</h2>
-            <p>Hola soy <?php echo $_SESSION["nombres"].", ".$_SESSION["mensaje"]?>. </p>
-
+            <p>Hola soy <span id="about-me"></span></p>
             <div class="fila">
                 <!-- Datos personales  -->
                 <div class="col">
                     <ul>
-                        <li><Strong>Email: </Strong>
-                        <?php echo $_SESSION["correo"]?></li>
+                        <li><Strong>Email: </Strong><span id="email-user"></span>
                     </ul>
                 </div>
             </div>
             <button>
-                <span class="overlay"></span>
-                Descargar Curriculum <i class="fa-solid fa-download"></i>
+                <a href="#" target="_blank" id="download-cv" rel="noopener noreferrer">
+                    <span class="overlay"></span>
+                    Descargar Curriculum <i class="fa-solid fa-download"></i>
+                </a>
             </button>
         </div>
     </section>
@@ -121,37 +74,13 @@ function generarHTMLHabilidades($habilidades) {
             <h2>Habilidades</h2>
             <div class="fila">
                 <!-- Habilidades tecnicas  -->
-                <div class="col">
+                <div class="col technique">
                     <h3>Técnicas</h3>
-                    <div class="skill">
-                        <span>JavaScript</span>
-                    </div>
-                    <div class="skill">
-                        <span>HTML && CSS</span>
-                    </div>
-                    <div class="skill">
-                        <span>Java</span>
-                    </div>
-                    <div class="skill">
-                        <span>Photoshop</span>
-                    </div>
                 </div>
-
                 <!-- Habilidades profesionales  -->
-                <div class="col">
+                <div class="col social">
                     <h3>Blandas</h3>
-                    <div class="skill">
-                        <span>Comunicacion</span>
-                    </div>
-                    <div class="skill">
-                        <span>Trabajo en equipo</span>
-                    </div>
-                    <div class="skill">
-                        <span>Creatividad</span>
-                    </div>
-                    <div class="skill">
-                        <span>Dedicacion</span>
-                    </div>
+                    
                 </div>
             </div>
         </div>
@@ -173,11 +102,8 @@ function generarHTMLHabilidades($habilidades) {
             <i class="fa-solid fa-angles-up"></i>
         </a>
     </footer>
-
-    <script src="../datos_plantillas/script.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
     <!-- Codigo para generar dinamicamente los proyectos del portafolio  -->
+    <!-- 
     <script>
         $(document).ready(function () {
             // Solicitud AJAX para obtener los datos de los proyectos
@@ -204,7 +130,8 @@ function generarHTMLHabilidades($habilidades) {
             });
         });
     </script>
-
+    -->
+    <script src="./../datos_plantilla/script.js"></script>
 </body>
 
 </html>
