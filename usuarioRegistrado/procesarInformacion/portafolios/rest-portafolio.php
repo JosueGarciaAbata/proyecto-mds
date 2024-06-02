@@ -29,7 +29,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
     case "POST":
         //  como no se pueden enviar archivos por metodo put lo hare en post
-        if(empty($_POST['id'])){
+        if (empty($_POST['id'])) {
             $titulo = $_POST['titulo'];
             $mensaje = $_POST['mensaje'];
             $estudios = $_POST['estudios'];
@@ -48,7 +48,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
 
             savePortafolio($conexion, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje, $proyectos);
             exit();
-        }else{
+        } else {
             $portafolioId = $_POST['id'];
             $titulo = $_POST['titulo'];
             $mensaje = $_POST['mensaje'];
@@ -58,18 +58,13 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $habilidadesSociales = $_POST['habilidadesSociales'];
             $proyectos = $_POST['proyectos'];
             $dataBasic = [$titulo, $mensaje, $estudios, $sobreMi, $portafolioId];
-            $cosasAVer = array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales);
-
-            if (contieneCaracteresEspeciales($conexion, $cosasAVer)) {
+            if (contieneCaracteresEspeciales($conexion, array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales))) {
                 http_response_code(405);
                 echo json_encode(["error" => "Los campos tienen valores inseguros"]);
                 exit();
             }
-
-            //updatePortafolio($conexion, $userId, $portafolioId, $titulo, $habT, $habS, $estudios, $sobreMi, $mensaje, $proyectos)
-            updatePortafolio($conexion, $portafolioId,$titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje, $proyectos);
+            updatePortafolio($conexion, $portafolioId, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje, $proyectos);
         }
-        
         break;
     case "DELETE":
         if (!empty($_GET['id-portafolio'])) {
@@ -116,6 +111,7 @@ function getUserName($conexion, $id)
         'fotoPerfil' => $ubicacionFotoPerfilUsuario
     );
 }
+
 function obtenerCarpetaUsuario($conexion, $userId)
 {
     $dataUser = getUserName($conexion, $userId);
@@ -138,19 +134,6 @@ function savePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $
 {
     session_start();
     $userId = $_SESSION['user_id'];
-    /*
-        $requiredInputs = ['userId', 'titulo', 'habT', 'habS', 'estudios', 'sobreMi', 'mensaje', 'foto-perfil', 'cv'];
-        
-        foreach ($requiredInputs as $input) {
-            if (empty($$input)) {
-                // Devolver un error si falta algún campo requerido
-                http_response_code(400);
-                echo json_encode(["error" => "Faltan datos requeridos"]);
-                exit();
-            }
-        }
-        
-    */
 
     // Subir archivos
     $rutaCarpetaUsuario = "../../" . obtenerCarpetaUsuario($conexion, $userId);
@@ -163,9 +146,6 @@ function savePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $
         $identificadorUnico = uniqid();
     }
     $rutaCarpetaUsuario .= "/$identificadorUnico";
-    //print_r($_FILES);
-    //print_r($_FILES["foto"]);
-
     $fotoP = subirArchivo("fotoP", $rutaCarpetaUsuario);
     $fotoF = subirArchivo("fotoF", $rutaCarpetaUsuario);
     $cv = subirArchivo("cv", $rutaCarpetaUsuario);
@@ -189,9 +169,7 @@ function savePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $
     // Insertar habilidades y proyectos
     $conexion->begin_transaction();
     $habilidades = array_merge($habT, $habS);
-    //  print_r($proyectos);
     try {
-        // Insertar habilidades
         $sql = "INSERT INTO portafolios_habilidades (id_portafolio_portafolios_habilidades, id_habilidad_portafolios_habilidades) VALUES (?, ?)";
         $stmt = $conexion->prepare($sql);
         foreach ($habilidades as $habilidad) {
@@ -207,7 +185,6 @@ function savePortafolio($conexion, $titulo, $habT, $habS, $estudios, $sobreMi, $
                 $stmt->execute();
             }
         }
-
         // Confirmar transacción
         $conexion->commit();
     } catch (Exception $e) {
@@ -260,9 +237,10 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
     try {
         session_start();
         $userId = $_SESSION['user_id'];
-        session_write_close(); // Cierra la sesión para evitar bloqueos
+        // session_write_close(); 
+        // Cierra la sesión para evitar bloqueos
 
-        $sql = "SELECT id_usuario_portafolio, ubicacion_portafolio FROM portafolios WHERE id_portafolio = ?";
+        $sql = "SELECT id_usuario_portafolio, ubicacion_portafolio, foto_portafolio, fondo_portafolio, cv_portafolio FROM portafolios WHERE id_portafolio = ?";
         $stmt = $conexion->prepare($sql);
         $stmt->bind_param("i", $portafolioId);
         $stmt->execute();
@@ -284,38 +262,41 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
 
         // Eliminar carpeta del portafolio anterior
         $datosUsuario = "../../" . obtenerCarpetaUsuario($conexion, $userId);
-        $rutaCarpetaUsuario = $datosUsuario . "/" . $portfolioData["ubicacion_portafolio"];
-        deleteDirectory($rutaCarpetaUsuario);
+        $rutaCarpetaUsuario = $datosUsuario . $portfolioData["ubicacion_portafolio"];
 
         // Actualizar el portafolio
-        $sql = "UPDATE portafolios SET titulo_portafolio = ?, educacion_portafolio = ?, sobre_mi_portafolio = ?, mensaje_bienvenida_portafolio = ? WHERE id_portafolio = ? AND id_usuario_portafolio = ?";
+        $sql = "UPDATE portafolios SET titulo_portafolio = ?, educacion_portafolio = ?, sobre_mi_portafolio = ?, mensaje_bienvenida_portafolio = ? WHERE id_portafolio = ?";
         $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("sssssi", $titulo, $estudios, $sobreMi, $mensaje, $portafolioId, $userId);
+        $stmt->bind_param("sssss", $titulo, $estudios, $sobreMi, $mensaje, $portafolioId);
 
         if (!$stmt->execute()) {
             throw new Exception("Error al actualizar el portafolio");
         }
-
+        $imageData =[];
         // Actualizar archivos si existen
-        $rutaCarpetaUsuario = "../../" . obtenerCarpetaUsuario($conexion, $userId);
-        $identificadorUnico = uniqid();
+        if (!empty($_FILES)) {
 
-        // Comprobar si la carpeta con el identificador único ya existe
-        while (file_exists($rutaCarpetaUsuario . "/" . $identificadorUnico)) {
-            $identificadorUnico = uniqid();
-        }
-        $rutaCarpetaUsuario .= "/$identificadorUnico";
+            if (!empty($_FILES['fotoP'])) {
+                // eliminar archivo y ponerlo en el mismo sitio
+                deleteFile($rutaCarpetaUsuario . '/' . $portfolioData["foto_portafolio"]);
+                //  subir a la misma ruta
+                subirArchivo("fotoP", $rutaCarpetaUsuario);
+                //actualizar
+                updatePortfolioColumn($conexion, $_FILES['fotoP']['name'], "foto_portafolio", $portafolioId);
+                $imageData["content"]=$rutaCarpetaUsuario ."/". $_FILES['fotoP']['name'];
+                $imageData["content"]=substr($imageData["content"],6);
+            }
+            if (!empty($_FILES['fotoF'])) {
+                deleteFile($rutaCarpetaUsuario . '/' . $portfolioData["fondo_portafolio"]);
 
-        $fotoP = subirArchivo("fotoP", $rutaCarpetaUsuario);
-        $fotoF = subirArchivo("fotoF", $rutaCarpetaUsuario);
-        $cv = subirArchivo("cv", $rutaCarpetaUsuario);
-
-        $sql = "UPDATE portafolios SET ubicacion_portafolio = ?, foto_portafolio = ?, fondo_portafolio = ?, cv_portafolio = ? WHERE id_portafolio = ? AND id_usuario_portafolio = ?";
-        $stmt = $conexion->prepare($sql);
-        $stmt->bind_param("sssssi", $identificadorUnico, $_FILES['fotoP']['name'], $_FILES['fotoF']['name'], $_FILES['cv']['name'], $portafolioId, $userId);
-
-        if (!$stmt->execute()) {
-            throw new Exception("Error al actualizar los archivos del portafolio");
+                subirArchivo("fotoF", $rutaCarpetaUsuario);
+                updatePortfolioColumn($conexion, $_FILES['fotoF']['name'], "fondo_portafolio", $portafolioId);
+            }
+            if (!empty($_FILES['cv'])) {
+                deleteFile($rutaCarpetaUsuario . '/' . $portfolioData["cv_portafolio"]);
+                subirArchivo("cv", $rutaCarpetaUsuario);
+                updatePortfolioColumn($conexion, $_FILES['cv']['name'], "cv_portafolio", $portafolioId);
+            }
         }
 
         // Actualizar habilidades si existen
@@ -336,7 +317,6 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
                 $stmt->execute();
             }
         }
-
         // Actualizar proyectos si existen
         if (!empty($proyectos)) {
             // Eliminar proyectos anteriores
@@ -353,16 +333,36 @@ function updatePortafolio($conexion, $portafolioId, $titulo, $habT, $habS, $estu
                 $stmt->execute();
             }
         }
-
         // Confirmar la transacción
         $conexion->commit();
+        
         http_response_code(200);
-        echo json_encode(["message" => "Portafolio actualizado correctamente"]);
+        echo json_encode($imageData);
     } catch (Exception $e) {
         // Si hay algún error, revertir la transacción
         $conexion->rollback();
         http_response_code(500);
         echo json_encode(["error" => $e->getMessage()]);
+    }
+}
+
+function deleteFile($ruta)
+{
+    try {
+        if (file_exists($ruta)) {
+            // Intentar eliminar el archivo
+            if (unlink($ruta)) {
+                return true; // El archivo fue eliminado exitosamente
+            } else {
+                throw new Exception("Error al intentar eliminar el archivo $ruta.");
+            }
+        } else {
+            throw new Exception("El archivo $ruta no existe.");
+        }
+    } catch (Exception $e) {
+        // Manejo de excepciones y errores
+        echo $e->getMessage();
+        return false; // Indica que hubo un error
     }
 }
 
@@ -462,14 +462,20 @@ function getPortafolios($conexion, $idHabilidades = 0)
                 'ubicacionCv_portafolio' => $row['cv_portafolio'],
                 'id_estado_portafolio' => $row['id_estado_portafolio']
             );
+            $idP = $portafolio["id_portafolio"];
             //  colocar habilidades relacionadas a un portafolio
-            $portafolio["habilidades"] = getHabilidadesByPortfolioId($conexion, $portafolio["id_portafolio"]);
+            //$portafolio["habilidades"]=array();
+            $portafolio["habilidades"] = json_encode(getHabilidadesByPortfolioId($conexion, $idP));
+            //print_r($portafolio["habilidades"]);
+            //  echo $idP."<br>";
             $portafolios[] = $portafolio;
         }
         http_response_code(200);
         echo json_encode($portafolios);
     }
 }
+
+
 function getPortafolio($conexion, $idPortfolio)
 {
     //traer todos
@@ -510,7 +516,7 @@ function getPortafolio($conexion, $idPortfolio)
         'mensaje_bienvenida_portafolio' => $row['mensaje_bienvenida_portafolio'],
         'foto_portafolio' => $carpetaUsuario . $row['foto_portafolio'],
         'fondo_portafolio' => $carpetaUsuario . $row['fondo_portafolio'],
-        'ubicacionCv_portafolio' => $row['cv_portafolio'],
+        'ubicacionCv_portafolio' => $carpetaUsuario .$row['cv_portafolio'],
         'id_estado_portafolio' => $row['id_estado_portafolio']
     );
     //  colocar habilidades relacionadas a un portafolio
@@ -526,7 +532,7 @@ function getProyectosByPortfolioId($conexion, $idProyecto)
         return [];
     }
     $sql = "SELECT 
-	        p.id_proyecto AS 'id', p.id_estado_proyecto, p.titulo_proyecto, p.id_categoria_proyecto
+	        p.id_proyecto AS 'id', p.id_estado_proyecto, p.id_categoria_proyecto
 	FROM 
 		proyectos_agrupados_portafolio pa 
 	JOIN
@@ -617,44 +623,50 @@ function getHabilidadesByPortfolioId($conexion, $idPortafolio)
     if (empty($idPortafolio)) {
         return [];
     }
-    // Crear la consulta SQL para obtener la información de las habilidades
-    $sql =
-        "SELECT 
-                ph.id_habilidad_portafolios_habilidades, h.nombre_habilidades, h.tipo_habilidades
-            FROM 
-                portafolios_habilidades ph
-            JOIN 
-                habilidades h ON ph.id_habilidad_portafolios_habilidades = h.id_habilidades
-            WHERE 
-                ph.id_portafolio_portafolios_habilidades = ?";
-    $stmt = $conexion->prepare($sql);
-    // Asignar los valores de los placeholders
-    $stmt->bind_param("i", $idPortafolio);
-    $stmt->execute();
-    $result = $stmt->get_result();
-    //$conexion->close();
-    // Obtener los datos de las habilidades
-    $habilidades = [];
+
+    // Crear las consultas SQL para obtener la información de las habilidades técnicas y sociales
+    $sqlTecnicas = "SELECT ph.id_habilidad_portafolios_habilidades AS 'id', h.nombre_habilidades as 'nombre'
+                    FROM portafolios_habilidades ph
+                    JOIN habilidades h ON ph.id_habilidad_portafolios_habilidades = h.id_habilidades
+                    WHERE ph.id_portafolio_portafolios_habilidades = ? AND h.tipo_habilidades = 1";
+
+    $sqlSociales = "SELECT ph.id_habilidad_portafolios_habilidades AS 'id', h.nombre_habilidades as 'nombre'
+                    FROM portafolios_habilidades ph
+                    JOIN habilidades h ON ph.id_habilidad_portafolios_habilidades = h.id_habilidades
+                    WHERE ph.id_portafolio_portafolios_habilidades = ? AND h.tipo_habilidades = 0";
+
+    // Consultar habilidades técnicas
+    $stmtTecnicas = $conexion->prepare($sqlTecnicas);
+    $stmtTecnicas->bind_param("i", $idPortafolio);
+    $stmtTecnicas->execute();
+    $resultTecnicas = $stmtTecnicas->get_result();
+
     $habilidadesTecnicas = [];
-    $habilidadesSociales = [];
-    while ($row = $result->fetch_assoc()) {
-        $tipoHabilidad = $row["tipo_habilidades"];
-        $habilidad = [
-            "id" => $row["id_habilidad_portafolios_habilidades"],
-            "nombre" => $row["nombre_habilidades"],
+    while ($row = $resultTecnicas->fetch_assoc()) {
+        $habilidadesTecnicas[] = [
+            "id" => $row["id"],
+            "nombre" => $row["nombre"],
         ];
-        if ($tipoHabilidad == 1) {
-            $habilidadesTecnicas[] = $habilidad;
-        } else {
-            $habilidadesSociales[] = $habilidad;
-        }
-
     }
-    // Retornar las habilidades encontradass
-    // print_r($habilidadesTecnicas);
-    // print_r($habilidadesSociales);
-    return array("habilidadesTecnicas" => $habilidadesTecnicas, "habilidadesSociales" => $habilidadesSociales);
 
+    // Consultar habilidades sociales
+    $stmtSociales = $conexion->prepare($sqlSociales);
+    $stmtSociales->bind_param("i", $idPortafolio);
+    $stmtSociales->execute();
+    $resultSociales = $stmtSociales->get_result();
+
+    $habilidadesSociales = [];
+    while ($row = $resultSociales->fetch_assoc()) {
+        $habilidadesSociales[] = [
+            "id" => $row["id"],
+            "nombre" => $row["nombre"],
+        ];
+    }
+
+    return [
+        "habilidadesTecnicas" => $habilidadesTecnicas,
+        "habilidadesSociales" => $habilidadesSociales
+    ];
 }
 
 function deleteDirectory($dir)
@@ -676,7 +688,15 @@ function deleteDirectory($dir)
     return rmdir($dir);
 }
 
-
+function updatePortfolioColumn($conexion, $valueColumn, $columna, $portfolioId)
+{
+    $sql = "UPDATE portafolios SET $columna = ? WHERE id_portafolio = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("ss", $valueColumn, $portfolioId);
+    if (!$stmt->execute()) {
+        throw new Exception("Error al actualizar los archivos del portafolio");
+    }
+}
 
 
 
