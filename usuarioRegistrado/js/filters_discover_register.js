@@ -32,85 +32,95 @@ $(document).ready(function () {
   });
 
   // Enviar los comentarios del post
-  $("#sendCommentBtn")
-    .off()
-    .on("click", function () {
-      var commentContent = $("#commentText").val().trim();
-      // Verificar si el comentario no está vacío antes de enviarlo
-      if (commentContent !== "" && postId != -1) {
-        // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
-        console.log("Enviando comentario:", commentContent);
-        console.log("ID del post:", postId);
+$("#sendCommentBtn")
+  .off()
+  .on("click", function () {
+    var commentContent = $("#commentText").val().trim();
 
-        $.ajax({
-          url: "procesarInformacion/comments_register/validar_comentarios_posts.php",
-          type: "POST",
-          data: {
-            action: "insertComment",
-            postId: postId,
-            commentContent: commentContent,
-          },
-          success: function (response) {
-            console.log(response);
+    // Verificar si el comentario no está vacío antes de enviarlo
+    if (commentContent !== "" && postId != -1) {
+      // Sanitizar el contenido del comentario para evitar XSS
+      commentContent = htmlspecialchars(commentContent);
 
-            if (response === "true") {
-              mostrarModalExito("Comentario enviado a revisión");
-            } else if (response === "trueRegister") {
-              mostrarModalExito("Comentario añadido exitosamente");
-            } else {
-              mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error("Error al enviar el comentario:", error);
-          },
-        });
-      } else {
-        // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
-      }
-    });
+      // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
+      console.log("Enviando comentario:", commentContent);
+      console.log("ID del post:", postId);
 
+      $.ajax({
+        url: "procesarInformacion/comments_register/validar_comentarios_posts.php",
+        type: "POST",
+        data: {
+          action: "insertComment",
+          postId: postId,
+          commentContent: commentContent,
+        },
+        success: function (response) {
+          console.log(response);
+
+          if (response === "true") {
+            mostrarModalExito("Comentario enviado a revisión");
+          } else if (response === "trueRegister") {
+            mostrarModalExito("Comentario añadido exitosamente");
+          } else {
+            mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Error al enviar el comentario:", error);
+        },
+      });
+    } else {
+      // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
+      mostrarModalDeAdvertencia("No puede ingresar palabras vacías.");
+    }
+  });
+
+
+ 
   // Enviar los comentarios de los proyectos
   // Boton de enviar proyecto
   $("#sendCommentBtnProjects")
-    .off()
-    .on("click", function () {
-      var commentContent = $("#commentTextProjects").val().trim();
+  .off()
+  .on("click", function () {
+    var commentContent = $("#commentTextProjects").val().trim();
 
-      // Verificar si el comentario no está vacío antes de enviarlo
-      if (commentContent !== "" && proyectoId != -1) {
-        // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
-        console.log("Enviando comentario:", commentContent);
-        console.log("ID del post:", proyectoId);
-        $.ajax({
-          url: "procesarInformacion/comments_register/validar_comentarios_projects.php",
-          type: "POST",
-          data: {
-            action: "insertComment",
-            projectId: proyectoId,
-            commentContent: commentContent,
-          },
-          success: function (response) {
-            console.log(response);
-            if (response == "true") {
-              mostrarModalExito("Comentario enviado a revision");
-            } else if (response == "trueRegister") {
-              mostrarModalExito("Comentario añadido exitosamente");
-            } else {
-              mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
-            }
-          },
-          error: function (xhr, status, error) {
-            console.error("Error al enviar el comentario:", error);
-          },
-        });
-      } else {
-        // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
-      }
-    });
-});
+    // Verificar si el comentario no está vacío antes de enviarlo
+    if (commentContent !== "" && proyectoId != -1) {
+      // Sanitizar el contenido del comentario para evitar XSS
+      commentContent = htmlspecialchars(commentContent);
+
+      // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
+      console.log("Enviando comentario:", commentContent);
+      console.log("ID del post:", proyectoId);
+
+      $.ajax({
+        url: "procesarInformacion/comments_register/validar_comentarios_projects.php",
+        type: "POST",
+        data: {
+          action: "insertComment",
+          projectId: proyectoId,
+          commentContent: commentContent,
+        },
+        success: function (response) {
+          console.log(response);
+          if (response === "true") {
+            mostrarModalExito("Comentario enviado a revisión");
+          } else if (response === "trueRegister") {
+            mostrarModalExito("Comentario añadido exitosamente");
+          } else {
+            mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
+          }
+        },
+        error: function (xhr, status, error) {
+          console.error("Error al enviar el comentario:", error);
+        },
+      });
+    } else {
+      // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
+      mostrarModalDeAdvertencia("No puede ingresar palabras vacías.");
+    }
+  });
+
 
 function filtroPosts(tipoPosts) {
   $(
