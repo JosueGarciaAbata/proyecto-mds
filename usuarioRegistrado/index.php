@@ -36,7 +36,30 @@ $stmt_state->close();
     background-color: rgba(0, 0, 0, 0.5);
     backdrop-filter: blur(8px);
   }
+
+  .card {
+    width: 200px; /* Ancho fijo para todos los cuadros */
+    height: 300px; /* Alto fijo para todos los cuadros */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    overflow: hidden;
+  }
+
+  .card-title, .card-text {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* Número de líneas permitidas */
+    -webkit-box-orient: vertical;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.5rem;
+  }
 </style>
+
 <div class="page">
 
 
