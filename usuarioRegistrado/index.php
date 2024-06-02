@@ -8,7 +8,7 @@ $result_categorias = $stmt_categorias->get_result();
 $categorias = $result_categorias->fetch_all(MYSQLI_ASSOC);
 $stmt_categorias->close();
 
-$stmt_state = $conexion->prepare("SELECT * FROM estado");
+$stmt_state = $conexion->prepare("SELECT * FROM estado WHERE id_estado=1");
 $stmt_state->execute();
 $result_state = $stmt_state->get_result();
 $states = $result_state->fetch_all(MYSQLI_ASSOC);
