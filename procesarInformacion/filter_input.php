@@ -11,5 +11,4 @@ function cleanText($text)
   return $clean_text;
 }
 
-
 ?>

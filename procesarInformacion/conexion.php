@@ -7,9 +7,9 @@ class ConexionBD
     // Datos de conexión a la base de datos
     private $servername = "localhost";
     private $username = "modelamientoProyecto";
-    private $password = "EKQuY92.ovMe7xin";
+    private $password = "EKQuY92.ovMe7xin"; // EKQuY92ovMe7xin
     private $database = "my_creative_portfolio";
-
+    private static $port = 3007;
     // Variable para almacenar la conexión
     private $conexion;
 
@@ -17,7 +17,7 @@ class ConexionBD
     private function __construct()
     {
         // Crear conexión
-        $this->conexion = new mysqli($this->servername, $this->username, $this->password, $this->database);
+        $this->conexion = new mysqli($this->servername, $this->username, $this->password, $this->database, self::$port);
 
         if ($this->conexion->connect_error) {
             die("Connection failed: " . $this->conexion->connect_error);
@@ -40,6 +40,4 @@ class ConexionBD
     {
         return $this->conexion;
     }
-
-
 }

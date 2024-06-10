@@ -308,9 +308,6 @@ function getProjects($conexion, $user_id)
   while ($row = $result->fetch_assoc()) {
     $data[] = $row;
   }
-
-
-
   return $data;
 }
 
