@@ -1,9 +1,8 @@
 <?php
 require_once ("../conexion.php");
+require_once ("../filter_input.php");
 session_start();
 
-// En este caso al ser un usuario no registrado. El id de usuario siempre sera null. 
-// Asi que siempre se ira por el else a insertarComentario_visitor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
 
@@ -14,12 +13,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         isset($_POST['action']) && $_POST['action'] == "insertComment" &&
         isset($_POST['postId']) && isset($_POST['commentContent'])
     ) {
-        $id_post = intval($_POST['postId']);
 
-        if (insertar_comentario_visitor($conexion, $id_post, $id_usuario, $_POST['commentContent'])) {
-            echo "true";
-        } else {
+        $id_post = intval($_POST['postId']);
+        $comment_content = $_POST['commentContent'];
+
+        // Limpiar el texto del comentario
+        $clean_comment_content = cleanText($comment_content);
+
+        // Verificar si el texto original es igual al texto limpio
+        if ($comment_content !== $clean_comment_content) {
+            // Si el texto contenía scripts, devolver "false"
             echo "false";
+        } else {
+            // Si el texto está limpio, insertarlo en la base de datos
+            if (insertar_comentario_visitor($conexion, $id_post, $id_usuario, $comment_content)) {
+                echo "true";
+            } else {
+                echo "false";
+            }
         }
     }
 }

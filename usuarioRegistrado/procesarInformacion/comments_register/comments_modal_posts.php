@@ -39,6 +39,21 @@ $stmt_categorias->close();
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
+
+                      <div id="postContentContainer" style="margin-bottom: 20px;">
+                         <p id="postContent" style="text-align: left;"></p>
+                    </div>
+
+                         <!-- Sección para la imagen del post -->
+                         <div id="postImageContainer" style="margin-bottom: 20px; text-align: center;">
+                          <img id="postImage" src="" alt="Imagen del Post" style="max-height: 200px; width: 100%; display: inline-block;">
+                         </div>
+
+                         <!-- Sección para las etiquetas -->
+                        <div id="postTagsContainer" style="margin-bottom: 20px;">
+                         <span id="postTags"></span>
+                         </div>
+
                         <!-- Sección para el título y contenido -->
                         <form id="postForm">
                             <div id="commentsContainer"></div>

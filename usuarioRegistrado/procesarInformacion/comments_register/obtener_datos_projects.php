@@ -13,16 +13,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
-function getProjectsRegisterComment($conexion, $id_projects)
+function getProjectsRegisterComment($conexion, $id_project)
 {
     // Consulta para obtener los datos del proyecto y del usuario creador del proyecto
     $sql = "SELECT proyectos.*, usuarios.*
             FROM proyectos 
             LEFT JOIN usuarios ON proyectos.id_usuario_proyecto = usuarios.id_usuario
-            WHERE proyectos.id_estado_proyecto = 1 
-            AND proyectos.id_proyecto = ?";
+            WHERE proyectos.id_proyecto = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_projects);
+    $stmt->bind_param("i", $id_project);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -36,7 +35,7 @@ function getProjectsRegisterComment($conexion, $id_projects)
             WHERE comentarios_proyectos.id_estado_comentario = 1 
             AND comentarios_proyectos.id_proyecto_comentario = ?";
     $stmt = $conexion->prepare($sql);
-    $stmt->bind_param("i", $id_projects);
+    $stmt->bind_param("i", $id_project);
     $stmt->execute();
     $result = $stmt->get_result();
 
@@ -46,8 +45,26 @@ function getProjectsRegisterComment($conexion, $id_projects)
         $commentsData[] = $row;
     }
 
+        // Consulta para obtener las etiquetas asociadas con el post
+    $sql = "SELECT DISTINCT etiquetas_agrupadas_proyectos.*, etiquetas.*
+        FROM etiquetas_agrupadas_proyectos
+        LEFT JOIN etiquetas ON etiquetas_agrupadas_proyectos.id_etiqueta_etiquetas_agrupadas = etiquetas.id_etiqueta
+        WHERE etiquetas_agrupadas_proyectos.id_proyecto_etiquetas_agrupadas = ?";
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $id_project);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+    // Array para almacenar las etiquetas
+    $tagsData = [];
+    while ($row = $result->fetch_assoc()) {
+        $tagsData[] = $row;
+    }
+
     // Combinar los datos del proyecto y del usuario con los datos de los comentarios
     $projectData['comentarios'] = $commentsData;
+    $projectData['etiquetas'] = $tagsData;
+
 
     // Devolver los datos combinados del proyecto y los comentarios
     return $projectData;

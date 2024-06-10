@@ -45,8 +45,25 @@ function getPostsData($conexion, $id_post)
         $commentsData[] = $row;
     }
 
-    // Combinar los datos del post y del usuario con los datos de los comentarios
+    // Consulta para obtener las etiquetas asociadas con el post
+    $sql = "SELECT DISTINCT etiquetas_agrupadas.id_etiqueta_agrupada, etiquetas.*
+        FROM etiquetas_agrupadas
+        LEFT JOIN etiquetas ON etiquetas_agrupadas.id_etiqueta_etiquetas_agrupadas = etiquetas.id_etiqueta
+        WHERE etiquetas_agrupadas.id_post_etiquetas_agrupadas = ?"; // Añadido punto y coma aquí
+        $stmt = $conexion->prepare($sql);
+        $stmt->bind_param("i", $id_post);
+        $stmt->execute();
+        $result = $stmt->get_result();
+
+    // Array para almacenar las etiquetas
+    $tagsData = [];
+    while ($row = $result->fetch_assoc()) {
+        $tagsData[] = $row;
+    }
+
+    // Combinar los datos del post y del usuario con los datos de los comentarios y etiquetas
     $postData['comentarios'] = $commentsData;
+    $postData['etiquetas'] = $tagsData;
 
     // Devolver los datos combinados del post y los comentarios
     return $postData;

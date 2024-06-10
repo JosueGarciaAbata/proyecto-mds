@@ -1,5 +1,6 @@
 <?php
 require_once ("../../../procesarInformacion/conexion.php");
+require_once ("../../../filter_input.php");
 session_start();
 
 // En este punto todo lo de aqui ya se realiza para usuario registrado. Es decir, se podria
@@ -16,6 +17,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         isset($_POST['postId']) && isset($_POST['commentContent'])
     ) {
         $id_post = intval($_POST['postId']);
+        $comment_content = $_POST['commentContent'];
+
+        // Limpiar el texto del comentario
+        $clean_comment_content = cleanText($comment_content);
+
+         if ($comment_content !== $clean_comment_content) {
+            // Si el texto contenía scripts, devolver "false"
+            echo "false";
+         } else {
 
         // Ver si el id del usuario actual le pertenece el post que esta siendo editado.
         if (usuario_es_propietario_del_post($conexion, $id_post, $id_usuario)) {
@@ -32,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo "false";
             }
         }
+    }
     }
 }
 

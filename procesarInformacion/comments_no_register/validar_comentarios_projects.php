@@ -1,9 +1,8 @@
 <?php
 require_once ("../conexion.php");
+require_once ("../filter_input.php");
 session_start();
 
-// En este caso al ser un usuario no registrado. El id de usuario siempre sera null. 
-// Asi que siempre se ira por el else a insertarComentario_visitor
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $conexion = ConexionBD::obtenerInstancia()->obtenerConexion();
@@ -14,11 +13,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         isset($_POST['projectId']) && isset($_POST['commentContent'])
     ) {
         $id_project = intval($_POST['projectId']);
+        $comment_content = $_POST['commentContent'];
 
-        if (insertar_comentario_visitor($conexion, $id_project, $id_usuario, $_POST['commentContent'])) {
-            echo "true";
-        } else {
+        // Limpiar el texto del comentario
+        $clean_comment_content = cleanText($comment_content);
+
+        if ($comment_content !== $clean_comment_content) {
+            // Si el texto contenía scripts, devolver "false"
             echo "false";
+        } else { 
+            if (insertar_comentario_visitor($conexion, $id_project, $id_usuario, $comment_content)) {
+                echo "true";
+            } else {
+                echo "false";
+            }
         }
     }
 }

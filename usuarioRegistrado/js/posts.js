@@ -71,7 +71,6 @@ $(document).ready(function () {
           //Establecer propiedades de la imagen
           imageElement.css({
             width: "100%",
-            height: "100%",
             "object-fit": "cover",
             "max-height": "200px",
           });

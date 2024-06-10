@@ -36,6 +36,7 @@ $(document).ready(function () {
     .off()
     .on("click", function () {
       var commentContent = $("#commentText").val().trim();
+
       // Verificar si el comentario no está vacío antes de enviarlo
       if (commentContent !== "" && postId != -1) {
         // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
@@ -67,7 +68,7 @@ $(document).ready(function () {
         });
       } else {
         // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
+        mostrarModalDeAdvertencia("No puede ingresar palabras vacías.");
       }
     });
 
@@ -83,6 +84,7 @@ $(document).ready(function () {
         // Aquí puedes enviar el comentario al servidor utilizando AJAX o cualquier otro método
         console.log("Enviando comentario:", commentContent);
         console.log("ID del post:", proyectoId);
+
         $.ajax({
           url: "procesarInformacion/comments_register/validar_comentarios_projects.php",
           type: "POST",
@@ -93,9 +95,9 @@ $(document).ready(function () {
           },
           success: function (response) {
             console.log(response);
-            if (response == "true") {
-              mostrarModalExito("Comentario enviado a revision");
-            } else if (response == "trueRegister") {
+            if (response === "true") {
+              mostrarModalExito("Comentario enviado a revisión");
+            } else if (response === "trueRegister") {
               mostrarModalExito("Comentario añadido exitosamente");
             } else {
               mostrarModalDeAdvertencia("No se ha podido enviar el comentario");
@@ -107,7 +109,7 @@ $(document).ready(function () {
         });
       } else {
         // Si el comentario está vacío, puedes mostrar un mensaje de advertencia al usuario o simplemente ignorar el envío
-        mostrarModalDeAdvertencia("No puede ingresar palabras vacias.");
+        mostrarModalDeAdvertencia("No puede ingresar palabras vacías.");
       }
     });
 });

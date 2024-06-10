@@ -5,6 +5,10 @@ require_once ('funcionesComentarios.php');
 require_once ("../procesarInformacion/conexion.php");
 ?>
 
+<style>
+
+    </style>
+
 <div class="page-wrapper">
 
     <!-- Page header -->

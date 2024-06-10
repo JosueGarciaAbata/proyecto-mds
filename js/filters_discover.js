@@ -254,6 +254,8 @@ function filtroPosts(tipoPosts) {
                         console.log("Entrado a llenar el modal...");
                         var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                         console.log(data);
+                        console.log("Filtros categorias...");
+
                         $(".h1-title-post").text(
                           data.nombre_usuario +
                             "'s" +
@@ -261,6 +263,44 @@ function filtroPosts(tipoPosts) {
                             " - " +
                             data.titulo_post
                         );
+
+                        if (data.contenido_textual_post) {
+                          $("#postContent").text(data.contenido_textual_post);
+                          $("#postContentContainer").show(); // Mostrar el contenedor del contenido
+                        } else {
+                          $("#postContentContainer").hide(); // Ocultar el contenedor del contenido
+                        }
+
+                        var defaultImage = "../img/genericImagePost.jpg";
+
+                        // Actualizar la imagen del post
+                        if (data.ubicacion_imagen_post) {
+                          $("#postImage")
+                            .attr("src", data.ubicacion_imagen_post)
+                            .show();
+                        } else {
+                          $("#postImage").attr("src", defaultImage).hide();
+                        }
+
+                        // Actualizar las etiquetas del post
+                        if (data.etiquetas && data.etiquetas.length > 0) {
+                          var tagsHtml = data.etiquetas
+                            .map(function (etiqueta) {
+                              return (
+                                '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                                etiqueta.nombre_etiqueta +
+                                "</span>"
+                              );
+                            })
+                            .join("");
+                          $("#postTags").html(tagsHtml).show();
+                        } else {
+                          $("#postTags")
+                            .html(
+                              '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                            )
+                            .show();
+                        }
 
                         if (data.comentarios.length > 0) {
                           data.comentarios.forEach(function (comment) {
@@ -549,6 +589,44 @@ function filtroPosts(tipoPosts) {
                               data.titulo_post
                           );
 
+                          if (data.contenido_textual_post) {
+                            $("#postContent").text(data.contenido_textual_post);
+                            $("#postContentContainer").show(); // Mostrar el contenedor del contenido
+                          } else {
+                            $("#postContentContainer").hide(); // Ocultar el contenedor del contenido
+                          }
+
+                          var defaultImage = "../img/genericImagePost.jpg";
+
+                          // Actualizar la imagen del post
+                          if (data.ubicacion_imagen_post) {
+                            $("#postImage")
+                              .attr("src", data.ubicacion_imagen_post)
+                              .show();
+                          } else {
+                            $("#postImage").attr("src", defaultImage).hide();
+                          }
+
+                          // Actualizar las etiquetas del post
+                          if (data.etiquetas && data.etiquetas.length > 0) {
+                            var tagsHtml = data.etiquetas
+                              .map(function (etiqueta) {
+                                return (
+                                  '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                                  etiqueta.nombre_etiqueta +
+                                  "</span>"
+                                );
+                              })
+                              .join("");
+                            $("#postTags").html(tagsHtml).show();
+                          } else {
+                            $("#postTags")
+                              .html(
+                                '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                              )
+                              .show();
+                          }
+
                           if (data.comentarios.length > 0) {
                             data.comentarios.forEach(function (comment) {
                               // Crear el contenedor del comentario
@@ -684,7 +762,7 @@ function filtroProjects(tipoProjects) {
                     var imageUrl =
                       proyecto.ubicacion_imagen_proyecto != null &&
                       proyecto.ubicacion_imagen_proyecto.trim() !== ""
-                        ? post.ubicacion_imagen_post
+                        ? proyecto.ubicacion_imagen_proyecto
                         : "../img/genericImagePost.jpg";
 
                     //Asignar imagen
@@ -783,6 +861,59 @@ function filtroProjects(tipoProjects) {
                               " - " +
                               data.titulo_proyecto
                           );
+
+                          // Mostrar la fecha de inicio y fin
+                          if (
+                            data.fecha_inicio_proyecto &&
+                            data.fecha_finalizacion_proyecto
+                          ) {
+                            $("#startDate")
+                              .val(data.fecha_inicio_proyecto)
+                              .prop("disabled", true);
+                            $("#endDate")
+                              .val(data.fecha_finalizacion_proyecto)
+                              .prop("disabled", true);
+                          }
+
+                          if (data.descripcion_proyecto) {
+                            $("#projectContent").text(
+                              data.descripcion_proyecto
+                            );
+                            $("#projectContentContainer").show(); // Mostrar el contenedor del contenido
+                          } else {
+                            $("#projectContentContainer").hide(); // Ocultar el contenedor del contenido
+                          }
+
+                          var defaultImage = "../img/genericImagePost.jpg";
+
+                          // Actualizar la imagen del post
+                          if (data.ubicacion_imagen_proyecto) {
+                            $("#projectImage")
+                              .attr("src", data.ubicacion_imagen_proyecto)
+                              .show();
+                          } else {
+                            $("#projectImage").attr("src", defaultImage).show();
+                          }
+
+                          // Actualizar las etiquetas del post
+                          if (data.etiquetas && data.etiquetas.length > 0) {
+                            var tagsHtml = data.etiquetas
+                              .map(function (etiqueta) {
+                                return (
+                                  '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                                  etiqueta.nombre_etiqueta +
+                                  "</span>"
+                                );
+                              })
+                              .join("");
+                            $("#projectTags").html(tagsHtml).show();
+                          } else {
+                            $("#projectTags")
+                              .html(
+                                '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                              )
+                              .show();
+                          }
 
                           if (data.comentarios.length > 0) {
                             data.comentarios.forEach(function (comment) {
@@ -1072,6 +1203,61 @@ function filtroProjects(tipoProjects) {
                                 " - " +
                                 data.titulo_proyecto
                             );
+
+                            // Mostrar la fecha de inicio y fin
+                            if (
+                              data.fecha_inicio_proyecto &&
+                              data.fecha_finalizacion_proyecto
+                            ) {
+                              $("#startDate")
+                                .val(data.fecha_inicio_proyecto)
+                                .prop("disabled", true);
+                              $("#endDate")
+                                .val(data.fecha_finalizacion_proyecto)
+                                .prop("disabled", true);
+                            }
+
+                            if (data.descripcion_proyecto) {
+                              $("#projectContent").text(
+                                data.descripcion_proyecto
+                              );
+                              $("#projectContentContainer").show(); // Mostrar el contenedor del contenido
+                            } else {
+                              $("#projectContentContainer").hide(); // Ocultar el contenedor del contenido
+                            }
+
+                            var defaultImage = "../img/genericImagePost.jpg";
+
+                            // Actualizar la imagen del post
+                            if (data.ubicacion_imagen_proyecto) {
+                              $("#projectImage")
+                                .attr("src", data.ubicacion_imagen_proyecto)
+                                .show();
+                            } else {
+                              $("#projectImage")
+                                .attr("src", defaultImage)
+                                .show();
+                            }
+
+                            // Actualizar las etiquetas del post
+                            if (data.etiquetas && data.etiquetas.length > 0) {
+                              var tagsHtml = data.etiquetas
+                                .map(function (etiqueta) {
+                                  return (
+                                    '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                                    etiqueta.nombre_etiqueta +
+                                    "</span>"
+                                  );
+                                })
+                                .join("");
+                              $("#projectTags").html(tagsHtml).show();
+                            } else {
+                              $("#projectTags")
+                                .html(
+                                  '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                                )
+                                .show();
+                            }
 
                             if (data.comentarios.length > 0) {
                               data.comentarios.forEach(function (comment) {

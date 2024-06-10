@@ -84,9 +84,7 @@ $(document).ready(function () {
           authorContainer.append(authorName);
 
           var content = $(
-            '<p style="margin: 10px 10px;">' +
-              post.contenido_textual_post +
-              "</p>"
+            '<p style="margin: 10px 10px;">' + post.titulo_post + "</p>"
           );
 
           anchor.append(imageElement);
@@ -134,9 +132,8 @@ $(document).ready(function () {
               },
               // Entra a llenar el modal
               success: function (response) {
-                console.log("Entrado a llenar el modal...");
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
-                console.log("usuarioPosts..." + data.nombre_usuario);
+
                 $(".h1-title-post").text(
                   data.nombre_usuario +
                     "'s" +
@@ -144,6 +141,44 @@ $(document).ready(function () {
                     " - " +
                     data.titulo_post
                 );
+
+                if (data.contenido_textual_post) {
+                  $("#postContent").text(data.contenido_textual_post);
+                  $("#postContentContainer").show(); // Mostrar el contenedor del contenido
+                } else {
+                  $("#postContentContainer").hide(); // Ocultar el contenedor del contenido
+                }
+
+                var defaultImage = "../img/genericImagePost.jpg";
+
+                // Actualizar la imagen del post
+                if (data.ubicacion_imagen_post) {
+                  $("#postImage")
+                    .attr("src", data.ubicacion_imagen_post)
+                    .show();
+                } else {
+                  $("#postImage").attr("src", defaultImage).hide();
+                }
+
+                // Actualizar las etiquetas del post
+                if (data.etiquetas && data.etiquetas.length > 0) {
+                  var tagsHtml = data.etiquetas
+                    .map(function (etiqueta) {
+                      return (
+                        '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                        etiqueta.nombre_etiqueta +
+                        "</span>"
+                      );
+                    })
+                    .join("");
+                  $("#postTags").html(tagsHtml).show();
+                } else {
+                  $("#postTags")
+                    .html(
+                      '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                    )
+                    .show();
+                }
 
                 if (data.comentarios.length > 0) {
                   data.comentarios.forEach(function (comment) {
@@ -292,9 +327,7 @@ $(document).ready(function () {
           authorContainer.append(authorName);
 
           var content = $(
-            '<p style="margin: 10px 10px;">' +
-              proyecto.descripcion_proyecto +
-              "</p>"
+            '<p style="margin: 10px 10px;">' + proyecto.titulo_proyecto + "</p>"
           );
 
           anchor.append(imageElement);
@@ -343,8 +376,13 @@ $(document).ready(function () {
               // Entra a llenar el modal
               success: function (response) {
                 console.log("Entrado a llenar el modal...");
+                console.log(response);
+
                 var data = JSON.parse(response); // Convertir la respuesta JSON en un objeto
                 console.log("usuarioProj..." + data.nombre_usuario);
+
+                console.log(data);
+
                 $(".h1-title-projects").text(
                   data.nombre_usuario +
                     "'s" +
@@ -352,6 +390,57 @@ $(document).ready(function () {
                     " - " +
                     data.titulo_proyecto
                 );
+
+                // Mostrar la fecha de inicio y fin
+                if (
+                  data.fecha_inicio_proyecto &&
+                  data.fecha_finalizacion_proyecto
+                ) {
+                  $("#startDate")
+                    .val(data.fecha_inicio_proyecto)
+                    .prop("disabled", true);
+                  $("#endDate")
+                    .val(data.fecha_finalizacion_proyecto)
+                    .prop("disabled", true);
+                }
+
+                if (data.descripcion_proyecto) {
+                  $("#projectContent").text(data.descripcion_proyecto);
+                  $("#projectContentContainer").show(); // Mostrar el contenedor del contenido
+                } else {
+                  $("#projectContentContainer").hide(); // Ocultar el contenedor del contenido
+                }
+
+                var defaultImage = "../img/genericImagePost.jpg";
+
+                // Actualizar la imagen del post
+                if (data.ubicacion_imagen_proyecto) {
+                  $("#projectImage")
+                    .attr("src", data.ubicacion_imagen_proyecto)
+                    .show();
+                } else {
+                  $("#projectImage").attr("src", defaultImage).show();
+                }
+
+                // Actualizar las etiquetas del post
+                if (data.etiquetas && data.etiquetas.length > 0) {
+                  var tagsHtml = data.etiquetas
+                    .map(function (etiqueta) {
+                      return (
+                        '<span class="badge bg-primary" style="margin-right: 5px;">' +
+                        etiqueta.nombre_etiqueta +
+                        "</span>"
+                      );
+                    })
+                    .join("");
+                  $("#projectTags").html(tagsHtml).show();
+                } else {
+                  $("#projectTags")
+                    .html(
+                      '<span class="badge bg-primary" style="margin-right: 5px;">There are no labels</span>'
+                    )
+                    .show();
+                }
 
                 if (data.comentarios.length > 0) {
                   data.comentarios.forEach(function (comment) {
@@ -417,4 +506,24 @@ $(document).ready(function () {
 
   //Obtener los posts
   getPosts();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+  // Obtiene una referencia al primer modal
+  var commentsModalProjects = document.getElementById("commentsModalProjects");
+
+  // Agrega un evento que se active cuando el primer modal se cierre
+  commentsModalProjects.addEventListener("hidden.bs.modal", function () {
+    // Borra el texto del comentario del primer modal
+    document.getElementById("commentTextProjects").value = "";
+  });
+
+  // Obtiene una referencia al segundo modal
+  var commentsModal = document.getElementById("commentsModal");
+
+  // Agrega un evento que se active cuando el segundo modal se cierre
+  commentsModal.addEventListener("hidden.bs.modal", function () {
+    // Borra el texto del comentario del segundo modal
+    document.getElementById("commentText").value = "";
+  });
 });

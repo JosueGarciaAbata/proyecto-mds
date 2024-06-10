@@ -27,7 +27,6 @@ function generarOpcionesHabilidades($habT)
     }
     echo $response;
 }
-
 ?>
 
 
@@ -234,3 +233,4 @@ function generarOpcionesHabilidades($habT)
 
 <?php require_once ('footer.php'); ?>
 <script src="js/filters_portafolios.js"></script>
+<script src="js/portafolio-handle.js" type="module"></script>

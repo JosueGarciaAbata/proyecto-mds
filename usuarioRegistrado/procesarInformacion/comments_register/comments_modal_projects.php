@@ -41,6 +41,33 @@ $stmt_categorias->close();
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body text-center">
+
+     <!-- Sección para la fecha de inicio -->
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Fecha de inicio:</label>
+                             <input type="date" class="form-control" id="startDate" name="startDate">
+                        </div>
+
+                        <!-- Sección para la fecha de fin -->
+                        <div class="mb-3">
+                             <label for="endDate" class="form-label">Fecha de fin:</label>
+                            <input type="date" class="form-control" id="endDate" name="endDate">
+                        </div>
+
+                         <div id="projectContentContainer" style="margin-bottom: 20px;">
+                         <p id="projectContent" style="text-align: left;"></p>
+                    </div>
+
+                          <!-- Sección para la imagen del post -->
+                         <div id="projectImageContainer" style="margin-bottom: 20px; text-align: center;">
+                          <img id="projectImage" src="" alt="Imagen del Proyecto" style="max-height: 200px; width: 100%; display: inline-block;">
+                         </div>
+
+                         <!-- Sección para las etiquetas -->
+                        <div id="projectTagsContainer" style="margin-bottom: 20px;">
+                         <span id="projectTags"></span>
+                         </div>
+
                         <!-- Sección para el título y contenido -->
                         <form id="postForm">
                             <div id="commentsContainerProjects"></div>

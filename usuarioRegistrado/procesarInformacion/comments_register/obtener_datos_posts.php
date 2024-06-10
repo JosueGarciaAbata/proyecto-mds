@@ -19,8 +19,8 @@ function getPostsRegisterComment($conexion, $id_post)
     $sql = "SELECT posts.*, usuarios.*
             FROM posts 
             LEFT JOIN usuarios ON posts.id_usuario_post = usuarios.id_usuario
-            WHERE posts.id_estado_post = 1 
-            AND posts.id_post = ?";
+            WHERE posts.id_post = ?";
+
     $stmt = $conexion->prepare($sql);
     $stmt->bind_param("i", $id_post);
     $stmt->execute();
@@ -46,8 +46,25 @@ function getPostsRegisterComment($conexion, $id_post)
         $commentsData[] = $row;
     }
 
+     // Consulta para obtener las etiquetas asociadas con el post
+    $sql = "SELECT DISTINCT etiquetas_agrupadas.id_etiqueta_agrupada, etiquetas.*
+        FROM etiquetas_agrupadas
+        LEFT JOIN etiquetas ON etiquetas_agrupadas.id_etiqueta_etiquetas_agrupadas = etiquetas.id_etiqueta
+        WHERE etiquetas_agrupadas.id_post_etiquetas_agrupadas = ?";
+    $stmt = $conexion->prepare($sql);
+    $stmt->bind_param("i", $id_post);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Array para almacenar las etiquetas
+    $tagsData = [];
+    while ($row = $result->fetch_assoc()) {
+        $tagsData[] = $row;
+    }
+
     // Combinar los datos del post y del usuario con los datos de los comentarios
     $postData['comentarios'] = $commentsData;
+    $postData['etiquetas'] = $tagsData;
 
     // Devolver los datos combinados del post y los comentarios
     return $postData;
