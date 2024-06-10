@@ -92,11 +92,11 @@ $proyectos = obtenerProyectosPorUsuario($conexion, $id_usuario);
                             </span>
                         </p>
                         <div class="comment-actions mt-2">
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline comentario-form" data-id="<?php echo $comentario['id_comentario']; ?>">
                                 <input type="hidden" name="comentario_id_posts" value="<?php echo $comentario['id_comentario']; ?>">
                                 <button type="submit" name="eliminar_comentario_posts" class="btn btn-danger">Ocultar</button>
                             </form>
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline comentario-form" data-id="<?php echo $comentario['id_comentario']; ?>">
                                 <input type="hidden" name="comentario_id_posts" value="<?php echo $comentario['id_comentario']; ?>">
                                 <button type="submit" name="publicar_comentario_posts" class="btn btn-primary">Publicar</button>
                             </form>
@@ -127,14 +127,12 @@ $proyectos = obtenerProyectosPorUsuario($conexion, $id_usuario);
                             </span>
                         </p>
                         <div class="comment-actions mt-2">
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline">
-                                <input type="hidden" name="comentario_id_projects"
-                                    value="<?php echo $comentario['id_comentario']; ?>">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline comentario-form" data-id="<?php echo $comentario['id_comentario']; ?>">
+                                <input type="hidden" name="comentario_id_projects" value="<?php echo $comentario['id_comentario']; ?>">
                                 <button type="submit" name="eliminar_comentario_projects" class="btn btn-danger">Ocultar</button>
                             </form>
-                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline">
-                                <input type="hidden" name="comentario_id_projects"
-                                    value="<?php echo $comentario['id_comentario']; ?>">
+                            <form action="<?php echo htmlspecialchars($_SERVER["PHP_SELF"]); ?>" method="post" class="d-inline comentario-form" data-id="<?php echo $comentario['id_comentario']; ?>">
+                                <input type="hidden" name="comentario_id_projects" value="<?php echo $comentario['id_comentario']; ?>">
                                 <button type="submit" name="publicar_comentario_projects" class="btn btn-primary">Publicar</button>
                             </form>
                         </div>
@@ -150,28 +148,30 @@ $proyectos = obtenerProyectosPorUsuario($conexion, $id_usuario);
 <?php require_once ('footer.php'); ?>
 
 <script>
-    function hideComment(idComentario) {
-        document.getElementById('comment-' + idComentario).style.display = 'none';
-    }
-</script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Capturar todos los formularios con la clase 'comentario-form'
+        document.querySelectorAll('.comentario-form').forEach(function(form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault(); // Evitar el envío del formulario
 
-<script>
-    function mostrarMensaje(mensaje, tipo) {
-        if (tipo === 'exito') {
-            mostrarModalExito(mensaje);
-        } else if (tipo === 'error') {
-            mostrarModalDeAdvertencia(mensaje);
-        }
+                var formData = new FormData(this);
+                var comentarioId = this.getAttribute('data-id');
+                var commentElement = document.getElementById('comment-' + comentarioId);
 
-        setTimeout(function () {
-            window.location.href = window.location.href;
-        }, 1000); // Retraso de 1 segundo (1000 milisegundos)
-    }
-
-    // Verificar si hay un mensaje para mostrar
-    <?php if (!empty($mensaje)): ?>
-        // Llamar a la función para mostrar el mensaje
-        mostrarMensaje("<?php echo $mensaje; ?>", "<?php echo strpos($mensaje, 'correctamente') !== false ? 'exito' : 'error'; ?>");
-    <?php endif; ?>
-
+                // Enviar la solicitud de forma asíncrona (AJAX)
+                fetch(this.action, {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.text())
+                .then(data => {
+                    // Ocultar el comentario de la interfaz
+                    if (commentElement) {
+                        commentElement.style.display = 'none';
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                });
+            });
+        });
+    });
 </script>
