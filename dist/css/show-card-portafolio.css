@@ -68,3 +68,22 @@
     max-height: 500px; 
     overflow: hidden;
 }
+
+.deletePortfolio .modal-content{
+    height: 40vh;
+}
+
+
+
+  
+  .showPortfolioPage {
+    opacity: 0;
+    height: 0;
+    padding: 0; 
+  }
+  
+  .showPortfolioPage.active {
+    opacity: 1;
+    height: auto; 
+    padding: 10px; 
+  }

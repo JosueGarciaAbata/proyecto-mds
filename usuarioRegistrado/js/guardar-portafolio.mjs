@@ -1,6 +1,7 @@
 const d = document;
 let $form, $titulo,$mensaje,$studios, $sobreMi, $fotoP, $fotoF, $cv, $selectElementT, $selectElementS, $selectProjects;
 
+const validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'pdf'];
 
 const setPropertys= (form,titulo,mensaje,studios, sobreMi, fotoP, fotoF, cv, selectElementT, selectElementS, selectProjects)=>{
   $form=form;
@@ -21,6 +22,9 @@ const elementsNotExist = () => {
   return [$form,$titulo, $mensaje, $studios, $sobreMi, $fotoP, $fotoF, $cv, $selectElementT, $selectElementS, $selectProjects].some(value => value == null);
 };
 
+const itsValidFiles=(...files)=>{
+  return files.every(file=>validExtensions.includes(file.name.split(".").pop().toLowerCase()));
+}
 
 const saveAll = async function saveAll() {
   if(elementsNotExist()){
@@ -70,6 +74,7 @@ const saveAll = async function saveAll() {
 
     let json = await res.json();
     console.log(json);
+    togleModal();
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al crear el portafolio";
     $form.insertAdjacentHTML(
@@ -104,13 +109,13 @@ const editPortafolio = async function () {
     formData.append("estudios", estudios);
     formData.append("sobreMi", sobreMi);
 
-  if($fotoP.files.length > 0){
+  if($fotoP.files.length > 0 && itsValidFiles($fotoP.files[0])){
     formData.append("fotoP", $fotoP.files[0]);
   }
-  if($fotoF.files.length > 0){
+  if($fotoF.files.length > 0 && itsValidFiles($fotoF.files[0])){
     formData.append("fotoF", $fotoF.files[0]);
   }
-  if($cv.files.length > 0){
+  if($cv.files.length > 0 && itsValidFiles($cv.files[0])){
     formData.append("cv", $cv.files[0]);
   }
 
@@ -138,7 +143,7 @@ const editPortafolio = async function () {
       console.log(element);
       element.setAttribute("src", json.content);
     }
-
+    //togleModal();
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al editar el portafolio";
     $form.insertAdjacentHTML(
@@ -149,6 +154,8 @@ const editPortafolio = async function () {
 
 };
 
-const saveEditPortafolio = { setPropertys,saveAll, editPortafolio };
+
+
+const saveEditPortafolio = { setPropertys,saveAll, editPortafolio, itsValidFiles};
 
 export default saveEditPortafolio;

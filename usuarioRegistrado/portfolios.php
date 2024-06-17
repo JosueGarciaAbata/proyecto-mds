@@ -37,7 +37,6 @@ function generarOpcionesHabilidades($habT)
         <div class="page-header d-print-none">
             <div class="container-xl">
                 <div class="row g-2 align-items-center">
-
                     <!-- Page title actions -->
                     <div class="col-auto ms-auto d-print-none">
                         <div class="d-flex">
@@ -79,22 +78,23 @@ function generarOpcionesHabilidades($habT)
         </div>
 
         <!-- Delete modal -->
-        <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+        <div class="modal fade deletePortfolio box-hidden" id="deleteModalLabel" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
             aria-hidden="true">
-            <div class="modal-dialog" role="document">
+            <div class="modal-dialog dialogPortfolio" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Cerrar">
+                        <button type="button" class="closeDeleteModal" data-dismiss="modal" aria-label="Cerrar">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
                     <div class="modal-body">
                         Are you sure you want to delete this portfolio?
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+                    <div class="modal-footer d-grid gap-2 d-md-flex justify-content-md-en">
+                        
+                        <button type="button" class="btn btn-secondary me-md-2" data-dismiss="modal" id="cancelDelete">Cancel</button>
+                        <button type="button" class="btn btn-danger" id="confirmDeleteBtn" data-dismiss="modal">Delete</button>
                     </div>
                 </div>
             </div>
@@ -213,7 +213,7 @@ function generarOpcionesHabilidades($habT)
 
                             <!-- Botones para guardar y cerrar el modal -->
                             <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                                <button type="button" class="btn btn-secondary me-md-2" id="show-page-portfolio">Ver Pagina</button>
+                                <button type="button" class="btn btn-secondary me-md-2 showPortfolioPage" id="show-page-portfolio" data-bs-dismiss="modal">Ver Pagina</button>
                                 <button type="button" class="btn btn-secondary me-md-2"
                                     data-bs-dismiss="modal">Close</button>
                                 <input id="btn_portfolio" type="submit" class="btn btn-primary" value="Save">

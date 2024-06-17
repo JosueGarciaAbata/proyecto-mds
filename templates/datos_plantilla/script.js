@@ -1,7 +1,7 @@
 const d = document;
 let menuVisible = false;
 const $nav = d.getElementById("nav");
-
+const URL_INDEX_SITIO="";
 const seleccionar = () => {
   // Ocultar el menu una vez que selecciona una opcion
   $nav.classList = "";
@@ -127,10 +127,11 @@ const getPortfolioData = async function (idPortfolio) {
     });
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
     json = await res.json();
+    console.log();
     d.title = `Portfolio ${json.titulo_portafolio}`;
     
     d.getElementById("img-portfolio").setAttribute("src", `../${json.foto_portafolio}`);
-    document.querySelector(".inicio").style.backgroundImage = `url(../${json.fondo_portafolio})`;
+    d.querySelector(".inicio").style.backgroundImage = `url(../${json.fondo_portafolio.replace(/ /g, '%20')})`;
     d.getElementById("download-cv").href = `../${json.ubicacionCv_portafolio}`;
     const $habT = d.querySelector(".technique");
     const $habS = d.querySelector(".social");
@@ -141,6 +142,7 @@ const getPortfolioData = async function (idPortfolio) {
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
     console.error(`Error ${err.status}: ${message}`);
+    window.location.href = URL_INDEX_SITIO;
     throw err;
   }
 
@@ -148,6 +150,10 @@ const getPortfolioData = async function (idPortfolio) {
 
 d.addEventListener("DOMContentLoaded", () => {
   const idPortfolio = (new URLSearchParams(window.location.search)).get('id-portafolio');
+  if (isNaN(idPortfolio) || idPortfolio===null) {
+    window.location.href = URL_INDEX_SITIO; 
+    return;
+  }
   getDataUsser(idPortfolio);
   getPortfolioData(idPortfolio);
   searchProjects(idPortfolio);

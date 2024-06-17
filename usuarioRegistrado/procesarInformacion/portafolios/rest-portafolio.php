@@ -17,11 +17,7 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         if (!empty($_GET)) {
             getPortafolio($conexion, $_GET['id-portafolio']);
             exit();
-        }
-        if (!empty($_POST)) {
-            //  o para obtenerlos filtrandolos por las habilidades q tiene el portafolio
-            getPortafolios($conexion, $_POST["id"], $_POST["habilidades"]);
-        } else {
+        }else {
             //es para obtener los datos de 1
             getPortafolios($conexion);
 
@@ -29,7 +25,8 @@ switch ($_SERVER["REQUEST_METHOD"]) {
         break;
     case "POST":
         //  como no se pueden enviar archivos por metodo put lo hare en post
-        if (empty($_POST['id'])) {
+
+        $portafolioId = $_POST['id'];
             $titulo = $_POST['titulo'];
             $mensaje = $_POST['mensaje'];
             $estudios = $_POST['estudios'];
@@ -37,26 +34,17 @@ switch ($_SERVER["REQUEST_METHOD"]) {
             $habilidadesTecnicas = $_POST['habilidadesTecnicas'];
             $habilidadesSociales = $_POST['habilidadesSociales'];
             $proyectos = $_POST['proyectos'];
-            $dataBasic = [$titulo, $mensaje, $estudios, $sobreMi];
-            $cosasAVer = array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales);
 
+        if (empty($_POST['id'])) {
+            $dataBasic = array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales,[$titulo, $mensaje, $estudios, $sobreMi]);
             if (contieneCaracteresEspeciales($conexion, $cosasAVer)) {
                 http_response_code(405);
                 echo json_encode(["error" => "Los campos tienen valores inseguros"]);
                 exit();
             }
-
             savePortafolio($conexion, $titulo, $habilidadesTecnicas, $habilidadesSociales, $estudios, $sobreMi, $mensaje, $proyectos);
             exit();
         } else {
-            $portafolioId = $_POST['id'];
-            $titulo = $_POST['titulo'];
-            $mensaje = $_POST['mensaje'];
-            $estudios = $_POST['estudios'];
-            $sobreMi = $_POST['sobreMi'];
-            $habilidadesTecnicas = $_POST['habilidadesTecnicas'];
-            $habilidadesSociales = $_POST['habilidadesSociales'];
-            $proyectos = $_POST['proyectos'];
             $dataBasic = [$titulo, $mensaje, $estudios, $sobreMi, $portafolioId];
             if (contieneCaracteresEspeciales($conexion, array_merge($dataBasic, $habilidadesTecnicas, $habilidadesSociales))) {
                 http_response_code(405);

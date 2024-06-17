@@ -1,20 +1,18 @@
-//  en este archivo estan importaciones de funciones, la primera guarda lo del form para crear o editar, la segunda permite mostrar los portafolios y tambien consigue los datos para su edicion, la tercera se encarga de las habilidades, me voy en busca del gran quiza, por si las dudas tambn hay un archivo css conectado a portafolios, agregare un archivo de mi base, si se crea un portafolio tambn su carpeta, se elimina la anterior con los datos.
 
 import saveEditPortafolio from "./guardar-portafolio.mjs";
 import getEditPortafolio from "./show-portafolios.mjs";
 import habilityFunctions from "./skills.mjs"; 
-//  bueno, falta lo de habilidades, segun yo estaba bien la insercion, 
+
 const d = document;
 const $form = d.getElementById("form-portafolio");
 const $btnAgregar= d.getElementById("btn_create");
-// function showPort
+
 
 d.addEventListener("DOMContentLoaded",e=>{
   getEditPortafolio.getMyPortafolios();
   
   $btnAgregar.addEventListener("click",()=>{
       if($form.getAttribute('data-id')){
-        //  entonces es como si estuviese desde 0
         $form.removeAttribute("data-id");
         getEditPortafolio.limpiarCaja();
       }
@@ -39,6 +37,16 @@ $form.addEventListener("submit", async e => {
       if(dataId){
         saveEditPortafolio.editPortafolio();
       }else{
+        // todos los datos deben ser adecuados
+        if(!saveEditPortafolio.itsValidFiles(
+          d.getElementById("foto-perfil").files[0],
+          d.getElementById("cv").files[0],
+          d.getElementById("foto-fondo").files[0])
+        ){
+          // aqui toca enviar una alerta
+          mostrarModalDeAdvertencia("Incorrect files");
+          return;  
+        }
         saveEditPortafolio.saveAll();
       }
       getEditPortafolio.cleanFiles(); 
@@ -48,23 +56,31 @@ $form.addEventListener("submit", async e => {
 const $btnFotoPerfil=$form.querySelector("#foto-perfil");
 
 $btnFotoPerfil.addEventListener("change",e=>{
-  getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-perfil"));
+  if (saveEditPortafolio.itsValidFiles(e.target.files[0])) {
+    getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-perfil"));
+  } else {
+    e.preventDefault();
+    mostrarModalDeAdvertencia("Archivo invalido");
+    $btnFotoPerfil.parentNode.replaceChild($btnFotoPerfil.cloneNode(true), $btnFotoPerfil);
+    $btnFotoPerfil.value = "";
+  }
 });
 
 const $btnFotFondo=$form.querySelector("#foto-fondo");
 
-$btnFotFondo.addEventListener("change",e=>{
-  getEditPortafolio.setImageInBox(e,$form.querySelector("#show-img-fondo"));
+$btnFotFondo.addEventListener("change", e => {
+  if (saveEditPortafolio.itsValidFiles(e.target.files[0])) {
+    getEditPortafolio.setImageInBox(e, $form.querySelector("#show-img-fondo"));
+  } else {
+    e.preventDefault();
+    mostrarModalDeAdvertencia("Archivo invalido");
+    $btnFotFondo.parentNode.replaceChild($btnFotoPerfil.cloneNode(true), $btnFotFondo);
+    $btnFotFondo.value = "";
+  }
 });
 
+//saveEditPortafolio
 $form.querySelector("#show-page-portfolio").addEventListener("click",()=>{
-  console.log("funciona");
   //tomar id y consultar sus datos, input pueden estar modificados
   getEditPortafolio.getDataForPage();
 });
-
-
-
-
-
-

@@ -1,30 +1,31 @@
 const d = document;
 let $formPortafolio = d.getElementById("form-portafolio");
-//  console.log($formPortafolio);
+let $modal=d.querySelector(".deletePortfolio");
 
 let addListenerEditOrDelete = async function () {
-  const container = document.querySelector(".row-cards");
+  const container = d.querySelector(".row-cards");
   // Agrega un event listener al contenedor padre
   container.addEventListener("click", function (e) {
-
+    console.log(e);
     // Verifica si el objetivo del evento es un elemento con la clase 'cardPortafolio'
     if (e.target.closest(".cardPortafolio")) {
       const $card = e.target.closest(".cardPortafolio");
-      // const id = card.querySelector(".edit-icon").getAttribute("data-id");
       const id = $card.dataset.id;
-      // Verifica si el evento proviene de la imagen con la clase 'delete-icon'
-      if (e.target.classList.contains("delete-icon")) {
+      console.log("ClassList del .card: " + e.target.classList);
+      if (e.target.classList.contains("edit-icon")) {
+        //console.log("Se hizo clic en la imagen con la clase edit-icon");
+        e.stopPropagation();
+        getPortfolioData(id);
+      } else if (e.target.classList.contains("delete-icon")) {
         // Ejecuta una función cuando se hace clic en la imagen con la clase 'delete-icon'
         console.log("Se hizo clic en la imagen con la clase delete-icon");
         // Si se elimina tambien eliminamos la carta
-        if (deletePortafolio(id)) {
-          $card.remove();
-        }
-      }
-      // Verifica si el evento proviene de la imagen con la clase 'edit-icon'
-      else if (!e.target.classList.contains("edit-icon")) {
-        console.log("Se hizo clic en la imagen con la clase edit-icon");
-        getPortfolioData(id);
+        e.stopPropagation();
+        toggleModal();
+        $modal.setAttribute("data-id", id);
+      } else if (e.target.classList.contains("card-img-top")) {
+        e.stopPropagation();
+        getDataForPage(id);
       }
 
     }
@@ -32,10 +33,9 @@ let addListenerEditOrDelete = async function () {
 }
 
 
-let deletePortafolio = async function (portafolio) {
-  if (portafolio === null || portafolio === undefined || portafolio === '') {
-    return; // Termina la función si la variable está vacía
-  }
+let deletePortafolio = async portafolio => {
+    // Termina la función si las variable estan vacías
+  if (portafolio === null || portafolio === undefined || portafolio === '')   return; 
   const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(portafolio)}`;
   try {
     let res = await fetch(url, {
@@ -60,7 +60,7 @@ let deletePortafolio = async function (portafolio) {
   return false;
 }
 
-let getMyPortafolios = async function () {
+let getMyPortafolios = async () => {
   try {
     let res = await fetch("./procesarInformacion/portafolios/rest-portafolio.php", {
       method: "GET",
@@ -71,7 +71,8 @@ let getMyPortafolios = async function () {
     // Verificar si la respuesta indica que el usuario no tiene portafolios actualmente
     if (json.status === "OK" && json.statusText === "El usuario no tiene portafolios actualmente.") {
       console.log('El usuario no tiene portafolios actualmente');
-      return; // No hacer nada si el usuario no tiene portafolios actualmente
+      // No hacer nada si el usuario no tiene portafolios actualmente
+      return; 
     }
 
     show(json);
@@ -85,14 +86,13 @@ let getMyPortafolios = async function () {
 
 function show(data) {
   const pageWrapper = d.querySelector(".row-cards");
-  //  console.log(data);
+  
   // Limpiar el contenido actual de pageWrapper antes de agregar nuevos posts
   pageWrapper.innerHTML = "";
   //Generar los contenedores con la informacion del post
   data.forEach(function (portafolio) {
     representData(portafolio, pageWrapper);
   });
-  //LISTENNER EDIT - SELECT
   addListenerEditOrDelete();
 }
 
@@ -118,6 +118,8 @@ function representData(portafolio, pageWrapper) {
   deleteIcon.setAttribute("viewBox", "0 0 24 24");
   deleteIcon.innerHTML =
     '<path stroke="none" d="M0 0h24v24H0z"></path><line x1="4" y1="7" x2="20" y2="7"></line><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"></path><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"></path>';
+  deleteIcon.setAttribute("data-bs-toggle", "modal");
+  deleteIcon.setAttribute("data-bs-target", "#deleteModalLabel");
   //  LISTENER
   //deleteIcon.addEventListener("click", deletePortafolio(portafolio));
   // SVG de editar al extremo derecho del cardBody
@@ -128,7 +130,8 @@ function representData(portafolio, pageWrapper) {
   editIcon.setAttribute("viewBox", "0 0 24 24");
   editIcon.innerHTML =
     '<path stroke="none" d="M0 0h24v24H0z"></path><path d="M11.933 5h-6.933v16h13v-8"></path><path d="M14 17h-5"></path><path d="M9 13h5v-4h-5z"></path><path d="M15 5v-2"></path><path d="M18 6l2 -2"></path><path d="M19 9h2"></path><line x1="7" y1="6" x2="7" y2="10"></line><line x1="17" y1="6" x2="17" y2="10"></line>';
-
+  editIcon.setAttribute("data-bs-toggle", "modal");
+  editIcon.setAttribute("data-bs-target", "#portfoliosModal");
   const anchor = d.createElement("a");
   anchor.href = "#";
   anchor.className = "d-block";
@@ -141,8 +144,7 @@ function representData(portafolio, pageWrapper) {
       : "../img/genericImagePost.jpg";
   imageElement.src = imageUrl;
   imageElement.className = "card-img-top";
-  imageElement.setAttribute("data-bs-toggle", "modal");
-  imageElement.setAttribute("data-bs-target", "#portfoliosModal");
+
 
   anchor.appendChild(imageElement);
 
@@ -175,7 +177,7 @@ const checkSelect = function ($select, habilidades) {
 };
 
 
-const getPortfolioData = async function (idPortfolio) {
+const getPortfolioData = async idPortfolio => {
   //  send request
   const url = `./procesarInformacion/portafolios/rest-portafolio.php?id-portafolio=${encodeURIComponent(idPortfolio)}`;
 
@@ -222,6 +224,9 @@ const getPortfolioData = async function (idPortfolio) {
     $cvBox.removeAttribute("required");
     $cvBox.value = "";
     //  enviar a un listener para q pueda ver si hubieron cambios, si es un si compararlo luego con la info del json cada vez q modifiq algo, si pasa eso toca modificarlo
+    // ver btn verPagina:
+    //d.querySelector("·showPortfolioPage").classList.toggle("active");
+    document.getElementById("show-page-portfolio").classList.toggle("active");
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al consultar los datos del portafolio";
     console.error(`Error ${err.status}: ${message}`);
@@ -232,51 +237,52 @@ const getPortfolioData = async function (idPortfolio) {
 
 }
 
-const cleanFiles=()=>{
+const cleanFiles = () => {
   // Limpia los campos de tipo file
   $formPortafolio.querySelector("#foto-perfil").value = "";
   $formPortafolio.querySelector("#foto-fondo").value = "";
   $formPortafolio.querySelector("#cv").value = "";
 };
 
-const uncheckSelect=($select)=>{
+const uncheckSelect = ($select) => {
   Array.from($select.options).forEach(option => {
-      option.selected = false;
+    option.selected = false;
   });
 };
 
 const limpiarCaja = () => {
   let defectImage = "../img/genericUploadImage.jpg";
-  
-  // Elimina el atributo "data-id" del formulario
   $formPortafolio.removeAttribute("data-id");
   $formPortafolio.querySelector("#show-page-portfolio").style.display = "none";
-  // quitar lo q este en titulo y mensaje
-  
   $formPortafolio.querySelector("#titulo-portafolio").value = '';
   $formPortafolio.querySelector("#mensaje-bienvenida").value = '';
   // Configura los campos como requeridos
   $formPortafolio.querySelector("#foto-perfil").setAttribute("required", "true");
   $formPortafolio.querySelector("#foto-fondo").setAttribute("required", "true");
   $formPortafolio.querySelector("#cv").setAttribute("required", "true");
-
   // Restablece las imágenes de perfil y fondo a la imagen por defecto
   $formPortafolio.querySelector("#show-img-perfil").setAttribute("src", defectImage);
   $formPortafolio.querySelector("#show-img-fondo").setAttribute("src", defectImage);
   cleanFiles();
-
   // clean check-box
   uncheckSelect($formPortafolio.querySelector("#habilidades-Tecnicas"));
   uncheckSelect($formPortafolio.querySelector("#habilidades-Sociales"));
   uncheckSelect($formPortafolio.querySelector("#proyectos"));
+  // ocultar btn de la pagina
+  document.getElementById("show-page-portfolio").classList.toggle("active");
 };
 
-const getDataForPage= function(){
-  const url = `../templates/plantilla/plantilla.php?id-portafolio=${$formPortafolio.getAttribute('data-id')}`;
-  window.open(url, '_blank');
+const getDataForPage = id => {
+  const dataId = id !== null ? id : $formPortafolio.getAttribute('data-id');
+  if (dataId) {
+    const url = `../templates/plantilla/plantilla.php?id-portafolio=${dataId}`;
+    window.open(url, '_blank');
+  } else {
+    console.error('No se proporcionó un ID.');
+  }
 };
 
-const setImageInBox = (ev,$element) => {
+const setImageInBox = (ev, $element) => {
   const file = ev.target.files[0];
   if (file) {
     const reader = new FileReader();
@@ -287,6 +293,37 @@ const setImageInBox = (ev,$element) => {
   }
 }
 
-const getEditPortafolio = { getMyPortafolios,setImageInBox,limpiarCaja,cleanFiles,getDataForPage };
+function toggleModal() {
+  $modal.classList.toggle("box-visible");
+  $modal.classList.toggle("box-hidden");
+}
+
+$modal.addEventListener("click",e=>{
+  switch(e.target.id){
+    case "cancelDelete":
+    case "closeDeleteModal":
+      toggleModal();
+      break;
+    case "confirmDeleteBtn":
+      const idPortfolio = $modal.getAttribute("data-id");
+      if(idPortfolio){
+        //if (deletePortafolio(id)) {
+          //const cardToRemove = d.querySelector(`.cardPortafolio[data-id="${idPortfolio}"]`);
+          //const fatherCard=cardToRemove.closest(".col-sm-6");
+          const fatherCard=d.querySelector(`.cardPortafolio[data-id="${idPortfolio}"]`).closest(".col-sm-6");
+          $modal.removeAttribute("data-id");
+          if (fatherCard) {
+            fatherCard.remove();
+          }
+          toggleModal();
+           $('#deleteModalLabel').modal('hide'); // Oculta el modal
+           
+        //}
+      }
+      break;
+  }
+});
+
+const getEditPortafolio = { getMyPortafolios, setImageInBox, limpiarCaja, cleanFiles, getDataForPage};
 
 export default getEditPortafolio;
