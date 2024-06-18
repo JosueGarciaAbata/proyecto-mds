@@ -35,7 +35,8 @@ $form.addEventListener("submit", async e => {
       const dataId = $form.getAttribute('data-id');
       //  actualizar card en ambos casos
       if(dataId){
-        saveEditPortafolio.editPortafolio();
+        if(saveEditPortafolio.editPortafolio()) 
+          getEditPortafolio.cleanFiles();
       }else{
         // todos los datos deben ser adecuados
         if(!saveEditPortafolio.itsValidFiles(
@@ -47,9 +48,10 @@ $form.addEventListener("submit", async e => {
           mostrarModalDeAdvertencia("Incorrect files");
           return;  
         }
-        saveEditPortafolio.saveAll();
+        if(saveEditPortafolio.saveAll())
+          getEditPortafolio.cleanFiles();
       }
-      getEditPortafolio.cleanFiles(); 
+      
     }
   });
 

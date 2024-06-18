@@ -21,8 +21,7 @@ let addListenerEditOrDelete = async function () {
         console.log("Se hizo clic en la imagen con la clase delete-icon");
         // Si se elimina tambien eliminamos la carta
         e.stopPropagation();
-        toggleModal();
-        $modal.setAttribute("data-id", id);
+        $modal.dataset.id= id;
       } else if (e.target.classList.contains("card-img-top")) {
         e.stopPropagation();
         getDataForPage(id);
@@ -256,6 +255,10 @@ const limpiarCaja = () => {
   $formPortafolio.querySelector("#show-page-portfolio").style.display = "none";
   $formPortafolio.querySelector("#titulo-portafolio").value = '';
   $formPortafolio.querySelector("#mensaje-bienvenida").value = '';
+  $formPortafolio.querySelector("#mensaje-bienvenida").value = '';
+  $formPortafolio.querySelector("#estudios").value = '';
+  $formPortafolio.querySelector("#sobre-mi").value = '';
+
   // Configura los campos como requeridos
   $formPortafolio.querySelector("#foto-perfil").setAttribute("required", "true");
   $formPortafolio.querySelector("#foto-fondo").setAttribute("required", "true");
@@ -293,21 +296,16 @@ const setImageInBox = (ev, $element) => {
   }
 }
 
-function toggleModal() {
-  $modal.classList.toggle("box-visible");
-  $modal.classList.toggle("box-hidden");
-}
-
 $modal.addEventListener("click",e=>{
   switch(e.target.id){
     case "cancelDelete":
     case "closeDeleteModal":
-      toggleModal();
+      $('#deleteModalLabel').modal('hide');
       break;
     case "confirmDeleteBtn":
       const idPortfolio = $modal.getAttribute("data-id");
       if(idPortfolio){
-        //if (deletePortafolio(id)) {
+        if (deletePortafolio(idPortfolio)) {
           //const cardToRemove = d.querySelector(`.cardPortafolio[data-id="${idPortfolio}"]`);
           //const fatherCard=cardToRemove.closest(".col-sm-6");
           const fatherCard=d.querySelector(`.cardPortafolio[data-id="${idPortfolio}"]`).closest(".col-sm-6");
@@ -315,15 +313,14 @@ $modal.addEventListener("click",e=>{
           if (fatherCard) {
             fatherCard.remove();
           }
-          toggleModal();
-           $('#deleteModalLabel').modal('hide'); // Oculta el modal
+          $('#deleteModalLabel').modal('hide'); // Oculta el modal
            
-        //}
+        }
       }
       break;
   }
 });
 
-const getEditPortafolio = { getMyPortafolios, setImageInBox, limpiarCaja, cleanFiles, getDataForPage};
+const getEditPortafolio = { getMyPortafolios, setImageInBox, limpiarCaja, cleanFiles, getDataForPage,representData};
 
 export default getEditPortafolio;

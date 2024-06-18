@@ -1,3 +1,4 @@
+import getEditPortafolio from "./show-portafolios.mjs";
 const d = document;
 let $form, $titulo,$mensaje,$studios, $sobreMi, $fotoP, $fotoF, $cv, $selectElementT, $selectElementS, $selectProjects;
 
@@ -19,7 +20,7 @@ const setPropertys= (form,titulo,mensaje,studios, sobreMi, fotoP, fotoF, cv, sel
 
 const elementsNotExist = () => {
   //como un for o bueno un filter para ver si uno esta como nulo
-  return [$form,$titulo, $mensaje, $studios, $sobreMi, $fotoP, $fotoF, $cv, $selectElementT, $selectElementS, $selectProjects].some(value => value == null);
+  return [$form,$titulo, $mensaje, $studios, $sobreMi, $fotoP, $fotoF, $cv, $selectElementT, $selectElementS].some(value => value == null);
 };
 
 const itsValidFiles=(...files)=>{
@@ -54,7 +55,6 @@ const saveAll = async function saveAll() {
     formData.append("fotoP", fotoP);
     formData.append("fotoF", fotoF);
     formData.append("cv", cv);
-
   selectedOptionsT.forEach((option) =>
     formData.append("habilidadesTecnicas[]", option)
   );
@@ -73,21 +73,25 @@ const saveAll = async function saveAll() {
     if (!res.ok) throw { status: res.status, statusText: res.statusText };
 
     let json = await res.json();
-    console.log(json);
-    togleModal();
+    const img=$form.querySelector("#show-img-perfil").getAttribute("src");
+    getEditPortafolio.representData({"id_portafolio":json.id_portafolio,"foto_portafolio":img,"titulo_portafolio":titulo},d.querySelector(".row-cards"));
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al crear el portafolio";
     $form.insertAdjacentHTML(
       "afterend",
       `<p><b>Error ${err.status}: ${message}</b></p>`
     );
+    return false;
   }
+  $('#portfoliosModal').modal('hide');
+  return true;
 };
 
+
 const editPortafolio = async function () {
-  if(elementsNotExist()){
-    return;
-  }
+  //if(elementsNotExist()){
+  //  return;
+  //}
   const titulo = $titulo.value,
     mensaje = $mensaje.value,
     estudios = $studios.value,
@@ -138,20 +142,23 @@ const editPortafolio = async function () {
     let json = await res.json();
     console.log(json);
     //  lo d abajo era para modificar la box con la img del portafolio modificado
-    if($fotoP.files.length > 0){
-      const element=document.querySelector(`.cardPortafolio[data-id='${$form.dataset.id}']`).querySelector("img.card-img-top");
-      console.log(element);
-      element.setAttribute("src", json.content);
+    console.log($fotoP.files);
+    if (formData.has("fotoP")) {
+      const $element=document.querySelector(`.cardPortafolio[data-id='${$form.dataset.id}']`).querySelector("img.card-img-top");
+      console.log($element);
+      console.log($form.querySelector("#show-img-perfil").getAttribute("src"));
+      $element.setAttribute("src", $form.querySelector("#show-img-perfil").getAttribute("src"));
     }
-    //togleModal();
   } catch (err) {
     let message = err.statusText || "Ocurrió un error al editar el portafolio";
     $form.insertAdjacentHTML(
       "afterend",
       `<p><b>Error ${err.status}: ${message}</b></p>`
     );
+    return false;
   }
-
+  $('#portfoliosModal').modal('hide');
+  return true;
 };
 
 
